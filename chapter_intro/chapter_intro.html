@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-08-04
+### Université de Namur </br> 2026-08-05
 ]
 
 ---
@@ -56,7 +56,7 @@ layout: true
 
 ## Qu'est ce que l'*économétrie*?
 
-- Un ensemble de **méthodes et techniques statistiques** utilisé pour mesurer des relations économiques, tester la théorie économique, ou évaluer des politiques publiques à l'aide de **données** .
+- Un ensemble de **méthodes et techniques statistiques** utilisé pour mesurer des relations économiques, tester la théorie économique, ou évaluer des politiques publiques à l'aide de **données**.
 
 - Quelques exemples !
 
@@ -105,6 +105,30 @@ Est-ce que le quartier de naissance a un  *effet* sur la réussite professionnel
 
 * ["Credibility Revolution"](https://www.aeaweb.org/articles?id=10.1257/jep.24.2.3) in econometrics over the past 30 years ([2022 Economics Nobel](https://www.nobelprize.org/prizes/economic-sciences/2021/press-release/) awarded to some of the main protagonists of this "revolution")
 
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Le point de départ: les Données
+
+---
+# Structure des données
+
+1. Données Transversales
+    - Situation où nous avons un échantillon d'individus, entreprises, pays, parcelles agricoles, pour lequel nous avons des informations pour **1 période temporelle**.
+    - Par exemple, une enquête d'individus sur leur revenu en 2021.
+
+2. Données Longitudinales
+    - Observe des individus statistiques à de nombreux moments dans le temps. La dimension **temporelle* des données est clé.
+    - Collecte des données s'effectue à une certaine fréquence dans le temps, par exemple le prix du m² à Bruxelles sur les 10 dernières années.
+    
+3. Données Transversales Répétées
+    - On observe différents échantillons aléatoires de la population dans le temps.
+
+
+
 ---
 
 layout: false
@@ -126,7 +150,7 @@ layout: true
 
 --
 
-## Pourquoi est-ce qu'on utilise R `R`?&lt;sup&gt;1&lt;/sup&gt;
+## Pourquoi est-ce qu'on utilise `R`?&lt;sup&gt;1&lt;/sup&gt;
 
 .footnote[
 [1]: Cette liste a été inspiré par [Ed Rubin's](https://github.com/edrubin/EC421S19).  
@@ -150,6 +174,26 @@ layout: true
 
 ---
 
+# Comment télécharger `R`?
+
+Sur le [R-project](http://www.r-project.org/) : 
+ - Téléchargez R et sélectionnez la source du téléchargement (aucune importance)
+ - Sélectionnez votre OS et la version souhaitée
+ - Note : pour Windows, [Rtools](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html) est aussi nécessaire
+
+---
+# RStudio
+
+Rstudio est un environnement de développement intégré (IDE):
+- Vous pouvez écrire un code en R sans Rstudio
+- Vous pouvez écrire votre code dans Notepad, Word, ou Powerpoint
+- mais vous **devez** écrire R dans Rstudio
+
+Vous pouvez télécharger Rstudio sur le site de [posit](https://posit.co/downloads/)
+    
+---
+
+
 layout: false
 class: title-slide-section-red, middle
 
@@ -167,11 +211,11 @@ layout: true
 
 --
 
-* You will spend a lot of time preparing data for further analysis.
+* Nous passons beaucoup de temps à préparer nos données pour les analyser.
 
 --
 
-* The `gapminder` dataset contains data on life expectancy, GDP per capita and population by country between 1952 and 2007.
+* La base de données `gapminder` contient des données sur l'espérance de vie, le PIB/hab, et la population par pays entre 1952 et 2007.
 
 * Suppose we want to know the average life expectancy and average GDP per capita for each continent in each year.
 
@@ -184,11 +228,11 @@ layout: true
 .pull-left[
 
 ``` r
-# load gapminder package
+# charger le package gapminder
 library(gapminder)
-# load the dataset from the gapminder package
+# charger les données depuis le package
 data(gapminder, package = "gapminder") 
-# show first 4 lines of this dataframe
+# montrer les 4 premières lignes de la base de données 
 head(gapminder,n = 4)
 ```
 ]
@@ -273,22 +317,10 @@ ggplot(data = gapminder_dplyr,
 
 ---
 
-# Animated Plotting 👌 &lt;sup&gt;1&lt;/sup&gt;
-
-
-
-.center[![Gapminder](chapter_intro_files/figure-html/ex_gganimate.gif)]
-
-.footnote[
-[1]: This animation is taken from [Ed Rubin](https://raw.githack.com/edrubin/EC421S19/master/LectureNotes/01Intro/01_intro.html#40).
-]
-
----
-
 layout: false
 class: title-slide-section-red, middle
 
-# R 101: Here Is Where You Start
+# R 101: Point de départ
 
 ---
 
@@ -298,44 +330,68 @@ layout: true
 
 ---
 
-# Start your `RStudio`!
+# Ouvrez votre `RStudio`!
 
-## First Glossary of Terms
+## Premier point de vocabulaire 
 
-* `R`: a programming language.
+* `R`: un langage de programmation a programming language.
 
-* `RStudio`: an integrated development environment (IDE) to work with `R`.
-
---
-
-* *command*: user input (text or numbers) that `R` *understands*.
-
-* *script*: a list of commands collected in a text file, each separated by a new line, to be run one after the other.
+* `RStudio`: un environnement de développement intégré (IDE) pour travailler avec `R`.
 
 --
 
-* To run a script, you need to highlight the relevant code lines and hit `Ctrl`+`Enter` (Windows) or `Cmd`+`Enter` (Mac).
+* *command*: input de l'utilisateur (texte ou nombre) que `R` *comprend*.
+
+* *script*: une liste de commande regroupée dans un fichier texte, séparé par un retour à la ligne, que l'on exécute l'une après l'autre.
+
+--
+
+* Pour exécuter un script, vous devez surligner les lignes ou vous positionner sur celle que vous souhaitez et faire `Ctrl`+`Enter` (Windows) ou `Cmd`+`Enter` (Mac).
 
 ---
 
 # `RStudio` Layout
 
-&lt;img src="chapter_intro_files/figure-html/rstudio.png" alt="" width="600px" style="display: block; margin: auto;" /&gt;
+&lt;img src="chapter_intro_files/figure-html/RStudio_IDE_screenshot.png" alt="" width="600px" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# R as a Calculator
+# R comme un calculateur
 
-* You can use the `R` console like a calculator
+* Entrez une opération arithmétique après  `&gt;` et tapez `Entrer`!
 
-* Just type an arithmetic operation after `&gt;` and hit `Enter`!
 
---
-
-* Some basic arithmetic first:
 
 ``` r
-4 + 1
+# Addition
+5 + 5
+```
+
+```
+## [1] 10
+```
+
+``` r
+# Substraction
+5 - 5
+```
+
+```
+## [1] 0
+```
+
+``` r
+# Multiplication
+3 * 5
+```
+
+```
+## [1] 15
+```
+
+``` r
+# Division
+10 / 2
 ```
 
 ```
@@ -343,40 +399,20 @@ layout: true
 ```
 
 ``` r
-8 / 2
+# Exponentiation
+5^3
 ```
 
 ```
-## [1] 4
+## [1] 125
 ```
-
-
-* Great! What about this?
-
-``` r
-2^3
-```
-
-```
-## [1] 8
-```
-
-``` r
-# by the way: this is a comment! R therefore disregards it
-```
-
 ---
 
 class: inverse
 
 # Task 1
 
-
-``` r
-countdown(minutes = 5, top = 0)
-```
-
-<countdown-timer class="countdown" id="timer_755c86e0" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_a4855d9c" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Create a new R script (File `\(\rightarrow\)` New File `\(\rightarrow\)` R Script). Save it somewhere as `lecture_intro.R`.
 
@@ -398,44 +434,33 @@ Congratulations, you have created your first `R` "object"! Everything is an obje
 
 ---
 
-# Where to get Help?
+# Où trouver de l'aide ?
 
-.pull-left[
-`R` built-in `help`:
+* `R` possède des fonctions `help`:
 
 ``` r
-?log #? in front of function
-help(lm)   # help() is equivalent
-??plot  # get all help on keyword "plot"
+?log #? devant la fonction
+help(lm)   # help() est équivalent 
+??plot  # vous donne toute l'aide associée au mot "plot"
 ```
-]
 
 --
 
-.pull-right[
-In practice:
-![Learning R](chapter_intro_files/figure-html/learning_path.png)
-]
-
----
-
-# Collaborate!
-
-&lt;img src="chapter_intro_files/figure-html/gator_error.jpg" alt="Gator collaboration" width="900" style="display: block; margin-left: auto; margin-right: auto"/&gt;
+* En pratique, rechercher sur internet en regardant les forumes et les cheatsheets des packages !
 
 ---
 
 # R Packages
 
-* `R` users contribute add-on data and functions as *packages*
+* Utilisateurs de `R` contribuent en créant des *packages*
 
-* Installing packages is easy! Just use the `install.packages` function:
+* Les installer est facile, il faut juste utiliser la fonction `install.packages` :
     
     ``` r
     install.packages("ggplot2")
     ```
 
-* To *use* the contents of a packge, we must load it from our library using `library`:
+* Puis pour les *utiliser*, on doit d'abord les charger depuis la librairie `library`:
     
     ``` r
     library(ggplot2)
@@ -443,12 +468,12 @@ In practice:
 
 ---
 
-# Vectors
+# Vecteurs
 
 
 
 .pull-left[
-* The `c` function creates vectors, i.e. *one-dimensional arrays*.
+* La fonction `c` crée des vecteurs, i.e. *tableau à 1 dimension*.
     
     ``` r
     c(1, 3, 5, 7, 8, 9)
@@ -473,7 +498,7 @@ In practice:
 
 .pull-right[
 
-* Creating a *range*
+* Crée une *série*
     
     ``` r
     1:10
@@ -483,7 +508,7 @@ In practice:
     ##  [1]  1  2  3  4  5  6  7  8  9 10
     ```
 
-* get vector elements with square bracket operator `[index]`:
+* obtenir certains éléments avec `[index]`:
     
     ``` r
     v[c(1,3)]
@@ -498,27 +523,27 @@ In practice:
 
 # `data.frame`'s
 
-`data.frame`s represent **tabular data**. Like spreadsheets.
+`data.frame`s représente un **tableau de données**.
 
 
 ``` r
 example_data = data.frame(x = c(1, 3, 5, 7),
-                          y = c(rep("Hello", 3), "Goodbye"),
-                          z = c("one", 2, "three", 4))
+                          y = c(rep("Bonjour", 3), "Ciao"),
+                          z = c("1", 2, "3", 4))
 example_data
 ```
 
 ```
-##   x       y     z
-## 1 1   Hello   one
-## 2 3   Hello     2
-## 3 5   Hello three
-## 4 7 Goodbye     4
+##   x       y z
+## 1 1 Bonjour 1
+## 2 3 Bonjour 2
+## 3 5 Bonjour 3
+## 4 7    Ciao 4
 ```
 
-* A `data.frame` has 2 dimensions: *rows* and *columns*. Like a *matrix*. Can get elements with `[row_index,col_index]`.
+* Un `data.frame` possède 2 dimensions: *lignes* et *colonnes*. Exactement comme une *matrice*. On peut optenir les éléments grâce à `[lig_index,col_index]`.
 
-* In practice, you will be importing files that contain the data into `R` rather than creating `data.frame`s by hand.
+* En pratique, on va plutôt importer des fichiers de données directement dans `R` plutôt que de créer des `data.frame` à la main.
 
 ---
 
@@ -526,7 +551,7 @@ class: inverse
 
 # Task 2
 
-<countdown-timer class="countdown" id="timer_50ec803c" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_43d9d6ab" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 
 
@@ -556,10 +581,10 @@ class: inverse
 
 # `data.frame`s
 
-Useful functions to describe a dataframe:
+Fonction utiles pour décrire une base de données
 
 ``` r
-str(murders) # `str` describes structure of any R object
+str(murders) # `str` décrit la structure d'un objet R
 ```
 
 ```
@@ -575,7 +600,7 @@ str(murders) # `str` describes structure of any R object
 
 
 ``` r
-names(murders) # column names
+names(murders) # noms des col
 ```
 
 ```
@@ -586,7 +611,7 @@ names(murders) # column names
 
 
 ``` r
-nrow(murders) # number of rows
+nrow(murders) # nombre de lignes
 ```
 
 ```
@@ -597,7 +622,7 @@ nrow(murders) # number of rows
 
 
 ``` r
-ncol(murders) # number of columns
+ncol(murders) # nombre de colonnes 
 ```
 
 ```
@@ -607,13 +632,13 @@ ncol(murders) # number of columns
 
 ---
 
-# Accessing `data.frame` Columns
+# Accès aux colonnes du `data.frame` 
     
-* To extract one column **as a vector** we can use the `$` operator (as in `murders$state`), or the square bracket operator `[which_index]` with name or position index:
+* Pour extraire une colonne comme un **vecteur** on peut utiliser le `$` operateur (comme dans `murders$state`), ou `[which_index]` avec le nom ou la position :
     
     ``` r
-    first5 &lt;- murders[1:5, ]  # take first 5 states only
-    first5$state  # extract with $ operator
+    first5 &lt;- murders[1:5, ]  # garde les 5 premiers états 
+    first5$state  # extraire avec $ 
     ```
     
     ```
@@ -621,7 +646,7 @@ ncol(murders) # number of columns
     ```
     
     ``` r
-    first5[ ,"state"]  # extract with column name
+    first5[ ,"state"]  # extraire avec le nom de la colonne 
     ```
     
     ```
@@ -629,7 +654,7 @@ ncol(murders) # number of columns
     ```
     
     ``` r
-    first5[ ,1] # get first column
+    first5[ ,1] # garder la première colonne
     ```
     
     ```
@@ -639,7 +664,7 @@ ncol(murders) # number of columns
 --
 
 .pull-left[
-* Check `class` of an object:
+* Vérifier la  `class` d'un objet :
     
     ``` r
     class(murders)
@@ -653,7 +678,7 @@ ncol(murders) # number of columns
 --
 
 .pull-right[
-* `typeof` gives the R-internal data type:
+* `typeof` donne la classe d'un objet  :
     
     ``` r
     typeof(murders)
@@ -666,12 +691,12 @@ ncol(murders) # number of columns
 
 ---
 
-# Subsetting `data.frames`
+# Diviser un `data.frames`
 
-* Subsetting a data.frame: `murders[row condition, column number]` or `murders[row condition, "column name"]`
+* Diviser a data.frame: `murders[ligne condition, numero colonne]` ou `murders[ligne condition, "nom colonne"]`
     
     ``` r
-    # Only keep states with over 500 gun murders and keep only the "state" and "total" variables
+    # Garde uniquement les états avec plus de 500 homicides et les variables "state" et "total" 
     murders[murders$total &gt; 500, c("state", "total")]
     ```
     
@@ -684,7 +709,7 @@ ncol(murders) # number of columns
     ```
     
     ``` r
-    # Only keep California and Texas and keep only the "state" and "total" variables
+    # Garde uniquement les états California et Texas et uniquement les variables  "state" et "total" 
     murders[murders$state %in% c("California", "Texas"), c("state", "total")]
     ```
     
@@ -701,7 +726,7 @@ class: inverse
 
 # Task 3
 
-<countdown-timer class="countdown" id="timer_094a932d" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_8bf0067a" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. How many observations are there in `murders`?
 
@@ -741,7 +766,7 @@ layout: true
 --
 
 
-- Introduire à `R.
+- Introduire à `R`.
 
 --
 
@@ -763,7 +788,7 @@ layout: true
 
 ---
 
-# Syllabus 🤞
+# Syllabus 
 
 .pull-left[
 Cours 1 (aujourd'hui): ***Introduction***
@@ -771,24 +796,24 @@ Cours 1 (aujourd'hui): ***Introduction***
 
 Cours 2 et 3: ***Tidying, Visualising et Summarising Data***
 
-Cours 4: ***Simple Linear Regression***
+Cours 4: ***Regression Linéaire Simple***
 
-Cours 5: ***Introduction to Causality***
+Cours 5: ***Introduction à la causalité***
 
-Cours 6: ***Multiple Linear Regression***
+Cours 6: ***Régression Linéaire Multivarié***
 
-Cours 7: ***Linear Regression Extensions***
+Cours 7: ***Régression Linéaire : extension***
 ]
 
 .pull-right[
 
-Cours 8: ***Sampling***
+Cours 8: ***Echantillonnage***
 
-Cours 9: ***Confidence Intervals et Hypothesis Testing***
+Cours 9: ***Intervales de Confiance et Tests d'Hypothèses***
 
-Cours 10: ***Statistical Inference***
+Cours 10: ***Inférence Statistique***
 
-Cours 11: ***Regression Discontinuity***
+Cours 11: ***Regression Discontinuité***
 
 Cours 12: ***Recap***
 
@@ -827,7 +852,7 @@ Cours 12: ***Recap***
 
 - *Soyez sympa, honnête, et ne trichez pas.*
 
-- En cas de question par email, jeremy.donascimento@unamur.be, j'y répondrai au cours suivant pour en faire profiter le plus grand nombre. 
+- En cas de question par [email](jeremy.donascimento@unamur.be), j'y répondrai au cours suivant pour en faire profiter le plus grand nombre. 
 
 - Vous pouvez venir à mon bureau, batiment xx, le X entre X et X. 
 
@@ -839,7 +864,6 @@ Cours 12: ***Recap***
 
 *Travail en groupe :* vous pouvez, même devez travailler en 2-3. 
 
-*IA* : 
 
 ---
 
@@ -847,7 +871,7 @@ Cours 12: ***Recap***
 
 - Votre cerveau est un **muscle** : il a besoin d'effort pour s'améliorer 
 
-- IA est bien meilleur en programmation qu'en capacité de raisonnement, les modèles font des erreurs, invente des fonctions pour R, ne lui faites pas trop confiance
+- IA est bien meilleur en programmation qu'en capacité de raisonnement, les modèles font des erreurs, invente des fonctions pour `R`, ne lui faites pas trop confiance
 
 - Un outil très utile dans le temps long, notamment pour ceux qui ont une bonne base de connaissance, mais c'est un piège pour les débutants !
 

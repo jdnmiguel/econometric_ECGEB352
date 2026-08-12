@@ -27,6 +27,7 @@ layout: true
 ```{r setup, include=FALSE,warning=FALSE,message=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
+  error = TRUE,   # commenter pour voir erreur
   message = FALSE,
   warning = FALSE,
   dev = "svg",
@@ -57,157 +58,117 @@ countdown(
 ```
 
 
-# Today - Real 'metrics finally `r emo::ji("v")`
+# Aujourd'hui - Real 'metrics finally 
 
-* Introduction to the ***Simple Linear Regression Model*** and ***Ordinary Least Squares (OLS)*** *estimation*.
+* Introduction aux  ***Modèles de Régression Linéaire Simple*** et *estimation* ***Ordinary Least Squares (OLS)***.
 
-* Empirical application: *class size* and *student performance*
+* Application empirique : *absentéisme* et *santé des élèves*
 
-* Keep in mind that we are interested in uncovering **causal** relationships
+* L'objectif est d'étudier l'existence d'une relation **causale** entre ces deux variables
 
 ---
 
-# Class size and student performance
+# Etat de santé des élèves et présence à l'école 
 
-* What policies *lead* to improved student learning?
+* Quelles politiques peuvent *causer* une réduction de l'absentéisme des élèves ? 
 
-* Class size reduction has been at the heart of policy debates for *decades*.
+* Différentes options mise en place : transferts sociaux conditionnels, construction d'écoles, accompagnement de santé.
 
 --
 
-* We will be using data from a famous paper by [Joshua Angrist and Victor Lavy (1999)](https://economics.mit.edu/files/8273), obtained from [Raj Chetty and Greg Bruich's course](https://opportunityinsights.org/course/).
+* Nous allons utiliser les données d'un papier économique célèbre écrit par [Michael Kremer et Edward Miguel](2004)](https://emiguel.econ.berkeley.edu/wordpress/wp-content/uploads/2021/03/Paper__Worms.pdf).
 
-* Consists of test scores and class/school characteristics for fifth graders (10-11 years old) in Jewish public elementary schools in Israel in 1991.
+* Les données donnent des informations sur des caractéristiques de santé et abstésime d'étudiant.e.s entre 6 et 8 ans dans 75 écoles Kényanes en  1998 et 1999.
 
-* National tests measured *mathematics* and (Hebrew) *reading* skills. The raw scores were scaled from 1-100.
+* Nous utiliserons principalement les *données anthropométriques* (rapport poids pour âge) et *l'absentéisme* mesuré par le nombre de jours d'école manqué lors des 4 dernière semaines.
 
 ---
 
 class:: inverse
 
-# Task 1: Getting to know the data
+# Exo 1: Connaitre les données
 
 `r countdown(minutes = 7, top = 0)`
  
-1. Load the data from [here](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) as `grades`. *Hint: Use the `read_dta` from the `haven` library to import the file, which has a format .dta.* (FYI: *.dta* is the extension for data files used in [*Stata*](https://www.stata.com/))
+1. Télécharger les données depuis [ici](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) comme `data`. *Indice : Utiliser la fonction `read_dta` de la librairie `haven` pour importer les données, qui est en format .dta.* (FYI: *.dta* est une extension utilisée pour les fichiers utilisés dans [*Stata*](https://www.stata.com/))
 
-1. Describe the dataset:
+1. Décrire les données :
 
-  * What is the unit of observations, i.e. what does each row correspond to?
-  * How many observations are there?
-  * View the dataset. What variables do we have? What do the variables `avgmath` and `avgverb` correspond to?
-  * Use the `skim` function from the `skimr` package to obtain common summary statistics for the variables `classize`, `avgmath` and `avgverb`. (*Hint: use `dplyr` to `select` the variables and then simply pipe (`%>%`) `skim()`.*)
+  * Quelle est l'unité d'observation, i.e., à quoi correspond une ligne ?
+  * Combien d'observations avons-nous ?
+  * Regarder les donnéest. Quelles variables avons-nous ? A quoi correspondent les variables `absdays` et `haz` ?
+  * Utiliser la fonction `skim` du package `skimr` pour avoir des statistiques basiques pour les variables `absdays`, `haz` et `waz`. (*Indice: utiliser `dplyr` pour `select` les variables et ensuite utiliser (`%>%`) `skim()`.*)
 
-1. Do you have any priors about the actual (linear) relationship between class size and student achievement? What would you do to get a first insight?
+1. Avez vous une idée sur la relation entre l'état de santé des élèves et leur absentéisme ? Qu'est ce que vous ferez pour étudier cela ?
 
-1. Compute the correlation between class size and math and verbal scores. Is the relationship positive/negative, strong/weak?
+1. Calculer la corrélation entre ces deux variables. Est-ce que cette relation est positive/négative, forte/faible?
 
 ```{r, echo=FALSE}
 # import data
-grades = read_dta(file = "https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1")
+data = read_dta(file = "https://www.dropbox.com/scl/fi/aycl7xc9qe3kwu8cxecr7/pupil_data.dta?rlkey=5xz5tworxm4hz2tm69c05pmfp&st=h79lk0zq&dl=1")
 ```
 
 ---
 
-# Class size and student performance: Scatter plot
+# Santé des élèves et absentéisme: Nuage de points
 
-.pull-left[
-```{r, echo=FALSE,fig.height=6}
-g_math = ggplot(grades, aes(x = classize, y = avgmath)) + 
+```{r, echo=FALSE,fig.height=4}
+g_abs = ggplot(data, aes(x = score, y = absdays_98)) + 
     geom_point(size = 2, alpha = 0.5) +
-    xlim(0,45) +
-    ylim(0, 100) +
+    xlim(-2,5) +
+    ylim(0, 20) +
     labs(
-      x = "Class size",
-      y = "Average score",
-      title = "Mathematics") +
+      x = "Score de santé",
+      y = "Absentéisme",
+      title = "Absentéisme") +
     theme_bw(base_size = 20)
-g_math
+g_abs
 ```
-]
 
-.pull-right[
-```{r, echo=FALSE,fig.height=6}
-g_verb = ggplot(grades, aes(x = classize, y = avgverb)) + 
-    geom_point(size = 2, alpha = 0.5) +
-    xlim(0,45) +
-    ylim(0, 100) +
-    labs(x = "Class size",
-         y = "Average score",
-         title = "Reading") +
-    theme_bw(base_size = 20)
-g_verb
-```
-]
+
+
 
 --
 
-* Somewhat positive association as suggested by the correlations. Let's compute the average score by class size to see things more clearly!
+* La relation semble positive, mais calculons l'absentéisme moyen par score de santé pour y voir plus clair !
 
 ---
 
-# Class size and student performance: Binned scatter plot 
+# Santé des élèves et absentéisme: Nuage de points
 
-.pull-left[
-```{r, echo=FALSE,fig.height=6}
-grades_avg_cs <- grades %>%
-  group_by(classize) %>%
-  summarise(avgmath_cs = mean(avgmath),
-            avgverb_cs = mean(avgverb))
+```{r, echo=FALSE,fig.height=4}
+g_abs <- data %>%
+  mutate(score_bin = round(floor(score / 0.1) * 0.1, 2)) %>%
+  group_by(score_bin) %>%
+  summarise(avg_abs = mean(absdays_98, na.rm = TRUE), n = n())
 
-g_math_cs = ggplot(grades_avg_cs, aes(x = classize, y = avgmath_cs)) + 
+g_abs_avg <- ggplot(g_abs, aes(x = score_bin, y = avg_abs)) + 
     geom_point(size = 2) +
-    xlim(0,45) +
-    ylim(0, 100) +
+    xlim(-2,5) +
+    ylim(0, 20) +
     labs(
-      x = "Class size",
-      y = "Average score",
-      title = "Mathematics") +
+      x = "Score de santé",
+      y = "Absentéisme moyenne",
+      title = "Absentéisme") +
     theme_bw(base_size = 20)
-g_math_cs
+g_abs_avg
 ```
-]
 
-.pull-right[
-```{r, echo=FALSE,fig.height=6}
-g_verb_cs = ggplot(grades_avg_cs, aes(x = classize, y = avgverb_cs)) + 
-    geom_point(size = 2) +
-    xlim(0,45) +
-    ylim(0, 100) +
-    labs(x = "Class size",
-         y = "Average score",
-         title = "Reading") +
-    theme_bw(base_size = 20)
-g_verb_cs
-```
-]
 
 ---
 
-# Class size and student performance: Binned scatter plot
+# Santé des élèves et absentéisme: ligne de régression
 
-* We'll first focus on the mathematics scores and for visual simplicity we'll zoom in
-
-```{r, echo=FALSE,fig.height=4.75, fig.width = 8}
-g_math_cs +
-    ylim(50, 80) +
-    theme_bw(base_size = 14)
-```
-
----
-
-# Class size and student performance: Regression line
-
-How to visually summarize the relationship: **a line through the scatter plot**
+Comment résumer visuellement cette relation ? On utilise le plus souvent une **droite de régression**
 
 --
 
 .left-wide[
 ```{r,echo=FALSE,fig.align='left',fig.height=4,fig.width=7}
-g_math_cs +
-    ylim(50, 80) +
+g_abs_avg +
+    ylim(0, 15) +
     theme_bw(base_size = 14) +
-  geom_hline(yintercept = 65, col = "#d90502")
+  geom_hline(yintercept = 3, col = "#d90502")
 ```
 ]
 
@@ -216,75 +177,73 @@ g_math_cs +
 .right-thin[
 <br>
 
-* A *line*! Great. But **which** line? This one?
+* Une *droite* ! MAIS  **laquelle** ? Celle-ci ?
 
-* That's a *flat* line. But average mathematics score is somewhat *increasing* with class size `r emo::ji("weary")`
+* La droite est relativement  *plate* mais l'absentéisme *augmente* modestement lorsque les élèves sont en plus mauvaise santé
 
 ]
 
 ---
 
-# Class size and student performance: Regression line
+# Santé des élèves et absentéisme: ligne de régression
 
-How to visually summarize the relationship: **a line through the scatter plot**
+Comment résumer visuellement cette relation ? On utilise le plus souvent une **droite de régression**
 
 .left-wide[
 ```{r,echo=FALSE,fig.align='left',fig.height=4,fig.width=7}
-g_math_cs +
-  ylim(50, 80) +
-  theme_bw(base_size = 14) +
-  geom_abline(intercept = 55,slope = 0.6, col = "#d90502")
+g_abs_avg +
+    ylim(0, 15) +
+    theme_bw(base_size = 14) +
+  geom_abline(intercept = 4,slope = 0.6, col = "#d90502")
 ```
 ]
 
 .right-thin[
 <br>
 
-* **That** one?
+* **Celle-ci** ?
 
-* Slightly better! Has a **slope** and an **intercept** `r emo::ji("neutral_face")`
+* Légèrement mieux ! Il y a une **pente** et une **intersection** 
 
-* We need a rule to decide! 
+* Nous avons besoin d'une règle formelle de décision. 
 
 ]
 
 
 ---
 
-# Simple Linear Regression
+# Régression Linéaire Simple
 
-Let's formalise a bit what we are doing so far. 
+Formalisons ce que l'on est entrain de faire. Nous sommes intéressé.e.s dans l'étude de la relation entre deux variables
 
-* We are interested in the relationship between two variables:
+* L'analyse économétrique a pour objectif d'expliquer $y$ par rapport à $x$ : 
 
 --
 
-  * an __outcome variable__ (also called __dependent variable__):  
-  *average mathematics score* $(y)$
+  * une __variable dépendante__ (ou __prédite, expliquée__):  
+  *absentéisme à l'école* $(y)$
   
 --
   
-  * an __explanatory variable__ (also called __independent variable__ or __regressor__):  
-  *class size* $(x)$
+  * une __variable explicative__ ( __dépendante, controle, predicteur, régresseur__) :  
+  *état de santé de l'élève* $(x)$
   
 --
 
-* For each class $i$ we observe both $x_i$ and $y_i$, and therefore we can plot the *joint distribution* of class size and average mathematics score.
+* Pour chaque classe $i$, nous observons $x_i$ et $y_i$, et par conséquent pouvons étudier la *distribution jointe* de la taille de la classe et du score moyen en math.
 
 --
 
-* We summarise this relationship with a line (for now). The equation for such a line with an intercept $b_0$ and a slope $b_1$ is:
-    $$
-    \widehat{y}_i = b\_0 + b\_1 x\_i
-    $$
+* On peut résumer cette relation avec une droite L'équation s'écrit de telle sorte qu'il a une intersection à l'ordonnée $\beta_0$ et la pente $\beta_1$ :
+$$\widehat{y}_i = \beta_0 + \beta_1 x_i + u_i$$
 
 --
 
-* $\widehat{y}_i$ is our *prediction* for $y$ at observation $i$ $(y_i)$ given our model (i.e. the line).
+* $\widehat{y}_i$ est notre *prédiction* pour $y$ à notre observation $i$ $(y_i)$ en utilisant notre modèle (i.e.,  la droite).
 
 ---
 
-# What's A Line: A Refresher
+# Qu'est ce qu'une droite ? 
 
 ```{r, echo = F, fig.width = 10, fig.height = 5}
 b_0 = 32
@@ -307,7 +266,7 @@ base_plot
 
 ---
 
-# What's A Line: A Refresher
+# Qu'est ce qu'une droite ? 
 
 ```{r, echo = F, fig.width = 10, fig.height = 5}
 library('latex2exp')
@@ -323,8 +282,7 @@ plot_b_0
 ```
 
 ---
-
-# What's A Line: A Refresher
+# Qu'est ce qu'une droite ? 
 
 ```{r, echo = F, fig.width = 10, fig.height = 5}
 plot_b_0 + 
@@ -336,9 +294,9 @@ plot_b_0 +
 
 ---
 
-# Simple Linear Regression: Residual
+# Résidus
 
-* If all the data points were __on__ the line then $\widehat{y}_i = y_i$.
+* Si l'ensemble des points étaient __sur__ la droite, alors $\widehat{y}_i = y_i$.
 
 --
 
@@ -361,9 +319,8 @@ plot_ex
 
 ---
 
-# Simple Linear Regression: Residual
-
-* If all the data points were __on__ the line then $\widehat{y}_i = y_i$.
+# Résidus
+* Si l'ensemble des points étaient __sur__ la droite, alors $\widehat{y}_i = y_i$.
 
 ```{r, echo = FALSE, fig.height = 4,fig.width=7}
 plot_ex + geom_line(color = "#d90502")
@@ -371,126 +328,178 @@ plot_ex + geom_line(color = "#d90502")
 
 ---
 
-# Simple Linear Regression: Residual
+# Résidus
+* Si l'ensemble des points étaient __sur__ la droite, alors $\widehat{y}_i = y_i$.
 
-* If all the data points were __on__ the line then $\widehat{y}_i = y_i$.
-
-* However, since in most cases the *dependent variable* $(y)$ is not *only* explained by the chosen *independent variable* $(x)$, $\widehat{y}_i \neq y_i$, i.e. we make an __error__.  
-This __error__ is called the __residual__.
-
---
-
-* At point $(x_i,y_i)$, we note this residual $e_i$.
+* Cependant, dans la majorité des cas la *variable dépendante* $(y)$ n'est pas *uniquement* expliquée par notre *variable indépendante* $(x)$, $\widehat{y}_i \neq y_i$, i.e., on fait une __erreur__.  
+Cette __erreur__ est appelée le __résidu__.
 
 --
 
-* The *actual data* $(x_i,y_i)$ can thus be written as *prediction + residual*:
+* Au point $(x_i,y_i)$, on le note $u_i$.
+
+--
+
+* Les *données réelles* $(x_i,y_i)$ peuvent être réecrite telle que *prédiction + residu*:
 
   $$
-  y_i = \widehat y_i + e_i = b_0 + b_1 x_i + e_i
+    \widehat{y}_i = \beta_0 + \beta_1 x_i + u_i
   $$
 
 ---
 
-# Simple Linear Regression: Graphically
-
+# Régression linéaire simple : graphiquement
+Regardons la distribution jointe de nos deux variables
 ```{r, echo = F, fig.width = 10, fig.height = 5}
-plot_1 <- g_math_cs +
-    ylim(50, 80) +
+plot_1 <- g_abs_avg +
+    ylim(0, 15) +
     theme_bw(base_size = 14)
 plot_1
 ```
 
 ---
 
-# Simple Linear Regression: Graphically
-
+# Régression linéaire simple : graphiquement
+Ajoutons la droite de régression linéaire
 ```{r, echo = F, fig.width = 10, fig.height = 5}
 plot_2 <- plot_1 +
-  stat_smooth(data = grades_avg_cs, method = "lm", se = FALSE, colour = "#d90502") +
+  stat_smooth(data = g_abs, method = "lm", se = FALSE, colour = "#d90502") +
   annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6)
 plot_2
 ```
 
 ---
 
-# Simple Linear Regression: Graphically
-
+# Régression linéaire simple : graphiquement
+Concentrons nous sur les observations avec un score = 2
 ```{r, echo = F, fig.width = 10, fig.height = 5}
-g_math_cs +
-    ylim(50, 80) +
+g_abs_avg +
+    ylim(0, 10) +
     theme_bw(base_size = 14) +
   stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
-  geom_point(data = grades_avg_cs %>% filter(classize == 17), aes(x = classize, y = avgmath_cs), color = "#d90502", size = 4) +
-  annotate("text", x = 17, y = 69, label = "y[x = 17]", parse = TRUE, colour = "#d90502", size = 6)
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
+  geom_point(data = g_abs %>% filter(score_bin == 3.1), aes(x = score_bin, y = avg_abs ), color = "#d90502", size = 4) +
+  annotate("text", x = 3.1, y = 6, label = "y[x = 3.1]", parse = TRUE, colour = "#d90502", size = 6)
 ```
 
 ---
 
-# Simple Linear Regression: Graphically
-
+# Régression linéaire simple : graphiquement
+L'erreur associée à la prédiction faite est la distance entre sa valeur réelle et la valeur de la droite à ce $x$  
 ```{r, echo = F, fig.width = 10, fig.height = 5}
-math_class_reg <- lm(avgmath_cs ~ classize, data = grades_avg_cs)
-math_class_reg <- broom::augment(math_class_reg)
+abs_score_reg <- lm(avg_abs ~ score_bin, data = g_abs)
+abs_score_reg <- broom::augment(abs_score_reg)
 
-g_math_cs +
-    ylim(50, 80) +
+g_abs_avg +
+    ylim(0, 1) +
     theme_bw(base_size = 14) +
   stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
-  geom_point(data = grades_avg_cs %>% filter(classize == 17), aes(x = classize, y = avgmath_cs), color = "#d90502", size = 4) +
-  annotate("text", x = 17, y = 69, label = "y[x = 17]", parse = TRUE, colour = "#d90502", size = 6) +
-  geom_segment(data = math_class_reg %>% filter(classize == 17),
-               aes(xend = classize, yend = .fitted), color = "#d90502", size = 1) +
-  annotate("text", x = 18, y = 65.55, label = "e[x = 17]", parse = TRUE, colour = "#d90502", size = 6)
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
+  geom_point(data = g_abs %>% filter(score_bin == 3.1), aes(x = score_bin, y = avg_abs ), color = "#d90502", size = 4) +
+  annotate("text", x = 3.1, y = 6, label = "y[x = 3.1]", parse = TRUE, colour = "#d90502", size = 6)
+  geom_segment(data = abs_score_reg  %>% filter(score_bin == 3.1),
+               aes(xend = score_bin, yend = .fitted), color = "#d90502", size = 1) +
+  annotate("text", x = 3.1, y = 2.5, label = "e[x = 3.1]", parse = TRUE, colour = "#d90502", size = 6)
 ```
 
 ---
 
-# Simple Linear Regression: Graphically
-
+# Régression linéaire simple : graphiquement
+On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base de données. Notre nouvel objectif est de minimiser la distance entre la droite ($\widehat{y_i}$) et les valeurs réelles ($y_i$)
 ```{r, echo = F, fig.width = 10, fig.height = 5}
-g_math_cs +
-    ylim(50, 80) +
+g_abs_avg +
+    ylim(0, 10) +
     theme_bw(base_size = 14) +
   stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
-  geom_segment(data = math_class_reg,
-               aes(xend = classize, yend = .fitted), color = "#d90502", size = 0.5)
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
+  geom_segment(data = abs_score_reg,
+               aes(xend = score_bin, yend = .fitted), color = "#d90502", size = 0.5)
 ```
 
 ---
 
-# Simple Linear Regression: Graphically
+# Régression linéaire simple : graphiquement
 
 .left-wide[
 ```{r, echo = F, out.width = "100%", fig.height = 4.5}
-g_math_cs +
-    ylim(50, 80) +
+g_abs_avg +
+    ylim(0, 10) +
     theme_bw(base_size = 14) +
   stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
-  geom_segment(data = math_class_reg,
-               aes(xend = classize, yend = .fitted), color = "#d90502", size = 0.5)
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
+  geom_segment(data = abs_score_reg,
+               aes(xend = score_bin, yend = .fitted), color = "#d90502", size = 0.5)
 ```
 ]
 
 .right-thin[
 <br>
 <br>
-<p style="text-align: center; font-weight: bold; font-size: 35px; color: #d90502;">Which "minimisation" criterion should (can) be used?</strong>
+<p style="text-align: center; font-weight: bold; font-size: 35px; color: #d90502;">Quel critère de *minimisation* devons nous utiliser?</strong>
 ]
 ---
+# Quelle est la relation entre x et u ?
 
-# **O**rdinary **L**east **S**quares (OLS) Estimation
+L'objectif est d'esitmer l'effet __ceteris paribus__ : tous les autres éléments sont maintenus constant pour isoler l'effet unique de notre variable indépendante sur la variable dépendante. 
 
 --
 
-* Errors of different sign $(+/-)$ cancel out, so we consider **squared residuals** 
-$$\forall i \in [1,N], e_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$$
+Hypothèse centrale sur la distribution des facteurs inobservables : (a) $E(u)=0$
 
-* Choose $(b_0,b_1)$ such that $\sum_{i = 1}^N e_1^2 + \dots + e_N^2$ is **as small as possible**.
+* Sachant que $x$ et $u$ sont deux variables aléatoires, on peut définir la distribution conditionnelle de $u$ pour toute valeur de $x$ 
+
+$\Rightarrow$ (b) $E(u|x) = E(u)$ $\iff$ En moyenne, les résidus sont indépendants des $x$ 
+
+---
+# Quelle est la relation entre x et u ?
+
+En combinant (a) et (b), on obtient l'hypothèse de moyenne conditionnelle nulle : $E(u|x)=0$
+
+On obtient la fonction de regression de la population $\Rightarrow$ $E(y|x) = \beta_0 + \beta_1 x $ 
+
+* Fonction linéaire de $x$, linéaire car la *variation* d'une unité de $x$ change la valeur espérée de $y$ par $\beta_1$
+---
+
+# Estimation **O**rdinary **L**east **S**quares (OLS) 
+
+* Comment choisir ($\beta_0$ et $\beta_1$) sachant que l'on a un échantillon aléatoire de taille $n$ : $\{(x_i,y_i): i =1,2,...,n\}$
+
+$$y_i = \beta_0 + \beta_1 x_i + u_i$$ pour l'individu $i$
+
+On sait que : 
+- $E[u|x]=0$, cela signifie donc que $\text{cov}(x,u)=0$
+- (1) $E(u)=0$
+
+On a donc : (2) $cov(x,u)= E(xu)=0 $
+
+
+En utilisant (1) et (2) ainsi que la définition de  $y_i$, on peut trouver $\widehat{\beta_0}$ et $\widehat{\beta_1}$ qui résoud : 
+
+- (1) $E(y - \beta_0 - \beta_1 x) = 0$
+- (2) $E(x[y - \beta_0 - \beta_1 x)] = 0$
+
+---
+# Estimation **O**rdinary **L**east **S**quares (OLS) 
+
+En utilisant (1) et (2) ainsi que la définition de  $y_i$, on peut trouver $\widehat{\beta_0}$ et $\widehat{\beta_1}$ qui résoud : 
+
+- (1) $E(y - \beta_0 - \beta_1 x) = 0$
+- (2) $E(x[y - \beta_0 - \beta_1 x)] = 0$
+
+>   ### __Pente: $\beta_1^{OLS} = \frac{cov(x,y)}{var(x)}$ $\hspace{2cm}$ Intersection: $\beta_0^{OLS} = \bar{y} - \beta_1\bar{x}$__
+
+* Note que $\beta_1 \geq 0$ si $cov(x,y) \geq 0$  et $\beta_1 \leq 0$ si $cov(x,y) \leq 0$ 
+
+* Ces formules peuvent être trouvée en résolvant la minimisation du carré des erreurs. Les maths peuvent être trouvé [ici](https://www.youtube.com/watch?v=Hi5EJnBHFB4)  en détail pour les intéréssé.e.s 
+
+---
+# Estimation **O**rdinary **L**east **S**quares (OLS) 
+
+
+* Erreurs de différents signes $(+/-)$ s'annulent, donc on considère **le carré des résidus** 
+$$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$$
+
+* Donc on choisi $(\beta_0,\beta_1)$ tel que $\sum_{i = 1}^N u_1^2 + \dots + u_N^2$ est aussi **petite que possible**.
 
 --
 
@@ -507,10 +516,11 @@ g_math_cs +
 
 # **O**rdinary **L**east **S**quares (OLS) Estimation
 
-* Errors of different sign $(+/-)$ cancel out, so we consider **squared residuals** 
-$$\forall i \in [1,N], e_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$$
 
-* Choose $(b_0,b_1)$ such that $\sum_{i = 1}^N e_1^2 + \dots + e_N^2$ is **as small as possible**.
+* Erreurs de différents signes $(+/-)$ s'annulent, donc on considère **le carré des résidus** 
+$$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$$
+
+* Donc on choisi $(\beta_0,\beta_1)$ tel que $\sum_{i = 1}^N u_1^2 + \dots + u_N^2$ est aussi **petite que possible**.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE,fig.width=7,fig.height = 3.5}
 g_math_cs +
@@ -549,56 +559,50 @@ knitr::include_url("https://gustavek.shinyapps.io/SSR_cone/")
 
 # **O**rdinary **L**east **S**quares (OLS): Coefficient Formulas
 
-* **OLS**: *estimation* method consisting in minimizing the sum of squared residuals.
+* **OLS**: méthode d'*estimation* consiste à minimiser la somme des carrés des erreur.
 
-* Yields __unique__ solutions to this minization problem.
-
-* So what are the formulas for $b_0$ (intercept) and $b_1$ (slope)?
+* Résulte en une __unique__ solution à ce problème de minimisation 
 
 --
 
-* In our single independent variable case:
+* Dans notre cas avec une seule variable indépendante :
 
->   ### __Slope: $b_1^{OLS} = \frac{cov(x,y)}{var(x)}$ $\hspace{2cm}$ Intercept: $b_0^{OLS} = \bar{y} - b_1\bar{x}$__
+>   ### __Pente: $\beta_1^{OLS} = \frac{cov(x,y)}{var(x)}$ $\hspace{2cm}$ Intersection: $\beta_0^{OLS} = \bar{y} - \beta_1\bar{x}$__
 
---
-
-
-* These formulas do not appear from magic. They can be found by solving the minimisation of squared errors. The maths can be found [here](https://www.youtube.com/watch?v=Hi5EJnBHFB4) for those who are interested.
 
 ---
 
 # **O**rdinary **L**east **S**quares (OLS): Interpretation
 
-For now assume both the dependent variable $(y)$ and the independent variable $(x)$ are numeric.
+Pour le moment, faisons l'hypothèse que nos variables dépendante $(y)$ et indépendante  $(x)$ sont numériques.
 
 --
 
-> Intercept $(b_0)$: **The predicted value of $y$ $(\widehat{y})$ if $x = 0$.**
+> Intersection $(\beta_0)$: **La valeur prédite de $y$ $(\widehat{y})$ si $x = 0$.**
 
 --
 
-> Slope $(b_1)$: **The predicted change, on average, in the value of $y$ *associated* to a one-unit increase in $x$.**
+> Pente $(\beta_1)$: **Le changement prédit, en moyenne, dans la valeur de $y$ *associé* à une hasse de une unité de$x$.**
 
 --
 
-* `r emo::ji("warning")` Note that we use the term *associated*, **clearly avoiding interpreting $b_1$ as the causal impact of $x$ on $y$**. To make such a claim, we need some specific conditions to be met. (Next week!)
+* `r emo::ji("warning")` Notez que l'on utilise ici le termé *associé*, **car pour le moment on évite d'interpréter $\beta_1$ comme l'effet causal de $x$ sur $y$**. Pour pouvoir mettre une interprétation causale, nous avons besoin que certaines conditions soient validées. (Plus tard dans le cours)
 
 --
  
-* Also notice that the units of $x$ will matter for the interpretation (and magnitude!) of $b_1$.
+* Un autre facteur importante dans l'interprétation de $\beta_1$ réside dans l'unité de $x$.
 
 --
 
-* **You need to be explicit about what the unit of $x$ is!**
+* **Lors de l'intreprétation vous devrez être explicite sur l'unité de $x$ !**
 
 ---
 
-# OLS with `R`
+# OLS dans `R`
 
-* In `R`, OLS regressions are estimated using the `lm` function.
+* Dans `R`, les régressions OLS sont estimées grâce à la fonction `lm`.
 
-* This is how it works:
+* Concrètement, voici à quoi ressemble le code :
 
   ```{r, echo = TRUE, eval = FALSE}
   lm(formula = dependent variable ~  independent variable, data = data.frame containing the data)
@@ -613,14 +617,14 @@ Let's estimate the following model by OLS: $\textrm{average math score}_i = b_0 
 .pull-left[
 ```{r echo=T, eval = FALSE}
 # OLS regression of class size on average maths score
-lm(avgmath_cs ~ classize, grades_avg_cs) 
+lm( ~ classize, grades_avg_cs) 
 ```
 ]
 
 .pull-right[
 ```{r echo=F, eval = TRUE}
 # OLS regression of class size on average maths score
-lm(avgmath_cs ~ classize, grades_avg_cs) 
+lm(avg_abs ~ score_bin, data = g_abs)
 ```
 ]
 
@@ -630,30 +634,29 @@ lm(avgmath_cs ~ classize, grades_avg_cs)
 
 ```{r echo=F, eval = TRUE}
 # OLS regression of class size on average maths score
-lm(formula = avgmath_cs~classize, data = grades_avg_cs)
+lm(avg_abs ~ score_bin, data = g_abs)
 ```
 
 --
 
-This implies (abstracting the $_i$ subscript for simplicity):
+Cela implique (on simplifie en omettant le subscript $_i$ ):
 
 
 $$
 \begin{aligned}
-\widehat y &= b_0 + b_1 x \\
-\widehat {\text{average math score}} &= b_0 + b_1 \cdot \text{class size} \\
-\widehat {\text{average math score}} &= 61.11 + 0.19 \cdot \text{class size}
+\widehat y &= \beta_0 + \beta_1 x \\
+\widehat {\text{absentéisme moyen}} &= \beta_0 + \beta_1 \cdot \text{score santé} \\
+\widehat {\text{absentéisme moyen}} &= 0.74 + 0.33 \cdot \text{score santé}
 \end{aligned}
 $$
 
 --
-
-What's the predicted average score for a class of 26 students? (Using the *exact* coefficients.)
+Quel est l'absentéisme prédit pour un score de santé égal à 3 ? (En se basant sur les coefficients)
 
 $$
 \begin{aligned}
-\widehat {\text{average math score}} &= 61.11 + 0.19 \cdot 26 \\
-\widehat {\text{average math score}} &= 66.08
+\widehat {\text{absentéisme moyen}} &= 0.74 + 0.33 \cdot 3 \\
+\widehat {\text{absentéisme moyen}} &= 1.73
 \end{aligned}
 $$
 
@@ -684,50 +687,46 @@ grades_avg_cs <- grades %>%
 
 ---
 
-# Predictions and Residuals: Properties
+# Propriété des OLS: Pedictions et Residus
+Valeurs prédites correspondent à tout valeur de $\widehat{y}_i$ qui se trouve sur la droite OLS.
 
 .pull-left[
-* __The average of $\widehat{y}_i$ is equal to $\bar{y}$.__  
-    $$\begin{align} \frac{1}{N} \sum_{i=1}^N \widehat{y}_i &= \frac{1}{N} \sum_{i=1}^N b_0 + b_1 x_i \\ &= b_0 + b_1  \bar{x}  = \bar{y} \end{align}$$
+* __La moyenne de $\widehat{y}_i$ est égale à $\bar{y}$.__  
+    $$\begin{align} \frac{1}{N} \sum_{i=1}^N \widehat{y}_i &= \frac{1}{N} \sum_{i=1}^N \beta_0 + \beta_1 x_i \\ &= \beta_0 + \beta_1  \bar{x}  = \bar{y} \end{align}$$
 
-* __The average (or sum) of residuals is 0.__
-  $$\begin{align} \frac{1}{N} \sum_{i=1}^N e_i &= \frac{1}{N} \sum_{i=1}^N (y_i - \widehat y_i) \\ &= \bar{y} - \frac{1}{N} \sum_{i=1}^N \widehat{y}_i \\\ &= 0 \end{align}$$
+* __La moyenne (ou la somme) des résidus est 0.__
+  $$\begin{align} \frac{1}{N} \sum_{i=1}^N u_i &= \frac{1}{N} \sum_{i=1}^N (y_i - \widehat y_i) \\ &= \bar{y} - \frac{1}{N} \sum_{i=1}^N \widehat{y}_i \\\ &= 0 \end{align}$$
 ]
 
 --
 
 .pull-right[
-* __ Regressor and residuals are uncorrelated (by definition).__
+* __ Les régresseurs et les résidus ne sont pas corrélés.__
 
-  $$Cov(x_i, e_i) = 0$$
+  $$Cov(x_i, u_i) = 0$$
 
 
-* __Prediction and residuals are uncorrelated.__
+* __Les valeurs prédites et les résidus ne sont pas corrélés.__
 
-  $$\begin{align} Cov(\widehat y_i, e_i) &= Cov(b_0 + b_1x_i, e_i) \\ &= b_1Cov(x_i,e_i) \\ &= 0 \end{align}$$
+  $$\begin{align} Cov(\widehat y_i, u_i) &= Cov(\beta_0 + \beta_1x_i, u_i) \\ &= \beta_1Cov(x_i,u_i) \\ &= 0 \end{align}$$
   
-  Since $Cov(a + bx, y) = bCov(x,y)$.
+  En se basant sur $Cov(a + bx, y) = bCov(x,y)$.
 
 ]
 
 ---
 
-# Linearity Assumption: Visualize your Data!
+#Un conseil, toujours visualiser ces données !
 
-* It's important to keep in mind that covariance, correlation and simple OLS regression only measure **linear relationships** between two variables.
+* `r emo::ji("warning")`La covariance, coefficient de corrélation, et régression OLS univarié ne mesurent qu'une **relation linéaire** entre deux variables.
 
-* Two datasets with *identical* correlations and regression lines could look *vastly* different.
-
---
-
-* Is that even possible?
-<img src="https://media.giphy.com/media/5aLrlDiJPMPFS/giphy.gif" height = "400" align = "middle" />
+* On peut avoir deux bases de données avec ces statistiques *identiques* mais qui sont *très* différentes.
 
 ---
 
-# Linearity Assumption: Anscombe
+# Hypothèse de linéaire : l'exemple Anscombe
 
-* Francis Anscombe (1973) came up with 4 datasets with identical stats. But look!
+* Francis Anscombe (1973) montre 4 base de données avec les mêmes statistiques. Néanmoins, celles-ci semblent bien différentes !
 
 .left-wide[
 
@@ -772,23 +771,23 @@ ch %>%
 ]
 ---
 
-# Nonlinear Relationships in Data?
+# Présence de relation non-linéaire ? 
 
 .pull-left[
-* We can accomodate non-linear relationships in regressions.
+* Il est très facile de prendre en compte des relations non-linéaire dans des régressions.
 
-* Just add a *higher order* term like this:
+* Il suffit d'ajouter un terme *d'ordre plus élevé* :
     $$
-    y_i = b_0 + b_1 x_i + b_2 x_i^2 + e_i
+    y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i
     $$
     
-* This is __multiple regression__ (in 2 weeks!)
+* C'est __une régression multivarié__ (patience on verra ça bientôt)
 ]
 
 --
 
 .pull-right[
-* For example, suppose we had this data and fit the previous regression model:
+* Par exemple, imaginons que nous avons ces données, on peut estimer ces modèles :
     ```{r non-line-cars-ols2,echo=FALSE,echo=FALSE,fig.height = 6}
 data(mtcars)
 mtcars %>% ggplot(aes(x = hp, y = mpg)) +
@@ -798,7 +797,7 @@ mtcars %>% ggplot(aes(x = hp, y = mpg)) +
     scale_colour_manual(name="legend", values=c("darkgreen", "#d90502")) +
     labs(x = "x",
          y = "y",
-         title = "Nonlinear relationship between x and y") +
+         title = "Relation non-linéaire entre x et y") +
     theme_bw(base_size = 20) +
     theme(legend.position="top") +
     theme(legend.title = element_blank())
@@ -808,48 +807,53 @@ mtcars %>% ggplot(aes(x = hp, y = mpg)) +
 
 ---
 
-# Analysis of Variance
+# Analyse de la variance
 
-* Remember that $y_i = \widehat{y}_i + e_i$.
+* Rappel : $y_i = \widehat{y}_i + u_i$.
 
-* We have the following decomposition:
-    $$\begin{align} Var(y) &= Var(\widehat{y} + e)\\&= Var(\widehat{y}) + Var(e) + 2 Cov(\widehat{y},e)\\&= Var(\widehat{y}) + Var(e)\end{align}$$
+* En décomposant, on obtient :
+    $$\begin{align} Var(y) &= Var(\widehat{y} +u)\\&= Var(\widehat{y}) + Var(u) + 2 Cov(\widehat{y},u)\\&= Var(\widehat{y}) + Var(u)\end{align}$$
     
-* Because:
+* Car:
   * $Var(x+y) = Var(x) + Var(y) + 2Cov(x,y)$
-  * $Cov(\hat{y},e)=0$
+  * $Cov(\hat{y},u)=0$
 
-* __Total variation (SST) = Model explained (SSE) + Unexplained (SSR)__
+* __Somme totale des carrés (SST) = Somme des carrés (SSE) + Somme des carrés résiduelles  (SSR)__
+
+ * $SST=\sum_i^N (y_i - \bar{y} )^2$ = variation totale dans les valeurs actuelles ($y_i$)
+ * $SSE=\sum_i^N (\widehat{y_i} - \bar{y} )^2$ = variation de l'échantillon dans les valeurs prédites ($\widehat{y_i}$)
+ * $SSR=\sum_i^N \hat{u_i}^2$ = variation de l'échantillon dans les résidus ($\widehat{u_i}$)
+
 
 ---
 
-# Goodness of Fit
-
-* The __ $R^2$ __ measures how well the __model fits the data__.
+# Pouvoir prédictif du modèle
+* Mesurer à quel point $x$ explique bien $y$, i.e., le pouvoir prédictif du modèle
+* Le__ $R^2$ __ mesure à quel point le __modèle estime bien les données__.
 
 --
 
 $$
-R^2 = \frac{\text{variance explained}}{\text{total variance}} =     \frac{SSE}{SST} = 1 - \frac{SSR}{SST}\in[0,1]
+R^2 = \frac{\text{variance expliquée}}{\text{variance totlae}} =     \frac{SSE}{SST} = 1 - \frac{SSR}{SST}\in[0,1]
 $$
 
 --
     
-* $R^2$ close to $1$ indicates a __very ***high*** explanatory power__ of the model.
+* $R^2$ proche de $1$ indique un __pouvoir explicatif très ***fort***__ du modèle.
 
-* $R^2$ close to $0$ indicates a __very ***low*** explanatory power__ of the model.
-
---
-
-* *Interpretation:* an $R^2$ of 0.5, for example, means that the variation in $x$ "explains" 50% of the variation in $y$.
+* $R^2$ proche to $0$ indique un __pouvoir explicatif très ***faible***__ du modèle.
 
 --
-    
-* `r emo::ji("warning")` Low $R^2$ does __NOT__ mean it's a useless model! Remember that econometrics is interested in causal mechanisms, not prediction!
+
+* *Interpretation:* un $R^2$ de 0.3, par exemple, signifie que la variation dans les $x$ "explique" 50% de la variatoin totale dans  $y$.
 
 --
     
-* `r emo::ji("warning")` The $R^2$ is __NOT__ an indicator of whether a relationship is causal!
+* `r emo::ji("warning")` Faible $R^2$ ne __SIGNIFIE PAS__ que le modèle est inutile ! Rappel du premier cours, on est intéressé.e dans les relations causales, pas la prédiction (cours de Machine Learning) !
+
+--
+    
+* `r emo::ji("warning")` Le $R^2$  n'est __PAS__ un indicateur de causalité entre deux relations. On verra ça plus tard dans le cours l!
 
 ---
 
@@ -871,36 +875,17 @@ class: inverse
 
 ---
 
-# On the way to causality
-
-`r emo::ji("white heavy check mark")` How to manage data? Read it, tidy it, visualise it...
-
-`r emo::ji("construction")`  **How to summarise relationships between variables?** Simple linear regression... to be continued
-
-`r emo::ji("cross mark")` What is causality?
-
-`r emo::ji("cross mark")` What if we don't observe an entire population?
-
-`r emo::ji("cross mark")`  Are our findings just due to randomness?
-
-`r emo::ji("cross mark")` How to find exogeneity in practice?
-
-
----
-
 
 class: title-slide-final, middle
 background-image: url(../img/logo/namur-logo.png)
 background-size: 250px
 background-position: 9% 19%
 
-# SEE YOU NEXT WEEK!
+# Bonne journée !
 
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| <a href="mailto:florian.oswald@sciencespo.fr">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | florian.oswald@sciencespo.fr       |
-| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |
-| <a href="https://scpoecon.github.io/ScPoEconometrics">.ScPored[<i class="fa fa-link fa-fw"></i>] | Book |
-| <a href="http://twitter.com/ScPoEcon">.ScPored[<i class="fa fa-twitter fa-fw"></i>]                          | @ScPoEcon                         |
+| <a href="mailto:jeremy.donascimento@unamur.be">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |                    |
 | <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
