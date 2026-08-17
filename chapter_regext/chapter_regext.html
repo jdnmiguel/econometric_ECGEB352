@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econométrie</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jérémy Do Nascimento Miguel" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="../css/scpo.css" type="text/css" />
+    <link rel="stylesheet" href="../css/scpo-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Econométrie
+]
+.subtitle[
+## Extensions du modèle de régression linéaire
+]
+.author[
+### Jérémy Do Nascimento Miguel
+]
+.date[
+### Université de Namur </br> 2026-08-17
+]
+
+---
+
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+
+
+
+
+# Aujourd'hui - Extensions du modèle de régression linéaire
+
+Selon les données et les relations entre les variables d'intérêt, il peut être nécessaire de s'éloigner du modèle de base.
+
+--
+
+Nous allons nous concentrer sur 3 variations importantes :
+  
+  1. ***Relations non-linéaires*** : modèles logarithmiques et polynomiaux
+  
+  1. ***Interactions*** entre variables
+
+  1. Régression ***standardisée***
+
+--
+
+Dans chaque cas, la façon dont on estime ces coefficients ne change pas (i.e. OLS).
+
+--
+
+Applications empiriques :
+
+  (i) *frais de scolarité* et *potentiel de revenu*,
+  (ii) *salaire*, *éducation* et *genre*,
+  (iii) *taille de classe* et *performance des élèves*
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Relations Non-Linéaires
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Prendre en compte les relations non-linéaires
+
+Il existe deux "méthodes" principales :
+
+--
+
+1. Modèles ***log***
+
+--
+
+1. Modèles ***polynomiaux***
+
+---
+
+
+# Modèles logarithmiques
+
+* Les modèles vus jusqu'à présent peuvent être appelés spécifications ***niveau-niveau***. La variable dépendante et la variable indépendante sont toutes deux mesurées en niveau.
+
+--
+
+  * Ce *niveau* peut être : des euros, des années, un nombre d'élèves, un %
+  
+--
+
+* Prendre le logarithme *naturel* de la variable dépendante et/ou de la (des) variable(s) indépendante(s) nous amène à définir 3 autres types de régressions (abus de notation : `\(ln(x) = \log_{e}(x)=\log(x)\)`) :
+
+  * ***Log - niveau*** :   `$$\log(y_i) = \beta_0 + \beta_1 x_{1,i} + ... + e_i$$`
+
+  * ***Niveau - log*** :   `$$\textrm{y}_i = \beta_0 + \beta_1 \log(x_{1,i}) + ... + e_i$$`
+
+  * ***Log - log*** :   `$$\log(y_i) = \beta_0 + \beta_1 \log(x_{1,i}) + ... + e_i$$`
+  
+---
+
+# La fonction logarithme (naturel) : une introduction 😉
+
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-1-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+# La fonction logarithme (naturel) : une introduction 😉
+
+La [fonction logarithme naturel](https://fr.wikipedia.org/wiki/Logarithme_n%C3%A9p%C3%A9rien) est la fonction inverse de la fonction exponentielle, i.e. `\(log(\exp(x))=x\)`
+
+--
+
+`\(\rightarrow\)` puisque pour tout `\(x\)`, `\(\exp(x)&gt;0 \implies\)` la fonction logarithme naturel n'est définie que pour des ***valeurs strictement positives*** ! (Elle n'est pas définie en 0 !)
+
+--
+
+⚠️ Vous ne pouvez logger vos variables que si elles ne prennent pas de valeurs nulles ou négatives ! Pensez-y toujours avant de prendre le log de votre variable dépendante ou indépendante(s)
+
+---
+
+# La fonction logarithme (naturel) : une introduction 😉
+
+Si vous avez des distributions très ***asymétriques***, prendre le log la rendra plus proche d'une ***distribution normale***
+
+--
+
+.pull-left[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-2-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-3-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+# Modèles logarithmiques : interprétations simplifiées
+
+|    Spécification           | Modèle  |  Interprétation de `\(\beta_1\)`            |
+|--------------------|:---------:|:-----------------------------------:|
+| Niveau - Niveau | `\(y = \beta_0 + \beta_1 x + e\)` | .small[Une augmentation d'**une unité** de ] `\(x\)` .small[ est associée, en moyenne, à un ] `\(\beta_1\)` .small[**changement d'une unité** de y]  |
+| Log - Niveau | `\(\log(y) = \beta_0 + \beta_1 x + e\)` | .small[Une augmentation d'**une unité** de ] `\(x\)` .small[ est associée, en moyenne, à un] `\(\beta_1 \times 100\)` .small[ **changement en pourcentage** de y]  |
+| Niveau - Log | `\(y = \beta_0 + \beta_1 \log(x)  + e\)` | .small[Une augmentation d'**un pourcent** de ] `\(x\)` .small[ est associée, en moyenne, à un ] `\(\beta_1 / 100\)`  .small[**changement d'une unité** de y] |
+| Log - Log  |  `\(\log(y) = \beta_0 + \beta_1 \log(x) + e\)` | .small[Une augmentation d'**un pourcent** de ] `\(x\)` .small[ est associée, en moyenne, à un] `\(\beta_1\)` .small[**changement en pourcentage** de y]  |
+
+--
+
+* Cela peut ressembler à des recettes de cuisine mais bien sûr, cela peut être [dérivé avec des mathématiques relativement simples](https://stats.idre.ucla.edu/other/mult-pkg/faq/general/faqhow-do-i-interpret-a-regression-model-when-some-variables-are-log-transformed/).
+
+--
+
+* ⚠️ ces interprétations ne sont vraies que pour de ***petits*** changements de `\(x\)` et/ou un petit `\(\beta_1\)`. Que se passe-t-il si l'on veut connaître le changement de `\(y\)` pour de grands changements de `\(x\)` ou lorsque `\(\beta_1\)` est grand ?
+
+---
+name: gen_log
+
+# Modèles logarithmiques : interprétations générales
+
+Pour ***toute augmentation de `\(x\)`, `\(\Delta x,\)` et tout `\(\beta_1\)`*** `\((\Delta x = 5\% = 0.05 \implies 1 + \Delta x = 1.05)\)` :
+
+|    Spécification           | Modèle  |  Interprétation de `\(\beta_1\)`            |
+|--------------------|:---------:|:-----------------------------------:|
+| Niveau - Niveau | `\(y = \beta_0 + \beta_1 x + e\)` | .small[Une augmentation d'**une unité** de ] `\(x\)` .small[ est associée, en moyenne, à un ] `\(\beta_1\)` .small[**changement d'une unité** de y]  |
+| Log - Niveau | `\(\log(y) = \beta_0 + \beta_1 x + e\)` | .small[Une augmentation d'**une unité** de ] `\(x\)` .small[ est associée, en moyenne, à un] `\((e^{\beta_1} - 1) \times 100\)` .small[ **changement en pourcentage** de y]  |
+| Niveau - Log | `\(y = \beta_0 + \beta_1 \log(x)  + e\)` | .small[Une  ] ** `\(\Delta x\)`** .small[augmentation en **pourcentage** de ] `\(x\)` .small[ est associée, en moyenne, à un ] `\(\beta_1 \times \log(1 + \Delta x)\)`  .small[**changement d'une unité** de y] |
+| Log - Log  |  `\(\log(y) = \beta_0 + \beta_1 \log(x) + e\)` | .small[Une  ] ** `\(\Delta x\)`** .small[augmentation en **pourcentage** de ] `\(x\)` .small[ est associée, en moyenne, à un] `\(((1 + \Delta x)^{\beta_1} - 1) \times 100\)` .small[**changement en pourcentage** de y]  |
+
+
+([*Annexe :*](#log_approx) Pourquoi les approximations montrées précédemment sont-elles vraies ?)
+
+
+---
+
+# Quand utiliser des modèles logarithmiques ?
+
+1. Si la relation entre `\(x\)` et `\(y\)` ressemble à une fonction logarithmique ou exponentielle. 
+
+--
+
+.pull-left[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-4-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-5-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Quand utiliser des modèles logarithmiques ?
+
+1. Si la relation entre `\(x\)` et `\(y\)` ressemble à une fonction logarithmique ou exponentielle. 
+
+.pull-left[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-6-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-7-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Quand utiliser des modèles logarithmiques ?
+
+1. Si la relation entre `\(x\)` et `\(y\)` ressemble à une fonction logarithmique ou exponentielle. 
+
+1. Pour interpréter facilement les coefficients comme des &lt;a href="https://fr.wikipedia.org/wiki/%C3%89lasticit%C3%A9_(%C3%A9conomie)"&gt;***élasticités***&lt;/a&gt;, qui jouent un rôle central en théorie économique.
+
+***Élasticité de `\(y\)` par rapport à `\(x\)` :*** changement en pourcentage de `\(y\)` suite à une augmentation de 1% de `\(x\)`.
+
+---
+
+# Prendre en compte d'autres types de relations non-linéaires
+
+Que se passe-t-il si la relation entre `\(x\)` et `\(y\)` n'est pas exponentielle/logarithmique ?
+
+--
+
+`\(\rightarrow\)` régressions ***polynomiales*** : il suffit de prendre une fonction polynomiale du régresseur !
+
+---
+
+# Polynomial Wut ? 😟
+
+.pull-left[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-8-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-9-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Régressions polynomiales
+
+Qu'est-ce que cela signifie en pratique ?
+
+--
+
+`\(\rightarrow\)` ajouter un ordre plus élevé du régresseur à la régression, selon la relation visuelle (ou attendue)
+
+--
+
+Plusieurs façons de le faire en `R` :
+
+.pull-left[
+
+``` r
+lm(y ~ x + I(x^2) + I(x^3), data)
+```
+]
+
+--
+
+.pull-right[
+
+``` r
+lm(y ~ poly(x, 3, raw = TRUE), data)
+```
+]
+
+--
+
+⚠️ Pour que la forme fonctionnelle soit véritablement polynomiale, les coefficients associés à tous les termes doivent être statistiquement différents de zéro. Nous verrons plus loin comment vérifier cette condition.
+
+---
+
+# Régressions polynomiales
+
+
+.pull-left[
+
+***2ème ordre :***
+
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-12-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-left[
+
+***3ème ordre :***
+
+&lt;img src="chapter_regext_files/figure-html/unnamed-chunk-13-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Rappel : trouver l'extremum d'une reg. quadratique
+
+Considérons le modèle estimé :
+
+`$$y = \beta_0 + \beta_1 x + \beta_2 x^2 + e$$`
+
+L'effet marginal de \(X\) sur \(Y\) est obtenu en dérivant le modèle :
+
+`$$\frac{\partial y}{\partial x} = \beta_1 + 2\beta_2x$$`
+
+--
+
+Le **point de retournement** correspond au point où la pente est nulle :
+
+\begin{aligned} 
+\beta_1 + 2\beta_2x^* &amp; = 0 \\
+x^* &amp; = -\frac{\beta_1}{2\beta_2}
+\end{aligned}
+
+
+Interprétation
+
+- Si \(\beta_2 &gt; 0\) : la courbe est en **U** donc \(x^*\) est un **minimum**.
+- Si \(\beta_2 &lt; 0\) : la courbe est en **U inversé** donc \(x^*\) est un **maximum**.
+
+
+---
+
+&lt;img src="chapter_regext_files/figure-html/curve_fitting.png" alt="" width="378px" height="600px" style="display: block; margin: auto;" /&gt;
+
+---
+
+class:inverse
+
+# Task 1 : Relations non-linéaires
+
+<countdown-timer class="countdown" id="timer_c5ec6f8f" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+1. Chargez les données [ici](https://www.dropbox.com/s/2v5mb04nzw2u7bd/college_tuition_income.csv?dl=1). Ce jeu de données contient des informations sur les frais de scolarité et les revenus estimés des diplômés d'universités américaines. Plus de détails [ici](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-03-10/readme.md).
+
+2. Créez un nuage de points du revenu médian en milieu de carrière estimé (`mid_career_pay`) `\((axe-y)\)` en fonction des frais de scolarité hors état (`out_of_state_tuition`) `\((axe-x)\)`. Diriez-vous que la relation est globalement linéaire ou plutôt non-linéaire ? Utilisez `geom_smooth(method = "lm", se = F) + geom_smooth(method = "lm", se = F, formula = y ~ poly(x, 2, raw= T))` pour ajuster à la fois une droite de régression linéaire et une régression de second ordre. Laquelle semble la plus appropriée cette fois-ci ?
+
+3. Créez une variable égale aux frais de scolarité hors état divisés par 1000. Régressez le revenu médian en milieu de carrière sur les frais de scolarité hors état divisés par 1000. Interprétez le coefficient.
+
+4. Régressez le revenu médian en milieu de carrière sur les frais de scolarité hors état divisés par 1000 et son carré. *Indice :* vous pouvez utiliser soit `poly(x, 2, raw = T)` soit `x + I(x^2)`, où x est votre régresseur. Que signifie le signe positif du terme au carré ?
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Termes d'Interaction
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Interagir des régresseurs
+
+* On interagit deux régresseurs lorsque l'on pense que ***l'effet de l'un dépend de la valeur de l'autre***. 
+
+  * *Exemple :* Le rendement de l'éducation sur le salaire varie selon le genre.
+  
+--
+  
+* En pratique, si l'on interagit `\(x_1\)` et `\(x_2\)`, on écrirait notre modèle ainsi : 
+
+`$$y_i =  \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_3x_{1,i} \times x_{2,i} + ... + e_i$$`
+
+--
+
+* L'interprétation de `\(\beta_1\)`, `\(\beta_2\)`, et `\(\beta_3\)` dépendra du type de `\(x_1\)` et `\(x_2\)`.
+
+--
+  
+* Concentrons-nous sur les cas où un régresseur est une variable ***binaire/catégorielle*** et l'autre est ***continue***.
+
+* Cela vous donnera l'intuition pour les autres cas :
+
+  * Les deux régresseurs sont des variables binaires/catégorielles,
+
+  * Les deux régresseurs sont des variables continues.
+  
+---
+
+# Interagir des régresseurs : Exemple
+
+
+Nous allons utiliser les données de l'expérience [*STAR*](#star) qui étudie l'effet des petites classes sur l'apprentissage des élèves aux Etats-Unis.
+
+--
+
+Comment l'effet d'être dans une petite classe vs une classe régulière varie-t-il avec l'expérience de l'enseignant.e ?
+
+--
+
+Notre modèle de régression devient :
+
+$$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textrm{small}_i + \color{#02AB0D}{\beta_2} \textrm{experience}_i + \color{#d90502}{\beta_3} \textrm{small}_i \times \textrm{experience}_i + e_i$$ 
+
+--
+
+Effet d'être en petite classe avec un.e enseignant.e ayant 10 ans d'expérience ?
+
+--
+
+`\(\mathbb{E}[\textrm{score}_i | \textrm{small}_i = 1 \textrm{ &amp; experience}_i = 10] = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} + \color{#02AB0D}{\beta_2}*10 + \color{#d90502}{\beta_3}*10\)`
+
+--
+
+`\(\mathbb{E}[\textrm{score}_i | \textrm{small}_i = 0 \textrm{ &amp; experience}_i = 10] = \color{#d96502}{\beta_0} + \color{#02AB0D}{\beta_2}*10\)`
+
+--
+
+`\(\begin{split} \mathbb{E}[\textrm{score}_i &amp;| \textrm{small}_i = 1 \textrm{ &amp; experience}_i = 10] - \mathbb{E}[\textrm{score}_i | \textrm{small}_i = 0 \textrm{ &amp; experience}_i = 10] \\ &amp;= \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} + \color{#02AB0D}{\beta_2}*10 + \color{#d90502}{\beta_3}*10 - (\color{#d96502}{\beta_0} + \color{#02AB0D}{\beta_2}*10) \\ &amp;= \color{#027D83}{\beta_1} + \color{#d90502}{\beta_3}*10 \end{split}\)`
+
+---
+
+# Interagir des régresseurs
+
+En exécutant la régression pour le score en `math` (pour tous les niveaux), on obtient :
+
+
+
+
+
+``` r
+lm(math ~ small+ experience + small*experience, star_df)
+```
+
+```
+## 
+## Call:
+## lm(formula = math ~ small + experience + small * experience, 
+##     data = star_df)
+## 
+## Coefficients:
+##          (Intercept)             smallTRUE            experience  
+##             534.1919               15.8906                1.3305  
+## smallTRUE:experience  
+##              -0.3034
+```
+
+***Interprétation :***
+
+--
+
+* Le terme d'interaction permet à l'impact d'être dans une petite classe de varier avec l'expérience de l'enseignant.e. 
+  
+--
+  
+* En particulier, on observe toujours un ***impact positif d'être dans une petite classe*** sur le score en math,
+  
+* mais cet ***effet diminue avec l'expérience de l'enseignant.e***.
+  
+---
+
+# Interagir des régresseurs : graphiquement
+
+$$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textrm{small}_i + \color{#02AB0D}{\beta_2} \textrm{experience}_i + \color{#d90502}{\beta_3} \textrm{small}_i * \textrm{experience}_i + e_i$$ 
+
+&lt;img src="chapter_regext_files/figure-html/graph_base.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Interagir des régresseurs : graphiquement
+
+$$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textrm{small}_i + \color{#02AB0D}{\beta_2} \textrm{experience}_i + \color{#d90502}{\beta_3} \textrm{small}_i * \textrm{experience}_i + e_i$$ 
+
+&lt;img src="chapter_regext_files/figure-html/graph_reg.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Interagir des régresseurs : graphiquement
+
+$$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textrm{small}_i + \color{#02AB0D}{\beta_2} \textrm{experience}_i + \color{#d90502}{\beta_3} \textrm{small}_i * \textrm{experience}_i + e_i$$ 
+
+&lt;img src="chapter_regext_files/figure-html/graph_reg_b0.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Interagir des régresseurs : graphiquement
+
+$$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textrm{small}_i + \color{#02AB0D}{\beta_2} \textrm{experience}_i + \color{#d90502}{\beta_3} \textrm{small}_i * \textrm{experience}_i + e_i$$ 
+
+&lt;img src="chapter_regext_files/figure-html/graph_reg_b0_b1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Interagir des régresseurs : graphiquement
+
+$$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textrm{small}_i + \color{#02AB0D}{\beta_2} \textrm{experience}_i + \color{#d90502}{\beta_3} \textrm{small}_i * \textrm{experience}_i + e_i$$ 
+
+&lt;img src="chapter_regext_files/figure-html/graph_reg_b0_b1_b2.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Interagir des régresseurs : graphiquement
+
+$$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textrm{small}_i + \color{#02AB0D}{\beta_2} \textrm{experience}_i + \color{#d90502}{\beta_3} \textrm{small}_i * \textrm{experience}_i + e_i$$ 
+
+&lt;img src="chapter_regext_files/figure-html/graph_reg_b0_b1_b2_b3.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class:inverse
+
+# Task 2 : Salaires, éducation et genre en 1985
+
+<countdown-timer class="countdown" id="timer_7c8b8b39" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+1. Chargez les données `CPS1985` du package `AER`.
+
+1. Consultez l'`aide` pour obtenir la définition de chaque variable : `?CPS1985`
+
+1. Nous ne savons pas si les personnes travaillent à temps partiel ou à temps plein, est-ce que cela a de l'importance ici ?
+
+1. Créez la variable `log_wage` égale au log de `wage`.
+
+1. Régressez `log_wage` sur `gender` et `education`, et sauvegardez le résultat sous `reg1`. Interprétez chaque coefficient.
+
+1. Régressez `log_wage` sur `gender`, `education` et leur interaction `gender*education`, sauvegardez le résultat sous `reg2`. Interprétez chaque coefficient. L'écart salarial entre genres diminue-t-il avec l'éducation ?
+
+1. Créez un graphique montrant cette interaction. (*Indice :* utilisez l'argument `color = gender` dans `aes` et `geom_smooth(method = "lm", se = F)` pour obtenir une droite de régression par genre.)
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Régression Standardisée
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Régression standardisée
+
+Définissons ce que signifie *standardiser* une variable.
+
+--
+
+&gt; ***Standardiser*** une variable `\(x\)` signifie *centrer* la variable et diviser la valeur centrée par son propre écart-type (i.e., centrer-réduire) :
+
+$$ x_i^{stand} = \frac{x_i - \bar x}{\sigma(x)}$$ 
+où `\(\bar x\)` est la moyenne de `\(x\)` et `\(\sigma(x)\)` est l'écart-type de `\(x\)`, i.e. `\(\sigma(x) = \sqrt{\textrm{Var}(x)}\)`.
+
+--
+
+`\(x^{stand}\)` a maintenant une moyenne de 0 et un écart-type de 1, i.e. `\(\overline{x^{stand}} = 0\)` et `\(\sigma(x^{stand}) = 1\)`
+
+--
+
+Intuitivement, standardiser ***met les variables à la même échelle*** afin de pouvoir les comparer.
+  
+Dans notre exemple sur la taille de classe et la performance des élèves, cela aidera à interpréter : 
+
+  * La **magnitude** des effets,
+  * L'**importance relative de chaque variable**.
+
+---
+
+# Régression standardisée : graphiquement
+
+.pull-left[
+&lt;img src="chapter_regext_files/figure-html/graph_before.png" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="chapter_regext_files/figure-html/graph_after.png" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Régression standardisée : interprétation
+
+Si la variable ***dépendante*** `\(y\)` est standardisée,  le modèle est `\(\color{#d90502}{y^{stand}} = \beta_0 + \sum_{k=1}^K\beta_kx_k +e\)` :
+
+--
+
+* Par définition, `\(\beta_k\)` mesure le changement prédit de ** `\(y^{stand}\)` ** associé à une augmentation d'une unité de `\(x_k\)`.
+  
+* Si `\(y^{stand}\)` augmente de un, cela signifie que `\(y\)` augmente d'un écart-type. Donc `\(\beta_k\)` mesure le changement de `\(y\)` **en tant que part de l'écart-type de `\(y\)`**.
+  
+--
+
+Si le ***régresseur*** `\(x_k\)` est standardisé, i.e. le modèle est `\(y = \beta_0 + \sum_{k=1}^K\beta_k\color{#d90502}{x_k^{stand}} +e\)` :
+
+--
+
+* Par définition, `\(\beta_k\)` mesure le changement prédit de `\(y\)` associé à une augmentation d'une unité de ** `\(x_k^{stand}\)` **. 
+  
+* Si `\(x_k^{stand}\)` augmente d'une unité, cela signifie que `\(x_k\)` augmente d'un écart-type. Donc `\(\beta_k\)` mesure le changement prédit de `\(y\)` **associé à une augmentation de `\(x_k\)` d'un écart-type**. 
+  
+---
+
+class:inverse
+
+# Task 3 : Régression standardisée
+
+<countdown-timer class="countdown" id="timer_96dcfa0f" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Revenons à notre jeu de données [grades](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1). Rappelez-vous que pour charger les données, vous devez utiliser la fonction `read_dta()` du package `haven`. Voici les estimations obtenues en régressant le score moyen en mathématiques sur l'ensemble complet des régresseurs.
+
+
+```
+##       (Intercept)          classize     disadvantaged school_enrollment 
+##      78.560725298       0.003320773      -0.389333008       0.000758258 
+##            female         religious 
+##       0.923710499       2.876146701
+```
+
+1. Créez une nouvelle variable `avgmath_stand` égale au score de math standardisé. Vous pouvez utiliser la fonction `scale()` (combinée avec `mutate`) ou le faire manuellement avec `R` de base.
+
+1. Effectuez la régression complète en utilisant le score de math standardisé comme variable dépendante. Interprétez les coefficients et leur magnitude.
+
+1. Créez les variables standardisées pour chaque régresseur *continu* sous le nom `&lt;régresseur&gt;_stand`.
+  * Aurait-il un sens de standardiser la variable `religious` ?
+
+1. Régressez `avgmath_stand` sur l'ensemble complet des régresseurs standardisés et `religious`. Discutez de l'influence relative des régresseurs.
+
+---
+
+# Aperçu des 3 prochains cours
+
+* Vous avez peut-être remarqué que depuis le début, nous travaillons toujours avec des **échantillons** tirés de la population globale.
+
+--
+
+* À chaque fois, imaginez que l'on pourrait tirer un autre échantillon de la population :
+
+  * Obtiendrait-on les mêmes résultats ? 
+  
+  * Autrement dit, à quel point peut-on être confiant que nos estimations (signe, magnitude) ne sont pas simplement dues au hasard ?
+  
+--
+
+* Nous répondrons à ce type de questions :
+
+  * Nous présenterons la notion d'**échantillonnage**, et
+  
+  * Comprendrons ce qu'est **l'inférence statistique** et comment la réaliser. 
+---
+
+# En route vers la causalité
+
+✅ Comment gérer les données ? Les lire, les nettoyer, les visualiser !
+
+✅  **Comment résumer les relations entre variables ?** Régression linéaire simple et multivariée, régressions non-linéaires, interactions...
+
+✅ Qu'est-ce que la causalité ?
+
+❌ Que faire si on n'observe pas toute une population ?
+
+❌  Nos résultats sont-ils simplement dus au hasard ?
+
+❌ Comment trouver l'exogénéité en pratique ?
+
+
+---
+
+
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+# BONNE JOURNÉE !
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                       |
+
+---
+name: log_approx
+# Modèles logarithmiques : approximations
+
+Pourquoi les approximations montrées précédemment sont-elles vraies ?
+
+--
+
+***Log-Niveau***
+
+*Interprétation générale :* Une augmentation d'**une unité** de `\(x\)` est associée, en moyenne, à un `\((e^{\beta_1} - 1) \times 100\)` **changement en pourcentage** de y.
+
+*Interprétation simplifiée :* Une augmentation d'**une unité** de `\(x\)` est associée, en moyenne, à un `\(\beta_1 \times 100\)` **changement en pourcentage** de y.
+
+--
+
+Ceci est dû au fait que, pour un petit `\(\beta_1\)`, `\(e^{\beta_1} \approx 1+ \beta_1 \iff \beta_1 \approx e^{\beta_1} - 1\)`
+
+--
+
+`\(\rightarrow\)` pour `\(\beta_1 = \color{#d90502}{0.04}\)`, `\(e^{\beta_1} - 1 = e^{0.04} - 1 = 0.0408\)` 
+
+--
+
+`\(\rightarrow\)` pour $\beta_1 =
+
+---
+name: start_project
+# L'expérience STAR (Student/Teacher Achievement Ratio)
+
+Expérience du Tennessee sur le **S**tudent/**T**eacher **A**chievement **R**atio (voir [Krueger (1999)](http://piketty.pse.ens.fr/files/Krueger1999.pdf))
+
+* Financée par la législature du Tennessee pour un coût total d'environ **12 millions de dollars**.
+
+* L'expérience a débuté durant l'année scolaire **1985-1986** et s'est déroulée sur **quatre ans**.
+
+--
+
+* **11 600 élèves** et leurs enseignants ont été **assignés aléatoirement** à l'un des **trois groupes** suivants, de la maternelle (*kindergarten*) jusqu'à la troisième année du primaire (*third grade*) :
+
+  1. ***Petite classe*** : 13 à 17 élèves par enseignant,
+  
+  2. ***Classe ordinaire*** : 22 à 25 élèves,
+  
+  3. ***Classe ordinaire avec assistant pédagogique*** : 22 à 25 élèves avec un enseignant et un **assistant pédagogique** à temps plein.
+
+--
+
+* La randomisation a été réalisée **au sein de chaque école**.
+
+* Les compétences des élèves en **mathématiques** et en **lecture** ont été évaluées vers le mois de **mars** de chaque année.
+
+--
+
+* Il existait un problème d'***attrition non aléatoire***, mais nous l'ignorerons dans la suite.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/remark/0.14.0/remark.min.js"></script>
+<script src="../js/ru_xaringan.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

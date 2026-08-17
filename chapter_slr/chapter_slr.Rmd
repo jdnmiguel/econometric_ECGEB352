@@ -384,28 +384,9 @@ g_abs_avg +
 
 ---
 
-# Régression linéaire simple : graphiquement
-L'erreur associée à la prédiction faite est la distance entre sa valeur réelle et la valeur de la droite à ce $x$  
-```{r, echo = F, fig.width = 10, fig.height = 5}
-abs_score_reg <- lm(avg_abs ~ score_bin, data = g_abs)
-abs_score_reg <- broom::augment(abs_score_reg)
-
-g_abs_avg +
-    ylim(0, 1) +
-    theme_bw(base_size = 14) +
-  stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
-  geom_point(data = g_abs %>% filter(score_bin == 3.1), aes(x = score_bin, y = avg_abs ), color = "#d90502", size = 4) +
-  annotate("text", x = 3.1, y = 6, label = "y[x = 3.1]", parse = TRUE, colour = "#d90502", size = 6)
-  geom_segment(data = abs_score_reg  %>% filter(score_bin == 3.1),
-               aes(xend = score_bin, yend = .fitted), color = "#d90502", size = 1) +
-  annotate("text", x = 3.1, y = 2.5, label = "e[x = 3.1]", parse = TRUE, colour = "#d90502", size = 6)
-```
-
----
 
 # Régression linéaire simple : graphiquement
-On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base de données. Notre nouvel objectif est de minimiser la distance entre la droite ($\widehat{y_i}$) et les valeurs réelles ($y_i$)
+On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base de données. Notre nouvel objectif est de minimiser la distance entre la droite ($\widehat{y_i}$) et les valeurs réelles ($y_i$), cad les erreurs
 ```{r, echo = F, fig.width = 10, fig.height = 5}
 g_abs_avg +
     ylim(0, 10) +
@@ -572,7 +553,7 @@ knitr::include_url("https://gustavek.shinyapps.io/SSR_cone/")
 
 ---
 
-# **O**rdinary **L**east **S**quares (OLS): Interpretation
+# **O**rdinary **L**east **S**quares (OLS) : Interpretation
 
 Pour le moment, faisons l'hypothèse que nos variables dépendante $(y)$ et indépendante  $(x)$ sont numériques.
 
@@ -582,7 +563,7 @@ Pour le moment, faisons l'hypothèse que nos variables dépendante $(y)$ et ind�
 
 --
 
-> Pente $(\beta_1)$: **Le changement prédit, en moyenne, dans la valeur de $y$ *associé* à une hasse de une unité de$x$.**
+> Pente $(\beta_1)$: **Le changement prédit, en moyenne, dans la valeur de $y$ *associé* à une hasse de une unité de $x$.**
 
 --
 

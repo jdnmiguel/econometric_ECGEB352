@@ -1,0 +1,525 @@
+---
+title: "Econométrie"
+subtitle: "Propriétés du modèle de régression linéaire"
+author: "Jérémy Do Nascimento Miguel"
+date: "Université de Namur </br> `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    chakra: "https://cdnjs.cloudflare.com/ajax/libs/remark/0.14.0/remark.min.js"
+    lib_dir: libs
+    css: [default, "../css/scpo.css", "../css/scpo-fonts.css"]
+    nature:
+      beforeInit: ["../js/ru_xaringan.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: "../libs/partials/header.html"
+---
+
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div> 
+
+---
+
+```{r setup, include=FALSE,warning=FALSE,message=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  dev = "svg",
+  cache = TRUE,
+  fig.align = "center"
+  #fig.width = 11,
+  #fig.height = 5
+)
+
+# define vars
+om = par("mar")
+lowtop = c(om[1],om[2],0.1,om[4])
+library(magrittr)
+library(plotly)
+library(reshape2)
+library(haven)
+library(tidyverse)
+library(AER)
+library(gtools)
+library(countdown)
+
+# countdown style
+countdown(
+  color_border              = "forestgreen",
+  color_text                = "black",
+  color_running_background  = "forestgreen",
+  color_running_text        = "white",
+  color_finished_background = "white",
+  color_finished_text       = "forestgreen",
+  color_finished_border     = "forestgreen"
+)
+```
+
+
+
+# Aujourd'hui - Propriétés du modèle de régression linéaire
+
+Jusqu à présent nous avons vu comment utiliser les modèles linéaires et leurs interpération 
+
+--
+
+Dans cette session, nous allons nous concentrer sur les propriétés de ces estimateurs :
+  
+  1. Pourquoi les utilisons-nous : hypothèses de  **Gauss-Markov**
+  
+  1. Etude de la **variance** de ces estimateurs
+
+
+--
+
+Nous allons voir en détails pourquoi ces estimateurs sont ceux que l on préfère utiliser : **sans biais**
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Valeurs Espérées des Estimateurs OLS
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div> 
+
+---
+
+# H1: Linéarité en paramètres
+
+La première hypothèse repose sur la linéarité en paramètres du modèle :
+
+--
+
+$$
+y = \beta_0 + \beta_1 x_1 + ... + \beta_k x_k + u 
+$$
+* La linéarité en paramètres signifie juste que la relation estimée par les paramètres du modèle ($\beta_k$) est **linéaire**.
+
+* Les variables indépendantes ($x$) peuvent être linéaires ou non
+
+---
+
+
+# H2: Echantillon aléatoire
+
+La seconde hypothèse statut sur l'origine des données. Les données utilisées pour estimer notre modèle sont **tirées** aléatoirement d'une population :
+
+--
+
+$$
+\text{n obs} : \{(x_{i,1},...,x_{i,k}; y_i)\}: i=\{1,...,n\}
+$$
+
+* Si c'est le cas, nous pouvons alors estimer le modèle associé à H1 et le réécrire pour un individu donné.
+
+$$
+y_i = \beta_0 + \beta_1 x_{i,1} + ... + \beta_k x_{i,k} + u_i
+$$
+
+---
+
+---
+# H3: L'absence de collinéarité parfaite
+
+* Dans un échantillon donné, aucune variable dépendante ($x$) ne doit être constante et aucune ne doit être la **combinaison linéaire** exacte de variables dépendantes.
+
+--
+
+* La solution ? **Supprimer** une des variables qui donne une **information redondante**. Par exemple, nous n'avons pas besoin d'ajouter les variables `homme` et `femme` dans un modèle.
+
+--
+
+* Cette hypothèse peut également ne pas tenir lorsque le **nombre d'observations est trop petit** par rapport au nombre de paramètres à estimer ($\widehat{\beta_k}$). On a besoin d'au moins $k+1$ observations pour pouvoir estimer un modèle avec $k+1$ paramètres.
+
+---
+# H4: Moyenne conditionnelle nulle
+
+* La moyenne conditionnelle des erreurs doit être nulle : 
+
+--
+
+$$
+E(u|x_1,x_2,...,x_k) = 0 
+$$
+
+--
+Cas où cette hypothèse n'est pas vérifiée : 
+
+--
+
+* La forme fonctionnelle du modèle est mal spécifiée : par exemple il y a une relation non linéaire entre une de nos variables dépendantes et notre variable indépendante.
+
+--
+
+* Omission d'une variable importante, $COV(u,x) \neq 0$
+
+--
+
+Si H4 est vérifiée, on dit alors que l'ensemble de nos variables sont exogènes, sinon qu'il y a un problème d'endogénéité. Nous verrons comment résoudre ce problème plus tard dans le semestre.
+
+
+---
+
+# Théorème : Absence de biais des estimateurs OLS
+
+.center[
+<div style="border: 3px solid #cc0000; border-radius: 10px; display: inline-block; margin-top: 20px; background-color: #fff5f5; text-align: left; max-width: 80%;">
+
+<div style="background-color: #cc0000; color: white; padding: 8px 20px; border-radius: 7px 7px 0 0; font-weight: bold; text-align: center;">
+Théorème — Absence de biais
+</div>
+
+<div style="padding: 15px 30px;">
+
+Sous les hypothèses H1 à H4 :
+
+$$
+E(\widehat{\beta_j}) = \beta_j \quad \text{pour } j = 0,1,...,k
+$$
+
+
+</div>
+</div>
+]
+
+--
+
+Ce résultat repose entièrement sur la validité conjointe des quatre premières hypothèses de Gauss-Markov :
+
+--
+
+* **H1** : Linéarité en paramètres
+
+--
+
+* **H2** : Echantillonnage aléatoire
+
+--
+
+* **H3** : Absence de colinéarité parfaite
+
+--
+
+* **H4** : Moyenne conditionnelle nulle ( $E(u|x_1,...,x_k) = 0$ )
+
+--
+
+.footnote[Si une seule de ces hypothèses n'est pas vérifiée, l'estimateur OLS peut devenir biaisé.]
+
+---
+# H5: Homoscédasticité
+
+Pour étudier la **variance** de nos estimateurs, nous avons besoin d'une cinquième hypothèse.
+
+--
+
+La variance de l'erreur, conditionnellement aux variables indépendantes, doit être **constante** :
+
+--
+
+$$
+Var(u|x_1,x_2,...,x_k) = \sigma^2
+$$
+
+--
+
+* Autrement dit, la dispersion des erreurs ne doit **pas dépendre** des valeurs prises par les $x$.
+
+--
+
+* Si cette hypothèse n'est **pas vérifiée**, on parle d'**hétéroscédasticité** : la variance de l'erreur varie selon les observations.
+
+---
+
+
+# La variance de $\widehat{\beta_j}$
+
+Sous les hypothèses H1 à H5, la variance de notre estimateur OLS peut s'écrire :
+
+--
+
+$$
+Var(\widehat{\beta_j}) = \frac{\sigma^2}{SST_j \times (1 - R_j^2)}
+$$
+
+--
+
+Décomposons chaque terme de cette formule :
+
+---
+
+# Terme 1 : $\sigma^2$ — La variance de l'erreur
+
+$$
+\sigma^2 = Var(u)
+$$
+
+--
+
+* C'est la **variance du terme d'erreur** : elle mesure à quel point nos données s'écartent en moyenne du modèle.
+
+--
+
+* **Plus il y a de "bruit"** dans les données (facteurs non observés, mesures imprécises...), **plus $\sigma^2$ est grand**.
+
+--
+
+* Un $\sigma^2$ élevé $\Rightarrow$ une variance de $\widehat{\beta_j}$ plus grande $\Rightarrow$ une estimation **moins précise**.
+
+---
+
+# Terme 2 : $SST_j$ — La variation totale de $x_j$
+
+$$
+SST_j = \sum_{i=1}^n (x_{ij} - \bar{x}_j)^2
+$$
+
+--
+
+* C'est la **dispersion totale** des valeurs de la variable $x_j$ dans notre échantillon.
+
+--
+
+* Concrètement : est-ce que $x_j$ prend des valeurs très **variées** dans nos données, ou est-ce que toutes les observations se ressemblent ?
+
+--
+
+* Un $SST_j$ élevé $\Rightarrow$ plus d'information disponible sur $x_j$ $\Rightarrow$ une estimation **plus précise** (la variance diminue).
+
+--
+
+* .red[**Intuition**] : il est plus facile d'estimer l'effet d'une variable qui varie beaucoup que celui d'une variable presque constante.
+
+---
+
+# Terme 3 : $R_j^2$ — La colinéarité avec les autres $x$
+
+$$
+R_j^2 = R^2 \; \text{de la régression de} \; x_j \; \text{sur toutes les autres variables} \; x_k
+$$
+
+--
+
+* Il mesure à quel point $x_j$ peut être **expliquée** (prédite) par les autres variables indépendantes du modèle.
+
+--
+
+* $R_j^2$ proche de **0** $\Rightarrow$ $x_j$ apporte une information **indépendante** des autres variables.
+
+--
+
+* $R_j^2$ proche de **1** $\Rightarrow$ $x_j$ est presque une **combinaison linéaire** des autres $x$ (colinéarité forte, cf. H3).
+
+--
+
+* Un $R_j^2$ élevé $\Rightarrow$ $(1 - R_j^2)$ devient petit $\Rightarrow$ la variance de $\widehat{\beta_j}$ **augmente fortement**.
+
+---
+
+# En résumé : ce qui rend $\widehat{\beta_j}$ plus précis
+
+.center[
+<div style="border: 3px solid #cc0000; border-radius: 10px; display: inline-block; margin-top: 10px; background-color: #fff5f5; text-align: left; max-width: 90%;">
+
+<div style="background-color: #cc0000; color: white; padding: 8px 20px; border-radius: 7px 7px 0 0; font-weight: bold; text-align: center;">
+Variance de $\widehat{\beta_j}$
+</div>
+
+<div style="padding: 15px 30px;">
+
+$$
+Var(\widehat{\beta_j}) = \frac{\sigma^2}{SST_j \times (1 - R_j^2)}
+$$
+
+</div>
+</div>
+]
+
+--
+
+Notre estimation est **plus précise** (variance plus faible) lorsque :
+
+--
+
+* $\sigma^2$ est **petit** — peu de bruit dans le modèle
+
+--
+
+* $SST_j$ est **grand** — $x_j$ varie beaucoup dans l'échantillon
+
+--
+
+* $R_j^2$ est **petit** — $x_j$ n'est pas colinéaire avec les autres variables
+
+
+---
+
+# Un problème : $\sigma^2$ est inconnu
+
+Dans la pratique, la variance de l'erreur $\sigma^2$ n'est **jamais observée** : elle dépend des erreurs $u_i$, qui ne sont pas observables.
+
+--
+
+* Nous devons donc **l'estimer** à partir des résidus $\hat u_i = y_i - \hat y_i$ de notre régression.
+
+--
+
+$$
+\hat\sigma^2 = \frac{\sum_{i=1}^n \hat u_i^2}{n-k-1} = \frac{SCR}{n-k-1}
+$$
+
+--
+
+* $SCR$ (ou $SSR$) est la **somme des carrés des résidus**.
+
+--
+
+* $n - k - 1$ est le nombre de **degrés de liberté** : $n$ observations moins $(k+1)$ paramètres estimés ($\beta_0, \beta_1,...,\beta_k$).
+
+--
+
+* $\hat\sigma = \sqrt{\hat\sigma^2}$ est appelé l'**erreur standard de la régression** (*Standard Error of the Regression*, SER).
+
+---
+
+# Écart-type vs erreur standard de $\widehat{\beta_j}$
+
+--
+
+$$
+sd(\widehat{\beta_j}) = \frac{\sigma}{\sqrt{SST_j(1-R_j^2)}} 
+\qquad \Longrightarrow \qquad 
+se(\widehat{\beta_j}) = \frac{\hat\sigma}{\sqrt{SST_j(1-R_j^2)}}
+$$
+
+--
+
+* $sd(\widehat{\beta_j})$ : l'**écart-type théorique** de l'estimateur — il dépend de $\sigma$, qui est **inconnu** en pratique.
+
+--
+
+* $se(\widehat{\beta_j})$ : l'**erreur standard estimée** — on remplace $\sigma$ par son estimation $\hat\sigma$, calculable à partir des données.
+
+--
+
+Pourquoi c'est important ?
+
+  * Le $se(\widehat{\beta_j})$ mesure la **précision** de notre estimation : plus il est petit, plus $\widehat{\beta_j}$ est fiable.
+  
+  * Il est indispensable pour construire des **tests d'hypothèses** et des **intervalles de confiance** sur $\beta_j$.
+
+
+---
+
+
+# Pourquoi utiliser les OLS ? Le théorème de Gauss-Markov
+
+Sous les hypothèses **H1 à H5**, le théorème de **Gauss-Markov** nous garantit que les estimateurs OLS sont les meilleurs estimateurs linéaires sans biais : on dit qu'ils sont **BLUE**.
+
+--
+
+.center[
+<div style="border: 3px solid #cc0000; border-radius: 10px; display: inline-block; margin-top: 10px; background-color: #fff5f5; text-align: left; max-width: 90%;">
+
+<div style="background-color: #cc0000; color: white; padding: 8px 20px; border-radius: 7px 7px 0 0; font-weight: bold; text-align: center;">
+BLUE — Best Linear Unbiased Estimator
+</div>
+
+<div style="padding: 15px 30px;">
+
+$$
+\widehat{\beta_j}^{OLS} \; \text{est BLUE} \iff Var(\widehat{\beta_j}^{OLS}) \leq Var(\widetilde{\beta_j}) \quad \forall \; \widetilde{\beta_j} \; \text{linéaire et sans biais}
+$$
+
+</div>
+</div>
+]
+
+---
+# Décomposons l'acronyme BLUE
+
+* **B**est (Meilleur) : parmi tous les estimateurs linéaires sans biais, l'estimateur OLS est celui qui a la **plus petite variance**.
+
+--
+
+* **L**inear (Linéaire) : l'estimateur $\widehat{\beta_j}$ peut s'écrire comme une **combinaison linéaire** des observations $y_i$.
+
+--
+
+* **U**nbiased (Sans biais) : en moyenne, sur un grand nombre d'échantillons, l'estimateur donne la **vraie valeur** du paramètre : $E(\widehat{\beta_j}) = \beta_j$ (H1 à H4).
+
+--
+
+* **E**stimator (Estimateur) : c'est une **règle de calcul** (une formule) permettant d'obtenir une valeur estimée $\widehat{\beta_j}$ à partir d'un échantillon de données.
+
+---
+
+# Pourquoi choisir OLS plutôt qu'un autre estimateur ?
+
+Il existe une infinité d'estimateurs linéaires et sans biais possibles pour $\beta_j$. Alors pourquoi utiliser spécifiquement les OLS ?
+
+--
+
+* Parce que le théorème de Gauss-Markov montre qu'**aucun autre estimateur linéaire sans biais** ne peut faire **mieux en termes de variance**.
+
+--
+
+* Une variance plus petite signifie des estimations **plus précises et plus stables** d'un échantillon à l'autre.
+
+--
+
+* OLS **n'est pas nécessairement le meilleur estimateur dans l'absolu** : si on autorise le biais, ou des estimateurs non linéaires, il peut exister de meilleures alternatives.
+
+--
+
+.footnote[OLS est donc **optimal dans sa classe** — celle des estimateurs linéaires et sans biais — pas dans l'absolu.]
+
+---
+
+
+---
+# En route vers la causalité
+
+`r emo::ji("white heavy check mark")` Comment gérer les données ? Les lire, les nettoyer, les visualiser !
+
+`r emo::ji("white heavy check mark")`  **Comment résumer les relations entre variables ?** Régression linéaire simple et multivariée, régressions non-linéaires, interactions...
+
+`r emo::ji("white heavy check mark")` Qu'est-ce que la causalité ?
+
+`r emo::ji("cross mark")` Que faire si on n'observe pas toute une population ?
+
+`r emo::ji("cross mark")`  Nos résultats sont-ils simplement dus au hasard ?
+
+`r emo::ji("cross mark")` Comment trouver l'exogénéité en pratique ?
+
+
+---
+
+
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+# BONNE JOURNÉE !
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| <a href="mailto:jeremy.donascimento@unamur.be">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.ScPored <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |
+| <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+
+---

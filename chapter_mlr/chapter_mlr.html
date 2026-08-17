@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econométrie</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jérémy Do Nascimento Miguel" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="../css/scpo.css" type="text/css" />
+    <link rel="stylesheet" href="../css/scpo-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Econométrie
+]
+.subtitle[
+## Regression Linéaire Multivarié
+]
+.author[
+### Jérémy Do Nascimento Miguel
+]
+.date[
+### Université de Namur </br> 2026-08-17
+]
+
+---
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+
+
+
+# Ce cours - Modèle linéaire multivarié
+
+* Situation où nous avons de nombreuses variables indépendantes 
+
+* Comment interpréter les variables continues et binaires 
+
+* La trappe des variables binaires
+
+* Le biais de variable omise
+
+* `\(R_2\)` ajusté
+
+* Application empirique:
+
+  * *Santé des élèves* et *Abstentéisme*
+
+---
+
+#  Santé des élèves et Abstentéisme
+
+* Revenons à l'analyse de Kremer et Miguel (2003) de l'effet de la santé des étudiant.e.s sur l'absentéisme à l'école au Kenya. 
+
+--
+
+* Avec un modèle de **régression linéaire univarié**, nous trouvions que la santé des élèves étaient négativement ***corrélé*** avec l'absentéisme des étudiants.
+
+---
+
+# Santé et abstentéisme des étudiant.e.s : Relation brute
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-1-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Santé et abstentéisme des étudiant.e.s : Relation brute
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-2-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Santé et abstentéisme des étudiant.e.s : Relation brute
+
+.pull-left[
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-3-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+
+``` r
+lm(absdays_98 ~ score, data)
+```
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score, data = data)
+## 
+## Coefficients:
+## (Intercept)        score  
+##      0.6558       0.3306
+```
+]
+
+---
+
+# Santé et abstentéisme des étudiant.e.s 
+
+* Revenons à l'analyse de Kremer et Miguel (2003) de l'effet de la santé des étudiant.e.s sur l'absentéisme à l'école au Kenya. 
+
+* Avec un modèle de **régression linéaire univarié**, nous trouvions que la santé des élèves étaient négativement ***corrélé*** avec l'absentéisme des étudiants.
+
+
+--
+
+* Est-ce qu'il peut y avoir d'autres variables **corrélées** avec la santé des étudiant.e.s  ***mais aussi*** avec l'absentéisme ?
+
+* En particulier, l'absence de toilettes à l'école peut être un facteur favorisant l'absentéisme. 
+
+--
+
+* Regardons cela
+
+---
+
+# Santé et abstentéisme des étudiant.e.s : cofounders
+
+.pull-left[
+Lien entre **l'absentéismee** et **le nombre de toilettes par élève** in the class.
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-5-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+👉 En moyenne, il y a plus d'absentéisme dans les écoles avec moins de toilettes.
+]
+
+--
+
+.pull-right[
+Relation entre la **santé des élèves** et **le nombre de toilettes** à l'école.
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-6-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+👉 En moyenne, plus il y a de toilettes par élève, meilleure est la santé des élèves.
+
+]
+
+---
+
+# Santé et abstentéisme des étudiant.e.s : régression multivarié
+
+* Supposons que l'on veuille connaître l'effet de la santé sur l'absentéisme, **en contrôlant pour** le fait qu'il existe une relation entre le nombre de toilettes disponibles et à la fois l'absentéisme et l'état de santé des élèves.
+
+--
+
+* Pour ce faire, il faut inclure à la fois les variables `score` et `latr_pup` comme *régresseurs* dans la régression.
+
+--
+
+* Ainsi, on peut obtenir une estimation de l'effet de la santé des élèves sur l'absentéisme, **purgée de l'effet de la variable liée à l'accès aux toilettes**.
+
+--
+
+* Le modèle que l'on souhaite estimer devient:
+
+$$
+ \textrm{Absentéisme}_i = \beta_0 + \beta_1 \textrm{Santé}_i + \beta_2 \textrm{Nbr de toilettes}_i + u_i
+$$
+--
+
+* Ceci est une ***régression multivariée*** ! Nous allons l'estimer plus tard après avoir formaliser ce que l'on vient de voir.
+
+---
+
+# Objectif de la régression multivariée
+
+* Rappel comment écrivons nous un **modèle linéaire simple** ?
+
+--
+
+`$$y_i = \beta_0 + \beta_1 x_i + u_i$$`
+
+--
+
+avec `\(y_i\)` est la ***variable dépendante*** et `\(x_i\)` la ***variable indépendante***.
+
+--
+
+* Rappel : on dit que `X` *affecte* `Y` lorsque un changement de la valeur de `X` ***sans changer rien d'autre***  change la valeur de `Y`.
+
+--
+
+⚠️ Sauf si tous les autres facteur impactant `\(y_i\)` ne sont pas corrélés avec  `\(x_i\)`, `\(\beta_1\)` **ne peut pas être interprété comme un effet causal**.
+
+--
+
+On a donc besoin **d'enrichir le modèle** et de prendre en compte les éléments qui sont corrélés simultanément avec `\(y_i\)` **and** `\(x_i\)`.
+
+---
+
+# Modèle de régression multivarié
+
+Le modèle étendu peut s'écrire comme suit :
+`$$y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i}  + \beta_3 x_{3,i} + \dots + \beta_k x_{k,i} + u_i,$$`
+où `\(x_1\)`, `\(x_2\)`, ..., `\(x_k\)` sont `\(k\)` régresseurs, et `\(\beta_1\)`, `\(\beta_2\)`, ..., `\(\beta_k\)` sont les `\(k\)` coefficients associés.
+
+--
+
+***Estimation*** : On obtient les valeurs de `\((\beta_0, \beta_1, \beta_2, ..., \beta_k)\)` de la même manière qu'auparavant, en utilisant les **OLS**.
+* `\((\beta_0^{OLS}, \beta_1^{OLS}, \beta_2^{OLS}, ..., \beta_k^{OLS})\)` sont les valeurs qui minimisent la **Somme des Carrés des Résidus**.
+  
+* C'est-à-dire qu'elles minimisent
+$$
+`\begin{align}
+\sum_{i}{u_i^2} &amp;= \sum_{i}{(y_i - \hat{y_i})^2} \\
+&amp;= \sum_{i}{[y_i - (\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i}  + \beta_3 x_{3,i} + \dots + \beta_k x_{k,i})]^2}
+\end{align}`
+$$
+---
+
+# Modèle de régression multivarié
+Pour l'instant, supposons que la variable dépendante `\((y_i)\)` et les variables indépendantes `\((x_k)\)` sont toutes numériques.
+
+&gt; Constante `\((\beta_0)\)` : **La valeur prédite de `\(y\)` `\((\widehat{y})\)` si tous les régresseurs `\((x_1, x_2, x_3,...)\)` sont égaux à 0.**
+
+--
+
+&gt; Pente `\((\beta_k)\)` : **Le changement prédit, en moyenne, de la valeur de `\(y\)` *associé* à une augmentation d'une unité de `\(x_k\)`...** &lt;br/&gt;
+&gt; `\(\quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad\)` **... en maintenant tous les autres régresseurs constants !**
+
+--
+
+* Remarquez que le fait de *maintenir tous les autres régresseurs constants* est la seule partie qui change par rapport au MLS (Modèle Linéaire Simple).
+
+* Autrement dit, on considère l'effet individuel de la variable `\(x_k\)` sur `\(y\)` **de manière isolée**, indépendamment de l'effet que les autres régresseurs pourraient avoir sur `\(y\)`.
+
+--
+
+* **Lien avec l'inférence causale** : Seuls les régresseurs inclus dans le modèle sont maintenus constants ; ceux qui ne sont pas dans le modèle peuvent encore varier et "biaiser" vos estimations.
+
+---
+
+# Implémentation dans  `R`
+
+* Très proche d'une régression univarié :
+
+
+``` r
+lm(formula = variable dépendante ~  variable independante 1 + variable independante 2 + ...,
+   data = data.frame avec les données)
+```
+
+--
+
+## Santé des élèves et absentéisme: Régression multivarié
+
+Estimons le modèle suivant en utilisant OLS :  
+$$
+ \textrm{Absentéisme}_i = \beta_0 + \beta_1 \textrm{Santé}_i + \beta_2 \textrm{Nbr de toilettes}_i + u_i
+$$
+ 
+
+``` r
+lm(absdays_98 ~ score + latr_pup, data)
+```
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score + latr_pup, data = data)
+## 
+## Coefficients:
+## (Intercept)        score     latr_pup  
+##      1.2662       0.3227     -62.8514
+```
+
+---
+
+## Santé des élèves et absentéisme: Régression multivarié
+
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score + latr_pup, data = data)
+## 
+## Coefficients:
+## (Intercept)        score     latr_pup  
+##      1.2662       0.3227     -62.8514
+```
+
+***Questions***
+
+1. Comment intreprétez-vous chacun de ces coefficients ?
+1. Comment expliquer vous la différence dans le coefficient de `score` en comparaison avec le modèle univarié ?
+
+---
+
+## Santé des élèves et absentéisme: Régression multivarié
+
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score + latr_pup, data = data)
+## 
+## Coefficients:
+## (Intercept)        score     latr_pup  
+##      1.2662       0.3227     -62.8514
+```
+
+***Réponses***
+
+1\. Comment intreprétez-vous chacun de ces coefficients ?
+
+* `\(\beta_0\)` = 1.27: Quand `score` et `latr_pup` sont égales à 0, la *valeur prédite* du nombre de jours d'école manqués est 1.27
+
+--
+
+* `\(\beta_1\)` = 0.3227: En gardant le *nombre de toilettes par élève* constant dans l'école, une hausse du score de mauvaise santé par 1 est ***associé, en moyenne,*** avec une hausse de 0.32 du nombre de jours d'absentéisme.
+
+--
+
+* `\(\beta_2\)` = - 0.628: En gardant le *le score de santé* constant, une hausse du nombre de toilettes par 100 élèves est ***associé, en moyenne,*** avec une baisse de 0.628 du nombre de jours d'absentéisme.
+
+---
+
+## Santé des élèves et absentéisme: Régression multivarié
+
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score + latr_pup, data = data)
+## 
+## Coefficients:
+## (Intercept)        score     latr_pup  
+##      1.2662       0.3227     -62.8514
+```
+
+***Réponses***
+
+2\. Comment expliquer vous la différence dans le coefficient de `score` en comparaison avec le modèle univarié ?
+
+--
+
+* `\(\beta_1\)` est relativement proche mais diminue lors de l'inclusion de cette nouvelle variable. La raison est sûrement qu'une partie de l'effet trouvé vient des écoles avec des faibles accès aux sanitaires. 
+
+
+---
+# Interprétation des coefficients
+
+$$
+\widehat{y} = \widehat{\beta_0} + \widehat{\beta_1}x_1 + \widehat{\beta_2}x_2 + u_i
+$$
+
+&gt; Constante `\((\beta_0)\)` : **La valeur prédite de `\(y\)` `\((\widehat{y})\)` si tous les régresseurs `\((x_1, x_2, x_3,...)\)` sont égaux à 0.**
+
+&gt; Effets partiels `\((\beta_1)\)` et `\((\beta_2)\)`  : **La valeur prédite de `\(y\)` `\((\widehat{y})\)` si les autres régresseurs `\((x_1, x_2\)` sont égaux à 0.**
+
+--
+
+Si l'on souhaite estimer l'effet d'une variation des régresseurs sur notre variable dépendante 
+$$
+\Delta\widehat{y} = \Delta\widehat{\beta_1}x_1 + \Delta\widehat{\beta_2}x_2 
+$$
+
+--
+
+Si l'on maintient `\(x_2\)` fixe (i.e., `\(\Delta x_2=0\)`), alors `\(\Delta\widehat{y} = \Delta\widehat{\beta_1}x_1\)`
+
+--
+
+Et si l'on maintient `\(x_1\)` fixe (i.e., `\(\Delta x_1=0\)`), alors `\(\Delta\widehat{y} = \Delta\widehat{\beta_2}x_2\)`
+
+
+
+---
+
+# Pourcentage vs Point de Pourcentage : Une introduction
+
+Exemple : Le % d'élèves défavorisés dans la classe passe de 10 à 25 % ?
+
+--
+
+***Questions :***
+1. Quel est le changement en *points de pourcentage* ?
+1. Quel est le changement en *pourcentage* ?
+
+---
+
+# Pourcentage vs. Point de pourcentage : Les bases
+
+Exemple : Le % d'élèves défavorisés dans la classe passe de 10 à 25 % ?
+
+***Réponses :***
+1. C'est une augmentation de `\(25-10=15\)` ***points de pourcentage***.
+
+--
+
+1. C'est une augmentation de `\(\frac{25-10}{10} \%= 150\)` ***pourcent***.
+
+--
+
+Il est ***essentiel*** de faire attention si l'on parle de changements en ***points de pourcentage*** ou en ***pourcentage*** ! Ces deux notions impliquent des magnitudes radicalement différentes !
+
+---
+
+class:inverse
+
+# Task 1
+
+<countdown-timer class="countdown" id="timer_1f620f65" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Let's analyse the regression results using **reading** score as the dependent variable.
+
+1. Load the data from [here](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) using the `read_dta()` function from the `haven` package. Assign it to an object `grades`.
+
+1. Regress `avgverb` on `classize` and `disadvantaged` and assign the output to a new object `reg`. Interpret the coefficients. How do they compare to the simple linear regression? How do they compare with the math score regression coefficients?
+
+1. (Optional) What are the other available variables that we may add in the regression? 
+  * Run the regression with all these variables and assign it to `reg_full`.
+  * Look at the coefficients.
+  * Discuss all coefficients: sign and magnitude.
+
+---
+
+# Variables numérique et binaire : interprétation 
+
+Vous savez déjà comment interpréter une variable numérique (i.e., continue)
+
+--
+
+Comment faire si l'une des variables est une variable ***binaire***, c'est à dire qu'elle peut prendre la valeur de 1 si certaines conditions sont `TRUE` et 0 si ce n'est pas le cas ?
+
+--
+
+*Exemple:* Comment interpréter les coefficients dans le modèle suivant 
+
+$$
+ \textrm{Absentéisme}_i = \beta_0 + \beta_1 \textrm{Santé}_i + \beta_2 \textrm{worm\_treat}_i + u_i
+ $$
+`worm_treat` est une binaire égale à 1 si l'enfant a reçu un vermifuge, 0 si non
+
+--
+
+
+``` r
+lm(formula = absdays_98 ~ score + worm_treat, data = data)
+```
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score + worm_treat, data = data)
+## 
+## Coefficients:
+## (Intercept)        score   worm_treat  
+##     0.68192      0.33547     -0.05781
+```
+
+---
+
+# Variables numérique et binaire : formellement 
+
+Notre modèle est :
+
+
+
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Santé}_i + \color{#027D83}{\beta_2}\text{worm\_treat}_i +u_i
+$$
+
+Nous avons les égalités suivantes :
+
+`\begin{align}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} = 0 \text{ &amp; } \text{Santé} = 0) &amp;= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times 0 + \color{#027D83}{\beta_2} \times 0 \\
+&amp;= \color{#d96502}{\beta_0}
+\end{align}`
+
+--
+
+`\(\rightarrow\)` `\(\color{#d96502}{\beta_0}\)` correspond à la valeur espérée moyenne d'absentéisme lorsque le score de santé vaut 0 et l'élève n'a pas reçu de vermifuge.
+
+---
+
+# Variables numérique et binaire : formellement 
+Notre modèle est :
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Santé}_i + \color{#027D83}{\beta_2}\text{worm\_treat}_i +u_i
+$$
+
+
+Nous avons les égalités suivantes :
+
+`\begin{equation}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Score} = n_1}) = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\end{equation}`
+
+--
+
+`\begin{multline}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1+1}) = \\ \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\end{multline}`
+
+--
+
+`\begin{multline}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1}) \\
+= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm\_treat} - (\color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}) = \color{#d90502}{\beta_1}
+\end{multline}`
+
+--
+
+`\(\rightarrow\)` `\(\color{#d90502}{\beta_1}\)` correspond au changement espéré de l'absentéisme en moyenne lié, en moyenne, avec une hausse de 1 du score de santé, en controllant pour le fait que l'élève se soit fait vermifuger  (= gardant ce traitement constnat)
+
+---
+
+# Variables numérique et binaire : formellement 
+Notre modèle est :
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Santé}_i + \color{#027D83}{\beta_2}\text{worm_treat}_i +u_i
+$$
+
+
+Nous avons les égalités suivantes : 
+
+`\begin{align}
+\mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} = 1} \text{ &amp; } \text{Santé} \in \mathbb{N}) &amp;= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé} + \color{#027D83}{\beta_2} \times 1 \\
+&amp;= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé} + \color{#027D83}{\beta_2}
+\end{align}`
+
+--
+
+`\begin{align}
+\mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} = 0} \text{ &amp; } \text{Santé} \in \mathbb{N}) &amp;= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé} + \color{#027D83}{\beta_2} \times 0 \\
+&amp;= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé}
+\end{align}`
+
+--
+
+`\begin{multline}
+\mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} = 1} \text{ &amp; } \text{Santé} \in \mathbb{N}) - \\ \mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} =0} \text{ &amp; } \text{Santé} \in \mathbb{N}) \\
+= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé} + \color{#027D83}{\beta_2}- (\color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé}) = \color{#027D83}{\beta_2}
+\end{multline}`
+
+--
+
+`\(\rightarrow\)` `\(\color{#027D83}{\beta_2}\)` correspond à la différence espérée moyenne d'absentéisme entre un élève vermifugé et non vermifugé, en gardant le score de santé constant.
+
+---
+
+# Variables numérique et binaire : résumé
+Notre modèle est :
+
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Santé}_i + \color{#027D83}{\beta_2}\text{worm\_treat}_i +u_i
+$$
+
+Nous avons les égalités suivantes :
+
+`\begin{equation}
+\color{#d96502}{\beta_0} = \mathbb{E}(\text{Absentéisme} | \text{worm_treat} = 0 \text{ &amp; } \text{Santé} = 0)
+\end{equation}`
+`\begin{multline}
+\color{#d90502}{\beta_1} = \mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1})
+\end{multline}`
+`\begin{multline}
+\color{#027D83}{\beta_2} = \mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} = 1} \text{ &amp; } \text{Santé} \in \mathbb{N}) - \\ \mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} =0} \text{ &amp; } \text{Santé} \in \mathbb{N})
+\end{multline}`
+`\begin{equation}
+\color{#d96502}{\beta_0} + \color{#027D83}{\beta_2} = \mathbb{E}(\text{Absentéisme} | \text{worm_treat} = 1 \text{ &amp; } \text{Santé} = 0)
+\end{equation}`
+---
+
+#  Variables numérique et binaire : graphiquement
+
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Score}_i + \color{#027D83}{\beta_2}\text{worm_treat}_i +u_i
+$$
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-13-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+#  Variables numérique et binaire : graphiquement
+
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Score}_i + \color{#027D83}{\beta_2}\text{worm_treat}_i +u_i
+$$
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-14-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+#  Variables numérique et binaire : graphiquement
+
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Score}_i + \color{#027D83}{\beta_2}\text{worm_treat}_i +u_i
+$$
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-15-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+#  Variables numérique et binaire : graphiquement
+
+$$
+\text{Absentéisme}_i = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1}\text{Score}_i + \color{#027D83}{\beta_2}\text{worm_treat}_i +u_i
+$$
+
+&lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-16-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Absence de collinéarité parfaite
+
+Il y a une condition à respecter pour ajouter des variables dans notre modèle  :
+
+&gt; Chaque nouvelle variable doit ajouter **au moins *un peu* d'information nouvelle**.
+
+--
+
+En d'autres termes, les régresseurs **ne peuvent pas être parfaitement collinéaire**, i.e., une combination linéaire d'autres variables not linear combinations of one another:
+
+  $$ x_2 \neq ax_1 + b $$ 
+
+--
+
+Même si non parfaitement collinéaire, l'effets individuels de variables hautement corrélées sera difficile à identifier.
+
+--
+
+Une autre règle important est que le nombre d'observations doit toujours être supérieur aux nombres de variables indépendantes dans le modèle (on verra plus tard pourquoi).
+
+---
+
+# Absence de collinéarité parfaite 
+
+Cette règle est particulièrement importante pour les ***variables catégorielles***, i.e., variables qui ne prennent qu'une valeur finie (e.g.,  saison, niveau d'éducation, genre, etc.)
+
+--
+
+Revenons à notre `worm_treat`  régression:
+
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score + worm_treat, data = data)
+## 
+## Coefficients:
+## (Intercept)        score   worm_treat  
+##     0.68192      0.33547     -0.05781
+```
+
+--
+
+Que se passe-t-il si l'on crée deux variables `worm_1` and a `worm_0` et que l'on régresse `abddays_98` sur ces deux (et `score`)?
+
+---
+
+# Absence de collinéarité parfaite 
+
+Que se passe-t-il si l'on crée deux variables `worm_1` and a `worm_0` et que l'on régresse `abddays_98` sur ces deux (et `score`)?
+
+
+``` r
+data &lt;- data %&gt;%
+  mutate(worm_1 = (worm_treat == 1),
+         worm_0 = (worm_treat == 0))
+lm(absdays_98 ~ score + worm_0 + 
+     worm_1, data)
+```
+
+```
+## 
+## Call:
+## lm(formula = absdays_98 ~ score + worm_0 + worm_1, data = data)
+## 
+## Coefficients:
+## (Intercept)        score   worm_0TRUE   worm_1TRUE  
+##     0.62411      0.33547      0.05781           NA
+```
+
+Uniquement l'une de ces deux variables a un coefficient ! Pourquoi ?
+--
+
+.pull-left[
+
+``` r
+data %&gt;% count(worm_1 == 1 - worm_0)
+```
+]
+
+.pull-right[
+
+```
+## # A tibble: 2 × 2
+##   `worm_0 == 1 - worm_1`     n
+##   &lt;lgl&gt;                  &lt;int&gt;
+## 1 TRUE                    6693
+## 2 NA                        80
+```
+]
+
+
+---
+
+# Absence de collinéarité parfaite
+
+`\(\rightarrow\)` `R` détecte automatiquement la collinéarité parfaite entre les variables et en supprime l'une d'entre elle
+
+--
+
+⚠️ Pour l'interprétation, il faut faire attention à la  ***catégorie omise (ou de référence)*** : la catégorie de "référence" à partir de laquelle on interpréte notre coefficient. Rappel :
+
+`\begin{multline}
+\color{#027D83}{\beta_2} = \mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} = 1} \text{ &amp; } \text{Santé} \in \mathbb{N}) - \\ \mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} =0} \text{ &amp; } \text{Score} \in \mathbb{N})
+\end{multline}`
+
+--
+
+Cela s'applique dans les cas avec plus de deux catégories. Vous n'avez pas à créer une variable binaire pour chaque possibilité, `R` va le faire automatiquement (tant qu'elles sont sauvées comme  `character` ou `factor`).
+
+--
+
+***MAIS*** vous avez besoin de vérifier quelle catégorie a été choisir comme ***catégorie ommise***.
+
+---
+
+class: inverse
+
+# Task 2: Dummy Variable Trap
+
+<countdown-timer class="countdown" id="timer_a4d5b890" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Let's run a regression where there is perfect linear dependence between regressors.
+
+1. Load the *STAR* data from [here](https://www.dropbox.com/s/bf1fog8yasw3wjj/star_data.csv?dl=1), using `read.csv`, and assign it to an object called `star_df`. Keep only cases with no `NA`s with the following code:  
+`star_df &lt;- star_df[complete.cases(star_df),]` 
+
+1. Create three dummy variables: (i) `small` equal to `TRUE` if students are in a small class and `FALSE` otherwise; (ii) `regular` equal to `TRUE` if students are in a regular class and `FALSE` otherwise; (iii) `regular_plus` equal to `TRUE` if students are in a regular+aide class and `FALSE` otherwise. (*Hint: To create a dummy, write* `dummy = (variable=="value")`, *inside the appropriate dplyr verb*) Create a last variable, `sum`, equal to the sum of `small`, `regular` and `regular_plus`. What is `sum` equal to? What does this mean?
+
+1. Regress `math` on `regular_plus`. What is the average predicted `math` score of students in a regular+aide class?
+
+1. Regress `math` on `small`, `regular` and `regular_plus`. What do you notice? What's the omitted (reference) category? Does this match the previous question?
+
+1. Regress `math` on `star`. What do you notice? What's the omitted category? Interpret the coefficient.
+
+---
+
+# Bias de variable omise (OVB)
+
+***Biais de variable omise (OVB)*** : Le fait d'omettre des variables de contrôle importantes du modèle de régression
+
+Ceci rend le coefficient de votre régresseur d'intérêt *biaisé*.
+
+--
+
+Notons `\(y\)` notre variable dépendante, `\(x\)` notre régresseur et `\(z\)` notre variable omise. L'objectif est d'estimer `\(\widehat{\beta_1}\)` : 
+
+--
+
+1. ***Modèle linéaire multivarié*** : `\(y = \beta_0 + \beta_1x + \color{#d90502}{\beta_2}z + u\)`
+
+--
+
+Mais pour des raisons diverses, comme une limite de données, il se peut que l'on doit omettre `\(\beta_2\)`
+
+--
+
+2. ***Variable omise sur le régresseur*** : `\(\tilde{y} = \tilde{\beta_0} + \color{#d96502}{\tilde{\beta_1}}x + u\)`
+
+--
+On sait que `\(\tilde{\beta_1} =  \widehat{\beta_1} + \widehat{\beta_2}\tilde{\delta_1}\)` avec `\(\tilde{\delta_1}\)` qui est la pente de la régression de `\(x\)` sur `\(z\)`
+
+---
+# Bias de variable omise (OVB)
+
+`\begin{aligned}
+E(\tilde{\beta_1}) &amp; = E(\widehat{\beta_1} + \widehat{\beta_2} \tilde{\delta_1}) \\
+                  &amp; = E(\widehat{\beta_1}) + E(\widehat{\beta_2}) \tilde{\delta_1} \\
+                  &amp; = \beta_1 + \beta_2 \delta_1 \\
+E(\tilde{\beta_1}) - \beta_1 &amp;  =  \underbrace{\beta_2 \delta_1}_{OVB}               
+\end{aligned}`
+
+
+--
+
+Autrement dit, `\(\beta_1 = \tilde{\beta_1} + OVB\)`
+
+---
+
+# Bias de variable omise (OVB)
+En résumé : 
+
+`$$\text{OVB} =  \beta_2 \times \underbrace{\frac{Cov(x,z)}{Var(x)}}_{\color{#d96502}{\tilde{\delta}}}$$`
+De cette formule, on peut obtenir : 
+
+* **Magnitude** du OVB (uniquement si on observe `\(z\)`),
+* ***Signe*** du OVB (positive/négatif) : en pratique on observa pas `\(z\)` (sinon il serait juste inclus dans la reg.) 
+
+--
+
+***Question:***
+1. Dans quels cas `\(\tilde{\beta_1}\)` n'est il pas biaisé ?
+
+1. Imaginez que vous voulez découvrir la relation entre le revenu et le nombre d'années d'éducation. Pourquoi une régression simple du revenu sur le nombre d'années d'éducation pourrait-elle ne pas donner des estimations fiables ? Quelle pourrait être une variable omise ? Quel est le signe attendu du biais de variable omise (OVB) ?
+
+---
+
+# Bias de variable omise (OVB)
+ Dans quels cas `\(\tilde{\beta_1}\)` n'est il pas biaisé ?
+
+1. Lorsque `\(\beta_2=0\)` : cela signifie que `\(z\)` ne doit pas être inclus dans notre modèle 
+
+2. `\(\tilde{\delta_1}=0\)` : i.e., `\(COV(x,z)=0\)` 
+
+
+
+Si `\(COV(x,z)\neq 0\)` `\(\Rightarrow\)` le signe de `\(\tilde{\delta}\)` correspond au signe de `\(Corr(x,z)\)`
+
+|                  | `\(Corr(x,z) &gt; 0\)` | `\(Corr(x,z) &lt; 0\)` |
+|:-----------------|:----------------:|:----------------:|
+| `\(\beta_2 &gt; 0\)`    | +                | -                |
+| `\(\beta_2 &lt; 0\)`    | -                | +                |
+
+
+
+---
+
+# Bias de variable omise (OVB) : En pratique
+
+Revenons à notre exemple initial entre l'absentéisme et la santé des élèves. Nous avions : 
+
+***Modèle linéaire simple :***  `\(\text{Absentéisme} = \tilde{\beta_0} + \tilde{\beta_1}\text{Score} + u\)`
+
+
+```
+## (Intercept)       score 
+##   0.6558044   0.3306233
+```
+
+--
+
+***Modèle linéaire multivarié :***  `\(\text{Absentéisme} = \beta_0 + \beta_1\text{Score} + \color{#d90502}{\beta_2}\text{worm_treat} + e\)`
+
+
+```
+## (Intercept)       score  worm_treat 
+##  0.68192443  0.33547348 -0.05781189
+```
+
+--
+
+***Omitted variable on regressor***:  `\(\text{worm_treat} = \delta_0 + \color{#d96502}{\delta_1}\text{Score} + u\)`
+
+
+```
+## (Intercept)       score 
+##  0.36566875  0.01791031
+```
+
+--
+
+On obtient : `$$\tilde{\beta_1} = 0.331 = \underbrace{0.335}_{\beta_1} + \underbrace{(-0.058)}_{\color{#d90502}{\beta_2}} \times \underbrace{(0.018)}_{\color{#d96502}{\delta_1}} = \beta_1 + OVB$$`
+
+---
+# Inclusion de variable irrelevante 
+
+* Nous avons vu quels sont les risques d'omettre une variable importante dans notre modèle. Existe-il un risque similaire lorsque l'on **sur-spécifie** notre modèle ? 
+
+--
+
+* **Sur-spécifier** un modèle singifie que l'on au moins une des variables de notre modèle dont le coefficient est égal à 0. Cette variable n'a donc aucune **relation** statistique avec notre variable dépendante. 
+
+--
+
+* Inclure ces variables n'a aucun effet sur la valeur des coefficients des autres variables, cela a uniquement un effet négatif sur la variance de nos estimateurs (i.e., leur précision). 
+
+
+---
+
+# `\(R^2\)` Ajusté
+
+* Pas d'une importance capitale, mais comme il est très largement rapporté, il faut simplement le connaître.
+
+--
+
+* Par construction, le `\(R^2\)` augmente toujours lorsqu'un nouveau régresseur est ajouté à la régression.
+
+--
+
+* Le `\(R^2\)` *ajusté* impose une pénalité pour l'ajout de régresseurs au modèle. Les détails ne sont pas essentiels, car dans la grande majorité des cas, le `\(R^2\)` et le `\(R^2\)` ajusté sont assez similaires.
+
+---
+class: inverse
+
+# Task 3: Recap
+
+<countdown-timer class="countdown" id="timer_2eb63ddc" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Let's use the *STAR* data (used in the previous task) to review the main concepts covered.
+
+1. Using the filtered data from the previous task, regress `math` on `school` (tabulate the variable to know what it contains). Interpret the coefficients. What's the omitted category? Do you find them surprising? Why? What might be an omitted variable?
+
+1. Compute the share of students qualifying for free lunch (i.e. `lunch` equals "free") by school location category. What do you observe? Add `free` to the previous question's regression. How do the coefficients change?
+
+1. Regress `math` on `star`. After interpreting the coefficients, regress `math` on `star`, `gender`, `ethnicity`, `lunch`, `degree`, `experience` and `school`. Recalling that this is a randomized experiment, does it look like the randomization was well done?
+
+1. What's the adjusted `\(R^2\)` from the previous multiple regression. How do you interpret it? What might you deduce about the importance of observable individual, teacher and school characteristics in explaining educational outcomes?
+
+1. (Optional) Regress `math` on `gender` and `experience` (the teacher's experience). Interpret the coefficients. How would these regression results look like visually?
+
+
+---
+
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+
+# Bonne journée !
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |                    |
+| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon          
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="../js/ru_xaringan.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
