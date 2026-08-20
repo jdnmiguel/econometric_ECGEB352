@@ -1,0 +1,1156 @@
+---
+title: "ScPoEconometrics"
+subtitle: "Regression Inference"
+author: "Florian Oswald, Mylene Feuillade, Gustave Kenedi and Pierre Villedieu"
+date: "SciencesPo Paris </br> `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, "../css/scpo.css", "../css/scpo-fonts.css"]
+    nature:
+      beforeInit: ["../js/ru_xaringan.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: "../libs/partials/header.html"
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/ScPo-shield.png" style="height: 60px;"/></div> 
+
+---
+
+```{r setup, include=FALSE,warning=FALSE,message=FALSE}
+options(htmltools.dir.version = FALSE)
+
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+
+
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  dev = "svg",
+  cache = TRUE,
+  fig.align = "center"
+  #fig.width = 11,
+  #fig.height = 5
+)
+
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+
+# define vars
+om = par("mar")
+lowtop = c(om[1],om[2],0.1,om[4])
+
+overwrite = FALSE
+
+library(countdown)
+
+# countdown style
+countdown(
+  color_border              = "#d90502",
+  color_text                = "black",
+  color_running_background  = "#d90502",
+  color_running_text        = "white",
+  color_finished_background = "white",
+  color_finished_text       = "#d90502",
+  color_finished_border     = "#d90502"
+)
+
+library(jtools)
+```
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/ScPo-shield.png" style="height: 60px;"/></div> 
+
+---
+
+# Quick "Quiz" on Last Week's Material
+
+1\. From your ***computer*** `r emo::ji("backhand_index_pointing_right")` connect to [***www.wooclap.com/SCPOCIHT***](https://app.wooclap.com/SCPOCIHT)
+
+&nbsp; &nbsp; &nbsp; ***OR***
+
+2\. From your ***phone*** `r emo::ji("backhand_index_pointing_right")` flash QR code below
+
+```{r, echo = F, out.width = "300px"}
+knitr::include_graphics("reg_inference_files/figure-html/qr_code_quiz.png")
+```
+
+---
+
+# Today - Statistical inference in the regression framework
+
+* Fully understand a ***regression table***
+
+* Compare ***theory-based*** and ***simulation-based*** inference
+
+* ***Classical Regression Model*** assumptions 
+
+* Empirical applications:
+
+  * Class size and student performance
+  * Returns to education by gender
+
+---
+
+# Back to class size and student performance
+
+* Let's go back the ***STAR*** experiment data, and focus on: 
+
+  * *small* and *regular* classes,
+  * *Kindergarten* grade.
+
+--
+
+* We consider the following regression model and estimate it by OLS:
+
+$$ \text{math score}_i = b_0 + b_1 \text{small}_i + e_i$$ 
+
+--
+.pull-left[
+```{r, echo = TRUE}
+library(tidyverse)
+
+star_df = read.csv("https://www.dropbox.com/s/bf1fog8yasw3wjj/star_data.csv?dl=1")
+star_df = star_df[complete.cases(star_df),]
+star_df = star_df %>%
+  filter(star %in% c("small","regular") &
+           grade == "k") %>% 
+  mutate(small = (star == "small"))
+```
+]
+
+--
+
+.pull-right[
+```{r, echo = TRUE}
+reg_star = lm(math ~ small, star_df)
+reg_star
+```
+]
+
+--
+
+* What if we drew another random sample of schools from Tennessee and redid the experiment, would we find a different value for $b_1$?
+
+* We know the answer is *yes*, but how different is this estimate likely to be? 
+
+---
+
+
+# Regression Inference: $b_k$ vs $\beta_k$ 
+
+* $b_0, b_1$ are ***point estimates*** computed from our sample.
+  
+  * Just like the sample proportion $\hat{p}$ from our pasta example!
+
+--
+
+.pull-left[
+
+* In fact, our model's prediction...
+    $$\hat{y} = b_0 + b_1 x_1$$
+]
+
+--
+
+.pull-right[
+
+... is an **estimate** about an unknown, **true population line**
+$$y = \beta_0 + \beta_1 x_1$$
+]
+
+where $\beta_0, \beta_1$ are the ***population parameters*** of interest.
+
+--
+
+* You will often find $\hat{\beta_k}$ rather than $b_k$, both refer to sample estimate of $\beta_k$.
+
+--
+
+* Let's bring what we know about ***confidence intervals***, ***hypothesis testing*** and ***standard errors*** to bear on those $\hat{\beta_k}$!
+
+---
+
+# Understanding Regression Tables
+
+Here is our `tidy` regression:
+```{r}
+library(broom)
+tidy(lm(math ~ small, star_df))
+```
+
+```{r echo=FALSE}
+reg_summary_star_df = round(summary(reg_star)$coefficients,2)
+coeff_star = coef(reg_star)
+```
+
+
+* There are 3 new columns here: `std.error`, `statistic`, `p.value`.
+
+--
+
+Entry | Meaning
+----- | ----
+`std. error` |  Standard error of $b_k$
+`statistic` |  Observed test statistic associated to $H_0:\beta_k = 0,H_A:\beta_k \neq 0$
+`p.value` |  p-value associated to $H_0:\beta_k = 0,H_A:\beta_k \neq 0$
+
+--
+
+* Let's focus on the `small` coefficient and make sense of each entry.
+
+---
+
+# Standard Error of $b_k$
+
+> ***Standard Error of $b_k$:*** Standard deviation of the sampling distribution of $b_k$.
+
+--
+
+Let's imagine we could redo the experiment 1,000 times on 1,000 different samples:
+
+* We'd run 1,000 regressions and obtain 1,000 estimates of $\beta_k$, $b_k$.
+
+--
+
+* The standard error of $b_k$ quantifies how much variation in $b_k$ one would expect across (*an infinity of*) samples.
+
+---
+
+# Standard Error of $b_\textrm{small}$
+
+* From the table, we get $\hat{\textrm{SE}}(b_\textrm{small}) = `r reg_summary_star_df[2,2]`$
+  
+  * Notice that we write $\hat{\textrm{SE}}$ and not ${\textrm{SE}}$ because `r reg_summary_star_df[2,2]` is an estimate of the real standard error of $b_\textrm{small}$ we get from our sample.
+
+  * We would love to know the real standard error ${\textrm{SE}}$, but we have only one sample!
+--
+
+* Let's simulate the sampling distribution of $b_\textrm{small}$ to see where it comes from.
+    
+---
+
+class:inverse
+
+# Task 1
+
+`r countdown(minutes = 7, top = 0)`
+
+As we did for the sampling distribution of the proportion of *green pasta*, we want to generate the bootstrap distribution of $b_\textrm{small}$. 
+
+1. Copy the loading and cleaning code from slide 3 and run it.
+
+1. Generate the bootstrap distribution of $b_\textrm{small}$ based on 1,000 samples drawn from `star_df`.  You can do so through the following code
+```{r, eval=FALSE}
+bootstrap_distrib <- star_df %>% 
+    mutate(small=as.numeric(small)) %>% 
+    specify(response = math, explanatory = small) %>%
+    generate(reps = 1000, type = "bootstrap") %>%
+    calculate(stat = "slope")
+```
+
+
+3. Plot this simulated sampling distribution and compute the mean and standard error of $b_\textrm{small}$.
+
+---
+
+# Bootstrap Distribution
+
+```{r, echo=FALSE, fig.height = 4.25, fig.width = 8}
+library(infer)
+bootstrap_distrib = star_df %>% 
+    mutate(small=as.numeric(small)) %>% 
+    specify(formula = math ~ small) %>%
+    generate(reps = 1000, type = "bootstrap") %>%
+    calculate(stat = "slope")
+se_simul = round(sd(bootstrap_distrib$stat),3)
+
+bootstrap_distrib %>%
+    ggplot(aes(x = stat)) +
+    geom_histogram(boundary = 9, binwidth = 0.5, col = "white", fill = "#d90502") +
+    labs(
+        x = "Bootstrap sample slope estimate",
+        y = "Frequency"
+    ) +
+    theme_bw(base_size = 14)
+```
+
+--
+
+***standard error:*** `r round(se_simul,2)` $\rightarrow$ very close to the one in the table (`r reg_summary_star_df[2,2]`)!
+
+Not exactly equal, because we used bootstrapping instead of the theory approach used by `R`.
+
+---
+
+# Back to our regression results
+
+```{r}
+library(broom)
+tidy(lm(math ~ small, star_df))
+```
+
+  * We have made sense of the `std.error` column.
+
+  * The next two columns in our regression are `statistic` and `p.value`
+
+  * We know those terms from our previous class on hypothesis testing
+  
+  * But which hypothesis test do they correspond to?
+
+---
+
+# Testing $\beta_k = 0$ vs $\beta_k \neq 0$
+
+By default, the regression output provides the results associated with the following hypothesis test: 
+
+$$\begin{align}H_0:& \beta_k = 0\\H_A:& \beta_k \neq 0\end{align}$$
+
+--
+
+* It allows to statistically test if there is a true relationship between the outcome and our regressor. 
+
+--
+
+* If $H_0$ is true, there is **no** relationship between the outcome and our regressor. 
+
+  * In that case observing $b_1 \neq 0$ was just chance.
+
+--
+
+* If $H_0$ is false, then there **is** a true relationship. 
+
+--
+
+* ***Important:*** This is a ***two-sided*** test!
+
+---
+
+# Test statistic and p-value
+
+* As we saw in the previous lecture, to conduct such a test we need to:
+
+--
+
+  * Derive the sampling distribution of our **test statistic** (`statistic`) assuming $H_0$ is true, i.e. the *null distribution*.
+  
+--
+
+  * Quantify how extreme the **observed test statistic** is in this hypothetic world.
+
+--
+
+* Our *observed test statistic* (`statistic`) equals $\frac{b}{\hat{SE}(b)}$.
+
+  * Why not just $b$? We'll come back and explain this formula later.
+
+--
+
+.pull-left[
+```{r}
+observed_stat = reg_star$coefficients[2]/sd(bootstrap_distrib$stat)
+round(observed_stat,2)
+```
+]
+
+--
+
+.pull-right[
+* Quite close to the observed test statistic we got in the table: `statistic` = `r reg_summary_star_df[2,3]`.
+]
+--
+
+* The **p-value** measures the area outside of $\pm$ *observed test statistic* under the *null distribution*.
+
+--
+
+* Finally, we check if we can reject $H_0$ at the usual **significance levels**: $\alpha$ = 0.1, 0.05, 0.01.
+
+---
+
+# Testing $\beta_\textrm{small} = 0$ vs $\beta_\textrm{small} \neq 0$
+
+* We will approximate the null distribution of $\frac{b_\textrm{small}}{\hat{SE}(b_\textrm{small})}$ through a simulation exercise. 
+
+--
+
+* If there is no relationship between math score and class size, i.e. $H_0$ is true and $\beta_\textrm{small} = 0$, then *reshuffling* / *permuting* the values of `small` across students should play no role.
+
+--
+
+.pull-left[
+* Let's generate 1,000 permuted samples and compute $b_\textrm{small}$ for each.
+
+```{r}
+null_distribution <- star_df %>% 
+  mutate(small=as.numeric(small)) %>% 
+  specify(formula = math ~ small) %>%
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "slope")
+```
+]
+
+--
+
+.pull-right[
+
+* We can compute the distribution of our test statistic $\frac{b_\textrm{small}}{\hat{SE}(b_\textrm{small})}$ under the null:
+
+```{r}
+null_distribution <- null_distribution %>%
+  mutate(test_stat = stat/sd(bootstrap_distrib$stat))
+```
+
+* Remember we got $\hat{SE}(b_\textrm{small})$ = `r round(sd(bootstrap_distrib$stat),2)` from our bootstrap distribution.
+]
+
+  
+
+
+---
+
+# Testing $\beta_\textrm{small} = 0$ vs $\beta_\textrm{small} \neq 0$
+
+
+```{r echo=FALSE, fig.height = 4.75, fig.width = 8}
+plot_null_distrib = null_distribution %>%
+  ggplot(aes(x = test_stat)) +
+  geom_histogram(binwidth = 0.2, col = "white", fill = "#d90502") +
+  labs(x = "Test statistic under the null hypothesis",
+       y = "Frequency",
+       title = "Simulation-Based Null Distribution") +
+  theme_bw(base_size = 14)
+plot_null_distrib
+```
+
+---
+
+# Testing $\beta_\textrm{small} = 0$ vs $\beta_\textrm{small} \neq 0$
+
+
+```{r echo=FALSE, fig.height = 4.75, fig.width = 8}
+plot_null_distrib +
+  geom_vline(xintercept = observed_stat, size = 1.25) +
+  annotate("text", x = 4.1, y = 75, label = "observed test statistic", size = 4)
+
+```
+
+--
+
+Very unlikely to obtain $b_\textrm{small}$ = `r coeff_star[2]` when $H_0$ is true.
+
+---
+
+# Testing $\beta_\textrm{small} = 0$ vs $\beta_\textrm{small} \neq 0$
+
+* To decide if we reject $H_0$, recall we are considering a **two-sided test** here: *more extreme* means inferior to `r round(-observed_stat,3)` **or** superior to `r round(observed_stat,3)`. 
+
+---
+
+# Testing $\beta_\textrm{small} = 0$ vs $\beta_\textrm{small} \neq 0$
+
+
+```{r echo=FALSE, fig.height = 4.75, fig.width = 8}
+plot_null_distrib +
+  geom_vline(xintercept = observed_stat, size = 1.25) +
+  geom_vline(xintercept = -observed_stat, size = 1.25)
+
+```
+
+--
+
+What does the p-value correspond to?
+
+---
+
+# Testing $\beta_\textrm{small} = 0$ vs $\beta_\textrm{small} \neq 0$
+
+* To decide if we reject $H_0$, recall we are considering a **two-sided test** here: *more extreme* means inferior to `r round(-observed_stat,2)` **or** superior to `r round(observed_stat,2)`. 
+
+* Computing the *p-value* we get:
+
+```{r}
+p_value = mean(abs(null_distribution$test_stat) >= observed_stat)
+p_value
+```
+
+--
+
+* This is the same value as in the regression table.
+
+--
+
+* ***Question:*** Can we reject the null hypothesis at the 5% level?
+
+---
+
+# Testing $\beta_\textrm{small} = 0$ vs $\beta_\textrm{small} \neq 0$
+
+* To decide if we reject $H_0$, recall we are considering a **two-sided test** here: *more extreme* means inferior to `r round(-observed_stat,2)` **or** superior to `r round(observed_stat,2)`. 
+
+* Computing the *p-value* we get:
+
+```{r}
+p_value = mean(abs(null_distribution$test_stat) >= observed_stat)
+p_value
+```
+
+* This is the same value as in the regression table.
+
+* ***Answer:***
+
+  * Since the *p-value* is equal to 0 it means that we would reject $H_0$ at any significance level: the p-value would always be inferior to $\alpha$.
+  * In other words, we can say that $b_\textrm{small}$ is **statistically different from 0** at any significance level.
+  * We also say that $b_\textrm{small}$ is *statistically significant* (at any significance level).
+
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Regression Inference: Theory
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/ScPo-shield.png" style="height: 60px;"/></div> 
+
+---
+
+# Regression Inference: Theory
+
+* Up to now we presented simulation-based inference.
+
+--
+
+* The values reported by statistical packages in `R` are instead obtained from theory.
+
+--
+
+* Theoretical inference is based on **large sample approximations**.
+  * One can show that sampling distributions *converge* to suitable distributions $\rightarrow$ ***Central Limit Theorem***
+  
+--
+  
+* Let's briefly look into the theory-based approach.
+
+---
+
+# Regression Inference: Theory
+
+* Theory-based approach uses one fundamental result: the sampling distribution of the sample statistic $\frac{b - \beta}{\hat{\textrm{SE}(b)}}$ *converges* to a ***standard normal distribution*** as the sample size gets larger and larger.
+
+  * $\hat{\textrm{SE}(b)}$ is the sample estimate of the standard deviation of $b$.
+  * It is also obtained through a theoretical formula (which you can find in the [book](https://scpoecon.github.io/ScPoEconometrics/std-errors.html#se-theory)!) but we'll leave it aside.
+
+--
+
+* A ***standard normal distribution*** is a *normal distribution* with *mean* 0 and *standard deviation* 1.
+
+--
+
+* We don't need to simulate any sampling distribution here, we derive it from theory and use it to construct confidence intervals or to conduct hypothesis tests.
+
+--
+
+* Note that if $\frac{b - \beta}{\hat{\textrm{SE}(b)}}$ *converges* to a ***standard normal distribution***, then $b$ converges to a ***normal distribution*** with mean $\beta$ and standard deviation $\hat{\textrm{SE}(b)}$.
+
+---
+
+# Normal Distribution: A Refresher
+
+.center[
+```{r, echo = FALSE, out.width = "850px"}
+knitr::include_graphics("../img/photos/standard_normal_distrib.png")
+```
+]
+
+---
+
+# Theory-Based Inference: Confidence Interval
+
+* Let's take the example of a 95% confidence interval.
+
+--
+
+* Since the sampling distribution of $b$ is assumed to be normally shaped, we can use the ***95% rule of thumb*** about normal distributions.
+
+--
+
+* We know indeed that 95% of the values of a normal distribution lie within approximately 2 standard deviations of the mean (exactly 1.96).
+
+--
+
+* So, we can compute a 95% CI for $\beta$ as: $\textrm{CI}_{95\%} = [ b \pm 1.96*\hat{\textrm{SE}}(b)]$
+
+--
+
+.pull-left[
+```{r}
+tidy(lm(math ~ small, star_df),
+     conf.int = TRUE, conf.level = 0.95) %>%
+  filter(term == "smallTRUE") %>%
+  select(term, conf.low, conf.high)
+```
+]
+
+--
+.pull-right[
+```{r}
+bootstrap_distrib %>%
+  summarise(
+    lower_bound = 8.895 - 1.96*sd(stat),
+    upper_bound = 8.895 + 1.96*sd(stat))
+```
+]
+
+--
+
+* This can easily be generalized to any confidence level by taking the appropriate quantile of the normal distribution.
+
+---
+
+class:inverse
+
+# Task 2
+
+`r countdown(minutes = 5, top = 0)`
+
+1. Using the bootstrap distribution you generated in Task 1, compute the 95% confidence interval using the *percentile method*.
+
+1. How similar is it to the confidence intervals obtained in the previous slide?
+
+---
+
+# Confidence Intervals: Visually
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5.5}
+ci_pctile = bootstrap_distrib %>%
+    summarise(
+        lower = quantile(stat, 0.025),
+        upper = quantile(stat, 0.975)
+    )
+
+ci_stderror <- bootstrap_distrib %>%
+  summarise(
+    lower = 8.895 - 1.96*sd(stat),
+    upper = 8.895 + 1.96*sd(stat))
+
+ci_theory <- tidy(lm(math ~ small, star_df),
+     conf.int = TRUE, conf.level = 0.95) %>%
+  filter(term == "smallTRUE") %>%
+  select(term, conf.low, conf.high)
+
+bootstrap_distrib %>%
+    ggplot(aes(x = stat)) +
+    geom_histogram(boundary = 9, binwidth = 0.5, col = "white", fill = "#d90502") +
+    labs(
+        x = "Bootstrap sample slope estimate",
+        y = "Frequency",
+        title = "95% confidence interval computed with different methods",
+        subtitle = "percentile (dashed), standard error (longdashed) and theory (solid)"
+    ) +
+  geom_vline(xintercept = c(ci_pctile$lower, ci_pctile$upper), linetype = "dashed", show.legend = TRUE) +
+  geom_vline(xintercept = c(ci_stderror$lower, ci_stderror$upper), linetype = "longdash", show.legend = TRUE) +
+  geom_vline(xintercept = c(ci_theory$conf.low, ci_theory$conf.high)) +
+  theme_bw(base_size = 14)
+```
+
+---
+
+# Theory-Based Inference: Hypothesis Testing
+
+* Theory tells us that $\frac{b - \beta_k}{\hat{\textrm{SE}(b)}}$ converges to a standard normal distribution
+
+* As we already mentioned, the default test that is conducted by any statistical software is:
+
+$$\begin{align}H_0:& \beta_k = 0\\H_A:& \beta_k \neq 0\end{align}$$
+--
+
+* So, **under the null hypothesis**, $\beta_k=0$, and we get from theory that the sampling distribution of $\frac{b}{\hat{\textrm{SE}(b)}}$ will be a standard normal distribution.
+
+
+--
+
+* So the *standard normal distribution* is the **null distribution** of our test statistic. 
+
+--
+
+* The ***p-value*** associated to our test is then equal to the area of the *standard normal distribution* outside $\pm$ the observed value of $\frac{b}{\hat{\textrm{SE}(b)}}$.
+
+--
+
+* Common rule of thumb: if the *estimate* is ***twice the size of the standard error***, then it is significant at the 5% level. Why?
+
+---
+
+# Formatting a regression table
+
+* Now that we have learned about all components of a regression table, let's finally learn how to create and read one!
+
+```{r, eval=F}
+reg_simple_math <- lm(math ~ small, data=star_df)
+reg_gender_math <- lm(math ~ small + gender , data=star_df)
+reg_simple_read <- lm(read ~ small, data=star_df)
+reg_gender_read <- lm(read ~ small + gender , data=star_df)
+
+export_summs(reg_simple_math, reg_gender_math, reg_simple_read, reg_gender_read,
+             model.names = c("Math score", "Math Score",
+                             "Reading score", "Reading score"),
+             coefs=c("Intercept" = "(Intercept)",
+                     "Small class" = "smallTRUE",
+                     "Male gender" = "gendermale"))
+```
+
+---
+
+# Formatting a regression table
+
+```{r, eval=T, echo=F, results='asis'}
+reg_simple_math <- lm(math ~ small, data=star_df)
+reg_gender_math <- lm(math ~ small + gender , data=star_df)
+reg_simple_read <- lm(read ~ small, data=star_df)
+reg_gender_read <- lm(read ~ small + gender , data=star_df)
+
+export_summs(reg_simple_math, reg_gender_math, reg_simple_read, reg_gender_read,
+             model.names = c("Math score", "Math Score",
+                             "Reading score", "Reading score"),
+             coefs=c("Intercept" = "(Intercept)",
+                     "Small class" = "smallTRUE",
+                     "Male gender" = "gendermale"))
+```
+
+---
+
+# Reading a regression table
+
+.center[
+```{r, echo = FALSE, out.width = "500px"}
+knitr::include_graphics("reg_inference_files/figure-html/reg_table.png")
+```
+]
+
+* Each column corresponds to a regression. For the first regression we have: 
+    * the **name of the outcome variable** in <span style="color: #2F528F;">blue</span>
+    * the **estimated coefficient associated to being in a small class** $\hat{\beta_\textrm{small}}$ in <span style="color: #70AD47;">green</span>
+    * its **estimated standard error** in <span style="color: #FFC000;">yellow</span>
+    * the **number of observations** in <span style="color: #7030A0;">purple</span>
+    * the **R-squared** in <span style="color: #C00000;">red</span>
+    * interpretation of the stars at the bottom
+
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Classical Regression Model
+
+---
+
+# Classical Regression Model
+
+* Whether the inference is made from theory or simulations, some assumptions have to be met for this inference to be valid.
+
+* The set of assumptions needed defines the *Classical Regression Model* (CRM).
+
+--
+
+* Before delving into these assumptions, let's see the small but important modifications we apply to our model (back to [*lecture SLR*](https://raw.githack.com/ScPoEcon/ScPoEconometrics-Slides/master/chapter_slr/chapter_slr.html)):
+
+--
+
+  * We already mentioned the distinction between the sample estimate $b_k$ (or $\hat{\beta_k}$) and the population parameter $\beta_k$.
+
+--
+
+  * In the same way, we distinguish $e$, the sample error (*residual*), from $\varepsilon$, the error term from the true population model: 
+  
+  $$y_i = \beta_0 + \beta_1 x_{1,i} + ... + \beta_k x_{k,i} + \varepsilon_i$$
+--
+
+  * The classical regression model applies to **correctly specified linear regressions**: the model needs to be linear in parameters, include all relevant variables, and variables cannot be collinear.
+
+
+---
+
+
+# CRM Assumptions
+
+1. ***Mean Independence:*** the mean of the residuals conditional on $x$ should be zero, $E[\varepsilon|x] = 0$. Notice that this also means that $Cov(\varepsilon,x) = 0$, i.e. that the errors and our explanatory variable(s) should be *uncorrelated*.
+
+--
+
+* Violating this assumption will lead to **biased** estimates of $\beta_k$.
+
+
+---
+
+# Mean Independence of Error: E[u | small] = ?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE,fig.width=8,fig.height=5}
+library(ggridges)
+library(ggthemes)
+library(viridis)
+
+# Data work ------------------------------------------------------------------------------
+# Set seed
+set.seed(555)
+# Sample size
+n <- 1e5
+# Exogenous
+e_good <- tibble(
+    x = runif(n = n, min = -1, max = 1),
+    e = rnorm(n)
+) %>% mutate(x = if_else(x < 0, FALSE, TRUE))
+# Endogenous
+e_bad <- tibble(
+    x = runif(n = n, min = -1, max = 1),
+    e = rnorm(n) + 2.5 * x
+) %>% mutate(x = if_else(x < 0, FALSE, TRUE))
+
+# Figures: Joint densities ---------------------------------------------------------------
+# The joint plot: good
+joint_good <- ggplot(data = e_good, aes(x = e)) +
+    geom_density() +
+    theme_pander()
+# The joint plot: bad
+joint_bad <- ggplot(data = e_bad, aes(x = e)) +
+    geom_density() +
+    theme_pander()
+
+# Figures: Conditional densities ---------------------------------------------------------
+cond_good <- ggplot(data = e_good, aes(x = e, y = as.factor(x))) +
+    geom_density_ridges_gradient(
+        aes(fill = ..x..),
+        color = "white",
+        scale = 2.5,
+        size = 0.2
+    ) +
+    # geom_vline(xintercept = 0, alpha = 0.3) +
+    scale_fill_viridis(option = "magma") +
+    scale_x_continuous(breaks = c(-4,4),limits = c(-6,6)) +
+    xlab("u") +
+    ylab("small class?") +
+    theme_bw() +
+    ggtitle("E[u | small] = 0") +
+    theme(
+        legend.position = "none"
+    )
+cond_bad <- ggplot(data = e_bad, aes(x = e, y = as.factor(x))) +
+    geom_density_ridges_gradient(
+        aes(fill = ..x..),
+        color = "white",
+        scale = 2.5,
+        size = 0.2
+    ) +
+    # geom_vline(xintercept = 0, alpha = 0.3) +
+    scale_fill_viridis(option = "magma") +
+    scale_x_continuous(breaks = c(-4,4),limits = c(-6,6)) +
+    xlab("u") +
+    ylab("small class?") +
+    ggtitle("E[u | small] != E[u | not small] != 0") +
+    theme_bw() +
+    theme(
+        legend.position = "none"
+    )
+
+cond_good
+```
+
+
+---
+
+# Mean Independence of Error: E[u | small] = ?
+
+```{r, echo = FALSE,fig.width=8,fig.height=5}
+cond_bad
+```
+
+---
+
+# Exogeneity Assumption
+
+The CRM assumption #1 is also know as the (strict) **exogeneity assumption**. 
+
+* When this assumption is violated our estimate $b$ will be a ***biased*** estimate of $\beta$, i.e. $\mathop{\mathbb{E}}[b] \neq \beta$
+
+--
+
+* For example, imagine you are interested in the effect of education on wage
+
+    $$\text{wage}_i = \beta_0 + \beta_1 \text{education}_i + \varepsilon_i$$
+  
+  * Under the exogeneity assumption $\beta_1$ denotes the causal effect of education in the population.
+
+--
+
+* Suppose there is *unobserved* ability $a_i$. 
+  * High ability means higher wage.
+  * It *also* means school is easier, and so $i$ selects into more schooling.
+
+---
+
+# Exogeneity Assumption 
+
+* Given ability is *unobserved*,  $a_i$ goes into the error $\varepsilon_i$
+
+--
+
+* Our *ceteris paribus* assumption (all else equal) does not hold. 
+
+--
+
+* Then regressing the wage on education we will attribute to `education` part of the effect on wages that is actually *caused* by ability $a_i$!
+
+--
+
+  * Remember the formula of the **omitted variable bias**:
+  
+  $$\text{OVB} = \text{multiple regression coefficient on omitted variable} \times \frac{Cov(x,z)}{Var(x)}$$
+
+--
+
+  * Thus, we have:
+  
+  $$ \mathbb{E}(b_1) = \beta_1 + OVB > \beta_1$$ 
+
+* *Interpretation*: taking repeated sample from the population and computing $b_1$ each time, we would **systematically overestimate** the effect of education on wage.
+
+
+---
+
+# CRM Assumptions
+
+1\. ***Mean Independence:*** the mean of the residuals conditional on $x$ should be zero, $E[\varepsilon|x] = 0$. Notice that this also means that $Cov(\varepsilon,x) = 0$, i.e. that the errors and our explanatory variable(s) should be *uncorrelated*.
+
+
+* Violating this assumption will lead to **biased** estimates of $\beta_k$.
+
+--
+
+2\. ***Independently and identically distributed:*** the data are drawn from a **random sample** of size $n$: observation $(x_i,y_i)$ comes from the exact same distribution, and is **independent** of observation $(x_j,y_j)$, for all $i\neq j$.
+
+--
+
+* Violating this assumption would make your sample less representative of the underlying population. It will lead to **biased** estimates of $\beta_k$.
+
+---
+
+# CRM Assumptions
+
+3\. ***Homoskedasticity:*** the variance of the error term $\varepsilon$ is the same for each value of $x$: $Var(\varepsilon|x) = \sigma^2$.
+
+--
+
+* If this assumption is violated, you can still obtain unbiased estimates of $\beta_k$. However your estimate of $\hat{\textrm{SE}}(b_k)$ will be biased, which will affect your test statistic and p-value.
+
+--
+
+4\. ***Normally distributed errors:*** the error term is normally distributed, i.e. $\varepsilon \sim \mathcal{N}(0,\sigma^2)$ 
+
+--
+
+* Not strictly necessary, but makes inference possible even with small sample sizes.
+ 
+--
+
+
+`r emo::ji("point_right")` Takeaway: **if assumptions violated, inference is invalid!**
+
+---
+
+class:inverse
+
+# Task 3.1
+
+`r countdown(minutes = 10, top = 0)`
+
+Let's go back to our question of returns to education and gender. 
+
+1. Load the data `CPS1985` from the `AER` package and look back at the `help` to get the definition of each variable: `?CPS1985`
+
+1. Create the `log_wage` variable equal to the log of `wage`.
+
+1. Regress `log_wage` on `gender` and `education`, and save it as `reg1`. 
+
+  * Interpret each coefficient.
+  
+  * Are the coefficients statistically significant? At which significance level? 
+
+1. Regress the `log_wage` on `gender`, `education` and their interaction `gender*education`, save it as `reg2`. 
+
+  * How do you interpret the coefficient associated to $female*education$?
+  
+  * Can we reject the nullity of this coefficient at the 5% level? At 10%?  
+  
+---
+
+class:inverse
+
+# Task 3.2
+
+`r countdown(minutes = 10, top = 0)`
+
+1. Produce a scatterplot of the relationship between the log wage and the level of education.
+
+1. Add the *regression line* with `geom_smooth`. What does this line represents?
+
+1. Let's illustrate what the shaded area stands for.
+
+  1. Draw one bootstrap sample from our `cps` data. 
+
+  1. Regress the `log_wage` on `gender`, `education` and their interaction `gender*education`, save it as `reg_bootstrap`.
+
+  1. From `reg_bootstrap` extract and save the value of the intercept for men as `intercept_men_bootstrap` and the value of the slope for men as `slope_men_bootstrap`. Do the same for women.
+
+  1. Add both predicted lines from this bootstrap sample to the previous plot (*Hint*: use `geom_abline` (x2))
+
+---
+
+# Illustrating Uncertainty
+
+.pull-left[
+
+Let's repeat the procedure you just made 100 times! 
+
+```{r eval=FALSE}
+library(AER)
+data("CPS1985")
+cps = CPS1985 %>% mutate(log_wage = log(wage))
+
+set.seed(1)
+bootstrap_sample = cps %>% 
+    rep_sample_n(size = nrow(cps), reps = 100, replace = TRUE)
+
+ggplot(data=cps,aes(y = log_wage, x = education, colour = gender)) +
+  geom_point(size = 1, alpha = 0.7) +
+  geom_smooth(method = "lm", alpha = 2) +
+  geom_smooth(data=bootstrap_sample,
+              size = 0.2,
+              aes(y = log_wage, x = education, group = replicate),
+              method = "lm", se = FALSE) +
+  facet_wrap(~gender) +
+  scale_colour_manual(values = c("darkblue", "darkred")) +
+  labs(x = "Education", y = "Log wage") +
+  guides(colour=FALSE) +
+  theme_bw(base_size = 20)
+```
+]
+
+--
+
+.pull-right[
+
+```{r echo=FALSE, fig.height=7}
+library(AER)
+data("CPS1985")
+cps = CPS1985 %>% mutate(log_wage = log(wage))
+
+set.seed(1)
+bootstrap_sample = cps %>% 
+    rep_sample_n(size = nrow(cps), reps = 100, replace = TRUE)
+
+ggplot(data=cps,aes(y = log_wage, x = education, colour = gender)) +
+  geom_point(size = 1, alpha = 0.7) +
+  geom_smooth(method = "lm", alpha = 2) +
+  geom_smooth(data=bootstrap_sample,
+              size = 0.2,
+              aes(y = log_wage, x = education, group = replicate),
+              method = "lm", se = FALSE) +
+  facet_wrap(~gender) +
+  scale_colour_manual(values = c("darkblue", "darkred")) +
+  labs(x = "Education", y = "Log wage") +
+  guides(colour=FALSE) +
+  theme_bw(base_size = 20)
+```
+
+]
+
+---
+
+# Illustrating Uncertainty
+
+.pull-left[
+![](../img/gifs/wages.gif)
+
+]
+
+.pull-right[
+</br>
+
+Even better : [`ungeviz`](https://github.com/wilkelab/ungeviz) and `gganimate` bring you moving lines!
+
+* We took 20 bootstrap samples from our data
+
+* You can see how different data points are included in each bootstrap sample.
+
+* Those different points imply different regression lines.
+
+* On average, 95% of these lines should fall into the shaded area.
+
+* You should remember those moving lines when looking at the shaded area!
+
+]
+
+---
+
+# On the way to causality
+
+`r emo::ji("white heavy check mark")` How to manage data? Read it, tidy it, visualise it!
+
+`r emo::ji("white heavy check mark")`  How to summarise relationships between variables? Simple and multiple linear regression, non-linear regressions, interactions...
+
+`r emo::ji("white heavy check mark")` What is causality?
+
+`r emo::ji("white heavy check mark")` What if we don't observe an entire population? Sampling!
+
+`r emo::ji("white heavy check mark")`  **Are our findings just due to randomness?** Confidence intervals and hypothesis testing, regression inference.
+
+`r emo::ji("cross mark")` How to find exogeneity in practice?
+
+
+---
+
+
+
+class: title-slide-final, middle
+
+#  THANKS
+
+To the amazing [moderndive](https://moderndive.com/) team!
+
+Big Thanks `r emo::ji("tada")` to [ungeviz](https://github.com/wilkelab/ungeviz) and `r emo::ji("confetti")` [gganimate](https://github.com/thomasp85/gganimate) for their awesome packages!
+
+---
+
+class: title-slide-final, middle
+background-image: url(../img/logo/ScPo-econ.png)
+background-size: 250px
+background-position: 9% 19%
+
+# SEE YOU NEXT WEEK!
+
+
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| <a href="mailto:florian.oswald@sciencespo.fr">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | florian.oswald@sciencespo.fr       |
+| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |
+| <a href="https://scpoecon.github.io/ScPoEconometrics">.ScPored[<i class="fa fa-link fa-fw"></i>] | Book |
+| <a href="http://twitter.com/ScPoEcon">.ScPored[<i class="fa fa-twitter fa-fw"></i>]                          | @ScPoEcon                         |
+| <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+

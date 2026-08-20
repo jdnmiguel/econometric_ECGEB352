@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econométrie</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jérémy Do Nascimento Miguel" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="../css/scpo.css" type="text/css" />
+    <link rel="stylesheet" href="../css/scpo-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Econométrie
+]
+.subtitle[
+## Intervalle de Confiance et Test d’Hypothèse
+]
+.author[
+### Jérémy Do Nascimento Miguel
+]
+.date[
+### Université de Namur </br> 2026-08-20
+]
+
+---
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+
+
+
+# Ajourd'hui - Plonger dans l'***inférence statistique*** &lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+[1]: Ce cours est en partie basé sur les chapitres sur les [intervalles de confiance](https://moderndive.com/8-confidence-intervals.html) et [test d'hypothèses](https://moderndive.com/9-hypothesis-testing.html) de [ModernDive](https://moderndive.com/)]
+
+* *Intervalles de Confiance* : fournissent un ***intervalle*** de valeurs dans lequel notre estimation est sûrement contenue.  
+
+* *Test d'Hypothèse* : compare des statistiques entre des groupes
+
+---
+
+
+# Retour à la vie réelle
+
+
+* Dans la vie réelle, on obtient uniquement ***1*** échantillon de la population (pas ***1000*** !).
+
+* De plus, on ne connait pas la valeur réelle du paramètre de la population qui nou intéresse, c'est notre intérêt principal. 
+
+* Quel était l'intérêt de nos précédents cours ?
+
+
+--
+
+&lt;br&gt;
+&lt;br&gt;
+
+* Même non obsevré, on ***sait*** que la distribution d'échantillonnage existe, et même mieux on sait comment elle se comporte !
+
+
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Intervalles de Confiance
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Des estimations ponctuelles aux intervalles de confiance
+
+* Jusqu'à présent, nous n'avons estimé que des ***estimations ponctuelles*** à partir de nos échantillons : *moyennes d'échantillon*, *proportions d'échantillon*, *coefficients de régression*, etc.
+
+--
+
+* Nous savons que cette ***statistique d'échantillon*** diffère du ***véritable paramètre de population*** en raison de la ***variation d'échantillonnage***. 
+
+--
+
+* Plutôt qu'une estimation ponctuelle, nous pourrions fournir un ***intervalle de valeurs plausibles*** pour le paramètre de population.
+
+--
+
+* C'est précisément ce que fournit un ***intervalle de confiance*** (IC).
+
+---
+
+# Construction d'intervalles de confiance 
+Il existe plusieurs approches pour construire des intervalles de confiance :
+    
+  1. *Théorie* : utiliser des formules mathématiques (***théorème central limite***) pour dériver la distribution d'échantillonnage de notre estimation ponctuelle sous certaines conditions `\(\rightarrow\)` ***ce que `R` fait en coulisses !***
+  
+--
+  
+  1. *Simulation* : utiliser la méthode du ***bootstrap*** pour *reconstruire* la distribution d'échantillonnage de notre estimation ponctuelle
+    
+--
+    
+Nous nous concentrerons sur la simulation pour vous donner l'intuition et reviendrons à l'approche mathématique au prochain cours.
+
+--
+
+En pratique, vous n'avez ***pas besoin*** de calculer vos intervalles de confiance à l'aide du *bootstrap*, `R` utilise la théorie statistique pour le faire à votre place.
+
+---
+
+# Retour aux pâtes
+
+* Comme dans la vraie vie, imaginons que nous n'ayons accès qu'à *un seul échantillon aléatoire* de notre bol de pâtes.
+
+--
+
+* Comment pourrions-nous étudier l'effet de la variation d'échantillonnage avec un seul échantillon ? 👉 ***rééchantillonnage bootstrap avec remise*** !
+
+--
+
+* Commençons par tirer un échantillon aléatoire de taille `\(n = 50\)` de notre bol.
+
+
+
+
+``` r
+library(tidyverse)
+bowl &lt;- read.csv("https://www.dropbox.com/s/qpjsk0rfgc0gx80/pasta.csv?dl=1")
+
+my_sample = bowl %&gt;%
+  mutate(color = ifelse(color == "green","green","non-green")) %&gt;%
+  rep_sample_n(size = 50) %&gt;%
+  ungroup() %&gt;%
+  select(pasta_ID, color)
+```
+
+.pull-left[
+
+``` r
+head(my_sample,3)
+```
+
+```
+## # A tibble: 3 × 2
+##   pasta_ID color    
+##      &lt;int&gt; &lt;fct&gt;    
+## 1        4 non-green
+## 2       41 non-green
+## 3       79 non-green
+```
+]
+
+--
+
+.pull-right[
+
+``` r
+p_hat = mean(my_sample$color == "green")
+p_hat
+```
+
+```
+## [1] 0.46
+```
+
+La proportion de pâtes vertes dans l'échantillon est simplement : `\(\hat{p} = 0.46\)`.
+]
+
+---
+# Rééchantillonnage de notre échantillon de pâtes
+
+Comment obtenons-nous un ***échantillon bootstrap*** ?
+
+--
+  
+  1. Tirer au hasard ***une*** pâte de l'échantillon et noter la couleur associée.
+  
+--
+  
+  1. Remettre cette pâte dans l'échantillon.
+  
+--
+  
+  1. Répéter les étapes 1 et 2 49 fois, c.-à-d. ***jusqu'à ce que le nouvel échantillon ait la même taille que l'échantillon d'origine***.
+
+--
+
+  1. Calculer la proportion de pâtes vertes dans l'échantillon bootstrap.
+  
+--
+
+Cette procédure est appelée ***rééchantillonnage avec remise*** :
+  * *rééchantillonnage* : tirage d'échantillons répétés à partir d'un échantillon.
+  * *avec remise* : à chaque fois, la pâte tirée est remise dans l'échantillon.
+  
+---
+
+# Réechantillonage de notre échantillon de pâtes
+
+.pull-left[
+
+Here is one bootstrap sample: 
+
+
+``` r
+one_bootstrap = my_sample %&gt;%
+  rep_sample_n(size = 50, replace = TRUE) %&gt;%
+  arrange(pasta_ID)
+
+head(one_bootstrap, 8)
+```
+
+```
+## # A tibble: 8 × 3
+## # Groups:   replicate [1]
+##   replicate pasta_ID color    
+##       &lt;int&gt;    &lt;int&gt; &lt;fct&gt;    
+## 1         1        4 non-green
+## 2         1       41 non-green
+## 3         1       41 non-green
+## 4         1       79 non-green
+## 5         1       79 non-green
+## 6         1      103 non-green
+## 7         1      103 non-green
+## 8         1      103 non-green
+```
+
+``` r
+nrow(one_bootstrap)
+```
+
+```
+## [1] 50
+```
+]
+
+--
+
+.pull-right[
+
+Plusieurs pâtes ont été tirées à plusieurs reprises. Comment cela se fait-il ?
+
+Quelle est la proportion de pâtes vertes dans cet échantillon bootstrap ?
+
+
+``` r
+mean(one_bootstrap$color == "green")
+```
+
+```
+## [1] 0.4
+```
+
+La proportion est différente de celle de notre échantillon ! Cela est dû au rééchantillonnage ***avec remise***.
+
+Que se passerait-il si nous répétions cette procédure de rééchantillonnage plusieurs fois ? La proportion serait-elle la même à chaque fois ?
+]
+
+  
+---
+
+# Obtenir la distribution Bootstrap 
+
+* Répétons cette procédure 1000 fois : il y aura 1000 échantillons bootstrap et autant d'estimations.
+
+--
+
+.pull-left[
+Nous utilisons le package `infer` pour faciliter la procédure.
+
+
+
+
+
+``` r
+library(infer)
+
+bootstrap_distrib = my_sample %&gt;%
+  # specifier la variable et niveau d'intérêt 
+  specify(response = color, success = "green") %&gt;% 
+  # génère 1000 échantillons bootstrap
+  generate(reps = 1000, type = "bootstrap") %&gt;% 
+  # calcule la proportion de pâtes vertes pour chaque
+  calculate(stat = "prop") 
+```
+]
+
+--
+
+.pull-right[
+Voici les 6ères lignes : 
+
+
+``` r
+head(bootstrap_distrib)
+```
+
+```
+## Response: color (factor)
+## # A tibble: 6 × 2
+##   replicate  stat
+##       &lt;int&gt; &lt;dbl&gt;
+## 1         1  0.44
+## 2         2  0.36
+## 3         3  0.46
+## 4         4  0.46
+## 5         5  0.52
+## 6         6  0.52
+```
+
+``` r
+nrow(bootstrap_distrib)
+```
+
+```
+## [1] 1000
+```
+
+Jettons un oeil graphiquement
+]
+
+---
+
+#  Distribution Bootstrap
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-10-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+--
+
+La ***distribution bootstrap*** est une estimation de la ***distribution de l'échantillon***.
+
+---
+
+# Distribution bootstrap avec la moyenne
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-11-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+--
+
+La moyenne de la ***distribution bootstrap*** est très proche de celle de l'échantillon d'origine.
+
+---
+
+# Distribution bootstrap avec la moyenne
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-12-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+En partant de la***distribution bootstrap*** nous pouvons construire nos intervalles de confiance !
+
+---
+
+# Comprendre les Intervalles de Confiance
+
+* Analogie avec la pêche :
+  * *estimation ponctuelle* : pêcher au harpon.
+ 
+--
+  
+  * *intervalle de confiance* : pêcher au filet.
+
+--
+
+* Dans notre cas, le poisson est la véritable proportion de pâtes vertes dans le bol `\((p)\)`.
+
+--
+
+* L'*estimation ponctuelle* serait la proportion de pâtes vertes obtenue à partir d'un échantillon aléatoire `\((\hat{p})\)`.
+
+--
+
+* L'*intervalle de confiance* `\((\underline{\beta_j} ; \overline{\beta_j})\)` : à partir de la distribution bootstrap précédente, ***où se situent la plupart des proportions ?***
+
+--
+
+* Méthode de construction de l'intervalle de confiance : ***méthode des percentiles***.
+
+--
+
+* Nécessite de spécifier un ***niveau de confiance*** (`\(\alpha_c\)`) : 90 %, 95 % et 99 % sont les plus courants.
+
+---
+
+# Méthode des percentiles : Intervalle de Confiance à 95% 
+
+* Construire un IC qui comprend le milieu de 95% des valeurs de la distribution bootstrapConstruct a confidence interval as the middle 95% of values of the bootstrap distribution.
+
+--
+
+* Pour cela, il faut calcule les 2.5% et 97.5% percentiles :
+
+.pull-left[
+
+``` r
+quantile(bootstrap_distrib$stat,0.025)
+```
+
+```
+## 2.5% 
+## 0.32
+```
+]
+.pull-right[
+
+``` r
+quantile(bootstrap_distrib$stat,0.975)
+```
+
+```
+## 97.5% 
+##   0.6
+```
+]
+
+* Par conséquent l'intervalle de confiance à 95% est `\([0.32 ; 0.6]\)`.
+
+* C'est une ***plage*** de valeurs.
+
+--
+
+* Regardons l'IC sur la distribution de l'échantillon.
+
+---
+
+# Méthode des percentiles : Intervalle de Confiance à 95% visuellement
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-15-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+--
+
+Est-ce que l'intervalle contient la vraie valeure de la proportion de la population ? 
+
+---
+
+# Méthode des percentiles : Intervalle de Confiance à 95% visuellement
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-16-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+--
+
+Le vrai paramètre de la population est en effet dans notre intervalle de 95%  ! Est-ce que cera toujours le cas ?
+
+---
+
+# Interpréter un IC à 95% 
+
+Tirons de façon répétée 100 échantillons différents de notre `bowl` et pour chaque échantillon, calculons l'IC à 95 % associé en utilisant la méthode des percentiles.
+--
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-17-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+Combien d'IC contiennent la valeur de la population ? Pourquoi ?
+---
+
+# Interpréter un IC à 95 %
+
+&gt; *Interprétation précise :* Si nous répétions notre procédure d'échantillonnage ***un grand nombre de fois***, nous ***nous attendons à ce qu'environ 95 %*** des IC résultants capturent la valeur du paramètre de population. 
+
+En d'autres termes, 95 % du temps, l'IC à 95 % contiendra le véritable paramètre de population.
+
+--
+
+&gt; *Interprétation simplifiée :* Nous sommes ***« confiants » à 95 %*** qu'un IC à 95 % capture la valeur du paramètre de population.
+
+--
+
+***Questions :*** 
+
+  * Comment la largeur de l'intervalle de confiance change-t-elle lorsque le ***niveau de confiance*** augmente ?
+  
+  * Comment la largeur de l'intervalle de confiance change-t-elle lorsque la ***taille de l'échantillon*** augmente ?
+  
+---
+
+# Interpréter un IC à 95 %
+
+&gt; *Interprétation précise :* Si nous répétions notre procédure d'échantillonnage ***un grand nombre de fois***, nous ***nous attendons à ce qu'environ 95 %*** des IC résultants capturent la valeur du paramètre de population.
+
+En d'autres termes, 95 % du temps, l'IC à 95 % contiendra le véritable paramètre de population.
+
+&gt; *Interprétation simplifiée :* Nous sommes ***« confiants » à 95 %*** qu'un IC à 95 % capture la valeur du paramètre de population.
+
+***Impact du niveau de confiance :*** plus le niveau de confiance est élevé, plus les IC sont larges.
+  * *Intuition* : un niveau de confiance plus élevé signifie que l'IC doit contenir le véritable paramètre de population plus souvent, et doit donc être plus large pour garantir cela.
+  
+--
+
+***Impact de la taille de l'échantillon :*** plus la taille de l'échantillon est grande, plus les IC sont étroits.
+
+  * *Intuition* : une taille d'échantillon plus grande entraîne moins de variation d'échantillonnage et donc une distribution bootstrap plus étroite, ce qui conduit à son tour à des IC plus fins.
+  
+---
+
+# Des intervalles de confiance aux tests d'hypothèses
+
+* Les *intervalles de confiance* peuvent être considérés comme une extension de l'*estimation ponctuelle*.
+
+--
+
+* Que faire si nous voulons ***comparer*** une statistique d'échantillon pour deux groupes ?
+  
+  * *Exemple* : différences de salaire moyen entre hommes et femmes. Les différences observées sont-elles ***significatives*** ?
+  
+--
+
+* Ces comparaisons relèvent du domaine des ***tests d'hypothèses***.
+
+--
+
+* Tout comme les intervalles de confiance, les tests d'hypothèses sont utilisés pour formuler des affirmations sur une population à partir d'informations issues d'un échantillon.
+
+* Cependant, nous verrons que le cadre pour effectuer de telles inférences est légèrement différent.
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Test d'Hypothèse
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Y a-t-il une discrimination de genre dans les promotions ?
+  * Nous utiliserons les données d'un [article](https://pdfs.semanticscholar.org/39f6/d40e907ff08af4ddd3280c2ceee55ee1ddb6.pdf) publié dans le *Journal of Applied Psychology* en 1974, qui a étudié si les employées de banque étaient victimes de discrimination.
+
+  * 48 superviseurs (hommes) ont reçu des CV de candidats *identiques*, ne différant que par le prénom, qui était masculin ou féminin.
+
+  * Chaque CV se présentait « *sous la forme d'un mémorandum demandant une décision concernant la promotion d'un employé au poste de directeur d'agence.* »
+
+--
+
+* ***Hypothèse*** que nous voulons tester : *Y a-t-il une discrimination de genre ?*
+
+--
+
+.pull-left[
+* Les données de l'expérience sont fournies dans le jeu de données `promotions` du package `moderndive`.
+]
+
+--
+
+.pull-right[
+
+``` r
+library(moderndive)
+head(promotions)
+```
+
+```
+## # A tibble: 6 × 3
+##      id decision gender
+##   &lt;int&gt; &lt;fct&gt;    &lt;fct&gt; 
+## 1     1 promoted male  
+## 2     2 promoted male  
+## 3     3 promoted male  
+## 4     4 promoted male  
+## 5     5 promoted male  
+## 6     6 promoted male
+```
+]
+
+---
+
+# Preuves de Discrimination?
+
+.pull-left[
+Combien hommes et femmes ont (pas) obtenu une promotion ? 
+
+
+``` r
+promotions %&gt;% 
+  group_by(gender, decision) %&gt;% 
+  tally() %&gt;%
+  mutate(percentage = 100 * n / sum(n))
+```
+
+```
+## # A tibble: 4 × 4
+## # Groups:   gender [2]
+##   gender decision     n percentage
+##   &lt;fct&gt;  &lt;fct&gt;    &lt;int&gt;      &lt;dbl&gt;
+## 1 male   not          3       12.5
+## 2 male   promoted    21       87.5
+## 3 female not         10       41.7
+## 4 female promoted    14       58.3
+```
+
+Il y a une différence de  ***29.2 points de pourcentage*** dans les promotions entre hommes et femmes. 
+]
+
+--
+
+.pull-right[
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-20-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+***Question***: Est-ce que ce résultat fournit ***des preuves*** sur les différences entre hommes et femmes ? Est-ce que l'on aurait pu observer ces résultats **par chance** ?
+
+---
+
+# Imaginos un monde Hypothétique : pas de discimination 
+
+* Immaginons que nous vivons dans un monde sans discrimination de genre : les décisions de promotion devraient être totalement  ***indépendente*** du genre.
+
+* Pour cela, nous réassignons **aléatoirement** le genre (`gender`) de chaque ligne et regardons comment cela affecte les résultats. 
+
+--
+
+.pull-left[
+
+
+``` r
+promotions %&gt;%
+       left_join(promotions_shuffled %&gt;%
+                   rename(shuffled_gender = gender)) %&gt;%
+  head()
+```
+
+```
+## # A tibble: 6 × 4
+##      id decision gender shuffled_gender
+##   &lt;int&gt; &lt;fct&gt;    &lt;fct&gt;  &lt;fct&gt;          
+## 1     1 promoted male   female         
+## 2     2 promoted male   female         
+## 3     3 promoted male   male           
+## 4     4 promoted male   female         
+## 5     5 promoted male   male           
+## 6     6 promoted male   male
+```
+
+A quoi ressemble  le taux de promotion dans ce nouvel échantillon permuté ?
+]
+
+--
+
+.pull-right[
+
+
+``` r
+promotions_shuffled %&gt;% 
+  group_by(gender, decision) %&gt;% 
+  tally() %&gt;%
+  mutate(percentage = 100 * n / sum(n))
+```
+
+```
+## # A tibble: 4 × 4
+## # Groups:   gender [2]
+##   gender decision     n percentage
+##   &lt;fct&gt;  &lt;fct&gt;    &lt;int&gt;      &lt;dbl&gt;
+## 1 male   not          6       25  
+## 2 male   promoted    18       75  
+## 3 female not          7       29.2
+## 4 female promoted    17       70.8
+```
+
+La différence est bien plus faible : ***4.2 points de pourcentage***!
+]
+
+---
+
+# Imaginos un monde Hypothétique : pas de discimination 
+
+* Immaginons que nous vivons dans un monde sans discrimination de genre : les décisions de promotion devraient être totalement  ***indépendente*** du genre.
+
+* Pour cela, nous réassignons **aléatoirement** le genre (`gender`) de chaque ligne et regardons comment cela affecte les résultats. 
+
+.pull-left[
+
+
+``` r
+promotions %&gt;%
+       left_join(promotions_shuffled %&gt;%
+                   rename(shuffled_gender = gender)) %&gt;%
+  head()
+```
+
+```
+## # A tibble: 6 × 4
+##      id decision gender shuffled_gender
+##   &lt;int&gt; &lt;fct&gt;    &lt;fct&gt;  &lt;fct&gt;          
+## 1     1 promoted male   female         
+## 2     2 promoted male   female         
+## 3     3 promoted male   male           
+## 4     4 promoted male   female         
+## 5     5 promoted male   male           
+## 6     6 promoted male   male
+```
+
+A quoi ressemble  le taux de promotion dans ce nouvel échantillon permuté ?
+]
+
+.pull-right[
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-24-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+# Variation d'échantillonnage
+
+* Dans notre monde hypothétique, la différence de taux de promotion n'était que de 4,2 points de pourcentage.
+
+* Pouvons-nous répondre maintenant à notre question initiale sur l'existence d'une discrimination de genre ?
+
+--
+
+* Non, nous devons étudier le rôle de la ***variation d'échantillonnage*** !
+
+* Si nous remélangions une nouvelle fois, à quel point la différence serait-elle différente de 4,2 pp (*points de pourcentage*) ?
+
+--
+  
+* En d'autres termes, dans quelle mesure 4,2 pp est-il représentatif de ce monde hypothétique ?
+  
+--
+  
+* Quelle est la probabilité qu'une différence de 29 pp se produise dans un tel monde ?
+  
+--
+
+* Nous devons connaître l'ensemble de la distribution d'échantillonnage sous l'hypothèse d'***absence de discrimination***.
+
+--
+
+* Comment ? En refaisant simplement le remélange un grand nombre de fois, et en calculant la différence à chaque fois.
+
+---
+
+# Distribution de l'échantillon avec 1000 permutations
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-25-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Sampling Distribution with 1000 Reshufflings
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-26-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+Quelle est la **probabilité** d'observer une différence de 0,292 dans un monde sans discrimination ?
+---
+
+# Qu'avons-nous fait ?
+
+* Nous venons de démontrer la procédure statistique connue sous le nom de ***test d'hypothèse*** en utilisant un ***test de permutation***.
+
+--
+
+* La question est de savoir quelle est la probabilité que la différence observée dans les taux de promotion se produise dans un univers hypothétique sans discrimination.
+
+--
+
+* Nous avons conclu ***plutôt que non***, c.-à-d. que nous avions tendance à ***rejeter*** l'hypothèse d'absence de discrimination.
+
+--
+
+* Introduisons maintenant le cadre formel des tests d'hypothèses.
+
+---
+
+# Notation et définitions des tests d'hypothèses
+
+* Un ***test d'hypothèse*** consiste en un test entre ***deux hypothèses concurrentes*** concernant le paramètre de population :
+
+--
+
+  * L'***hypothèse nulle*** `\((H_0)\)` : généralement l'hypothèse d'absence de différence ;
+
+--
+  
+  * L'***hypothèse alternative*** `\((H_A \textrm{ ou }H_1)\)` : l'hypothèse de recherche.
+
+--
+
+* Dans l'exemple précédent :
+
+`$$\begin{align}H_0&amp;: p_m - p_f = 0\\H_A&amp;: p_m - p_f &gt; 0,\end{align}$$` où `\(p_h=\)` taux de promotion des hommes, et `\(p_f =\)` taux de promotion des femmes.
+
+--
+
+  * Ici, nous avons considéré une alternative *unilatérale*, affirmant que `\(p_h &gt; p_f\)`, c.-à-d. que les femmes sont victimes de discrimination.
+  
+  * La formulation *bilatérale* est simplement `\(H_A: p_h - p_f \neq 0\)`.
+  
+---
+
+# Notation et définitions des tests d'hypothèses
+
+* ***Statistique de test*** : formule d'*estimation ponctuelle/statistique d'échantillon* utilisée pour le test d'hypothèse. 
+
+--
+
+  * *Dans notre cas précédent* : différence des proportions d'échantillon `\(\hat{p}_m - \hat{p}_f\)`.
+
+--
+
+* ***Statistique de test observée*** : valeur de la statistique de test que nous avons observée dans la réalité.
+
+--
+
+  * *Dans notre cas précédent* : différence observée `\(\hat{p}_m - \hat{p}_f = 0,292 = 29,2\)` points de pourcentage.
+  
+--
+
+* ***Distribution nulle*** : distribution d'échantillonnage de la statistique de test *en supposant que l'hypothèse nulle `\(H_0\)` est vraie*.
+
+--
+
+  *  *Dans notre cas précédent* : toutes les valeurs possibles que `\(\hat{p}_m - \hat{p}_f\)` peut prendre en supposant qu'il n'y a pas de discrimination.
+  * C'est la distribution que nous avons vue juste avant.
+ 
+
+ 
+---
+
+# Distribution Nulle
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-27-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Notation et définitions des tests d'hypothèses
+
+&gt; ### ***Valeur-p (p-value) :*** probabilité d'observer une statistique de test *aussi ou plus extrême* que celle que nous avons obtenue, en supposant que l'hypothèse nulle `\(H_0\)` est vraie. 🤔
+
+--
+
+* À quel point sommes-nous *surpris* d'avoir observé une différence de taux de promotion de 0,292 dans notre échantillon en supposant que `\(H_0\)` est vraie, c.-à-d. un monde sans discrimination ? Très surpris ? Plutôt surpris ?
+
+--
+
+* Qu'entend-on par ***plus extrême*** ?
+
+  * Défini en fonction de l'hypothèse alternative : dans ce cas, les hommes sont ***plus susceptibles*** d'être promus que les femmes. Par conséquent, ***plus extrême*** signifie ici observer une différence de taux de promotion ***supérieure à 0,292***.
+
+--
+
+* ***Interprétation*** : plus la valeur-p est faible, *moins notre hypothèse nulle est cohérente avec la statistique observée*.
+
+--
+
+* Quand décidons-nous de ***rejeter*** `\(H_0\)` ou non ?
+
+---
+
+# Notation et définitions des tests d'hypothèses
+
+* Pour décider si nous rejetons `\(H_0\)` ou non, nous fixons un ***niveau de signification*** pour le test.
+
+--
+
+* ***Niveau de signification `\(\alpha\)` :*** agit comme un *seuil* sur la valeur-p.
+  * Probabilité de rejeter `\(H_0\)` alors que c'est vrai
+  * Les valeurs les plus utilisées en économie sont `\(\alpha = 0,01\)`, `\(0,05\)`, ou `\(0,1\)`.
+
+--
+
+* ***Décision*** :
+
+  * Si la valeur-p est ***inférieure au seuil `\(\alpha\)` ***, nous "***rejetons l'hypothèse nulle au niveau de signification `\(\alpha\)`*** ".
+
+--
+
+  * À l'inverse, si la valeur-p est ***supérieure à `\(\alpha\)` ***, nous disons que nous "***ne parvenons pas à rejeter l'hypothèse nulle `\(H_0\)` au niveau de signification `\(\alpha\)`***".
+  
+--
+
+* ***Interprétation*** : Si ce que nous observons *est trop peu probable pour se produire* sous l'hypothèse nulle, cela signifie que cette hypothèse est ***probablement fausse***.
+
+--
+
+⚠️ On n'accepte jamais `\(H_0\)` ou `\(H_A\)` mais on peut (pas) rejeter l'hypothèse nulle.  
+
+--
+
+* Illustrons comment cela fonctionne dans notre exemple.
+
+---
+
+# Visualisation de la valeur-p
+
+&lt;img src="chapter_ci_hyptest_files/figure-html/unnamed-chunk-28-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+--
+L'aire hachurée correspond à la valeur-p !
+
+---
+
+# Et maintenant ? Décision avec la valeur-p 
+
+* Rappel qu'une valeur-p est la : ***probabilité d'observe une statistique de test *au moins aussi extrême* que celle obtenue, en supposant que l'hypothèse nulle `\(H_0\)` est vraie.***
+
+--
+
+
+``` r
+p_value &lt;- mean(null_distribution$stat &gt;= 0.292)
+p_value
+```
+
+```
+## [1] 0.007
+```
+
+* Dans un monde sans discrimination, nous aurons obtenu  `\(\hat{p_m} - \hat{p_f}\)` supérieur (ou égal) à 0.292 seulement 0.7% du temps. 
+--
+
+* Par conséquent, on peut rejeter  `\(H_0\)`, cad l'absence de discrimination, au seuil de 5%. 
+
+  * On peut aussi dire que `\(\hat{p_m} - \hat{p_f} = 0.292\)` est ***statistiquement différent de zéro 0*** au seuil de 5%. 
+ 
+--
+
+* ***Question***: Immaginons que l'on aurait définit  `\(\alpha = 0.01 = 1\%\)`, aurions nous rejeter l'absence de discrimination à ce seuil ? 
+
+---
+
+
+# Comprendre la région de rejet
+* Sous `\(H_0\)`, la statistique de test suit une ***distribution normale*** centrée en 0. La ***région de rejet*** (zone verte) correspond aux valeurs de la statistique de test jugées ***trop extrêmes*** pour être compatibles avec `\(H_0\)`.
+
+--
+
+* Sa taille est déterminée par le `\(\alpha\)` : plus `\(\alpha\)` est grand, plus la région de rejet est large.
+
+--
+
+* Si notre ***statistique observée*** tombe dans cette région, on ***rejette `\(H_0\)`***.
+
+&lt;div style="display: flex; align-items: center; gap: 12px; margin: 12px 0 6px;"&gt;
+  &lt;label for="alpha" style="font-size: 15px; min-width: 170px;"&gt;Niveau de signification (&amp;alpha;)&lt;/label&gt;
+  &lt;input type="range" min="0.01" max="0.20" step="0.01" value="0.05" id="alpha" style="flex: 1;" /&gt;
+  &lt;span style="font-size: 16px; font-weight: bold; min-width: 44px; text-align: right;" id="alpha-out"&gt;0.05&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;div style="display: flex; align-items: center; gap: 12px; margin: 0 0 12px;"&gt;
+  &lt;label style="font-size: 15px; min-width: 170px;"&gt;Type de test&lt;/label&gt;
+  &lt;select id="side"&gt;
+    &lt;option value="right"&gt;Unilatéral (droite)&lt;/option&gt;
+    &lt;option value="left"&gt;Unilatéral (gauche)&lt;/option&gt;
+    &lt;option value="two"&gt;Bilatéral&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/div&gt;
+
+&lt;div style="position: relative; width: 100%; height: 240px;"&gt;
+  &lt;canvas id="chart"&gt;&lt;/canvas&gt;
+&lt;/div&gt;
+
+&lt;div style="text-align:center; margin-top: 8px; font-size: 15px;"&gt;
+  Valeur(s) critique(s) : &lt;b id="crit-out"&gt;1.64&lt;/b&gt;
+&lt;/div&gt;
+
+&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;&lt;script&gt;
+function normPdf(x) {
+  return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+}
+function erf(x) {
+  var sign = x &lt; 0 ? -1 : 1;
+  x = Math.abs(x);
+  var a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  var t = 1/(1+p*x);
+  var y = 1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return sign*y;
+}
+function invNorm(p) {
+  var lo=-6, hi=6, mid;
+  for (var i=0;i&lt;60;i++){
+    mid=(lo+hi)/2;
+    var cdf = 0.5*(1+erf(mid/Math.SQRT2));
+    if (cdf&lt;p) lo=mid; else hi=mid;
+  }
+  return mid;
+}
+
+var xs = [];
+for (var x=-4; x&lt;=4.001; x+=0.05) xs.push(Math.round(x*100)/100);
+var curve = xs.map(function(x){ return normPdf(x); });
+
+var ctx = document.getElementById('chart');
+var chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: xs,
+    datasets: [
+      {
+        label: 'Densité',
+        data: curve,
+        borderColor: 'forestgreen',
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: false,
+        tension: 0.3
+      },
+      {
+        label: 'Région de rejet',
+        data: curve,
+        borderWidth: 0,
+        pointRadius: 0,
+        fill: true,
+        backgroundColor: 'rgba(34,139,34,0.35)'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 300 },
+    interaction: { intersect: false },
+    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+    scales: {
+      x: {
+        ticks: { maxTicksLimit: 9, font: { size: 11 }, callback: function(val, idx){ var v = xs[idx]; return (Math.round(v*2)%2===0) ? v : ''; } },
+        grid: { display: false },
+        title: { display: true, text: 'Statistique de test', font: { size: 12 } }
+      },
+      y: { display: false, min: 0 }
+    }
+  }
+});
+
+function update() {
+  var alpha = parseFloat(document.getElementById('alpha').value);
+  var side = document.getElementById('side').value;
+  document.getElementById('alpha-out').textContent = alpha.toFixed(2);
+
+  var fillData = xs.map(function(){ return 0; });
+  var critLabel = '';
+
+  if (side === 'right') {
+    var zc = invNorm(1 - alpha);
+    xs.forEach(function(x, i){ if (x &gt;= zc) fillData[i] = curve[i]; });
+    critLabel = zc.toFixed(2);
+  } else if (side === 'left') {
+    var zc2 = invNorm(alpha);
+    xs.forEach(function(x, i){ if (x &lt;= zc2) fillData[i] = curve[i]; });
+    critLabel = zc2.toFixed(2);
+  } else {
+    var zc3 = invNorm(1 - alpha/2);
+    xs.forEach(function(x, i){ if (x &gt;= zc3 || x &lt;= -zc3) fillData[i] = curve[i]; });
+    critLabel = '±' + zc3.toFixed(2);
+  }
+
+  chart.data.datasets[1].data = fillData;
+  chart.update();
+  document.getElementById('crit-out').textContent = critLabel;
+}
+
+document.getElementById('alpha').addEventListener('input', update);
+document.getElementById('side').addEventListener('change', update);
+update();
+&lt;/script&gt;
+
+
+
+
+---
+
+
+# Erreurs de test
+
+Travailler avec des probabilités impliquent que l'on peut faire des **erreurs**.
+
+--
+
+* Une différence de 29p% est *improbable* sous `\(H_0\)`, mais cela **ne signifie pas que c'est *impossible* **.
+
+  * Une telle différence (ou plus grande) ne peut arriver (environ) que dans 0.007% des cas.
+  
+--
+
+* Donc, il se peut que parfois on rejette `\(H_0\)`, alors qu'en fait c'était vrai.
+
+  * En définissant un seuil de 5%, on s'assure que cela n'arrive pas plus de 5% du temps. 
+
+---
+
+# Erreurs de test
+
+Lorsque l'on teste des hypothèses, il y a deux  ***types d'erreurs***:
+
+.pull-left[
+
+![:scale 100%](../img/photos/gt_error_table_ht.png)
+
+]
+
+.pull-right[
+
+***Type I***: rejet de l'hypothèse nulle alors qu'elle est vraie. ***faux positif***
+  
+***Type II***: rejette pas l'hypothèse nulloe alors qu'elle est en vérité fausse. ***faux négatif***
+
+]
+
+* En pratique, on choisi la fréquence d'une errueur de Type 1 en définissant `\(\alpha\)` et en essayant de minimiser les erreurs de type II.
+
+
+---
+# Comprendre les erreurs de Type I et de Type II
+
+* Reprenons notre exemple de ***discrimination dans les promotions*** :
+  * `\(H_0\)` : `\(p_m - p_f = 0\)` (***pas de discrimination***).
+  * `\(H_A\)` : `\(p_m - p_f &gt; 0\)` (***discrimination*** envers les femmes).
+
+--
+
+* Deux types d'erreurs sont possibles lors de notre décision :
+
+--
+
+  * ***Erreur de Type I*** `\((\alpha)\)` : on ***rejette `\(H_0\)` alors qu'elle est vraie***.  
+  `\(\rightarrow\)` on conclut qu'il y a ***discrimination*** alors qu'en réalité il n'y en a ***pas***. *(faux positif)*
+
+--
+  
+  * ***Erreur de Type II*** `\((\beta)\)` : on ***ne rejette pas `\(H_0\)` alors qu'elle est fausse***.  
+  `\(\rightarrow\)` on conclut qu'il ***n'y a pas de discrimination*** alors qu'en réalité il y en a. *(faux négatif)*
+
+---
+
+# Comprendre les erreurs de Type I et de Type II
+
+* Tableau récapitulatif :
+
+Réalité \ Décision | On ne rejette pas `\(H_0\)` | On rejette `\(H_0\)`
+:--: | :--: | :--:
+`\(H_0\)` vraie (pas de discrimination) | Bonne décision ✅ | Erreur de Type I ❌
+`\(H_0\)` fausse (discrimination) | Erreur de Type II ❌ | Bonne décision ✅
+
+--
+
+* Dans notre exemple :
+  * ***Erreur de Type I*** : conclure, à partir de notre échantillon de 48 superviseurs, qu'il y a discrimination alors qu'en réalité les hommes et les femmes ont les ***mêmes chances*** d'être promus dans la population générale.
+  * ***Erreur de Type II*** : conclure qu'il n'y a ***pas*** de discrimination alors que, dans la population générale, les femmes sont ***réellement défavorisées*** en matière de promotion.
+  
+--
+
+* Il existe un ***compromis*** entre les deux erreurs : diminuer `\(\alpha\)` (par exemple passer de `\(0.05\)` à `\(0.01\)`) réduit le risque de ***conclure à tort à une discrimination***, mais augmente le risque de ***passer à côté d'une discrimination réelle***.
+
+
+---
+
+
+# Quel est le lien de tout ça avec l'analyse économétrique ? 
+
+* Maintenant nous avons tous les outils pour implémenter les outils de la ***statistique inférentielle*** !
+
+--
+
+* L'analyse de régression est basée sur un **échantillon** de données.
+
+--
+
+* Par conséquent, les ***coefficient de régression*** sont soumis à la ***variation d'échantillonnage***, ce qui n'est pas le cas avec le vrai coefficient de la population.
+
+--
+
+* ***Question pour le prochain cours*** : Est-ce que l'effet estimé est statistiquement différent d'une valeur `\(z\)`?
+
+
+
+---
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+# BONNE JOURNÉE !
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.ScPored[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;] | Discord |
+| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                       |
+
+---          
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="../js/ru_xaringan.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
