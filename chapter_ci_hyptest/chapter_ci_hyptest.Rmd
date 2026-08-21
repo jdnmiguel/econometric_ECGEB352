@@ -324,7 +324,7 @@ La ***distribution bootstrap*** est une estimation de la ***distribution de l'é
 
 ---
 
-# Distribution bootstrap avec la moyenne
+# Distribution Bootstrap avec la moyenne
 
 ```{r,echo = FALSE,fig.height = 4.75, fig.width = 8}
 boot_distrib_plot +
@@ -338,7 +338,7 @@ La moyenne de la ***distribution bootstrap*** est très proche de celle de l'éc
 
 ---
 
-# Distribution bootstrap avec la moyenne
+# Distribution Bootstrap avec la moyenne
 
 ```{r,echo = FALSE,fig.height = 4.75, fig.width = 8}
 boot_distrib_plot +
@@ -346,7 +346,7 @@ boot_distrib_plot +
   annotate("text", x = 0.375, y = 127, label = "Distribution bootstrap avec la moyenne", size = 4)
 ```
 
-En partant de la***distribution bootstrap*** nous pouvons construire nos intervalles de confiance !
+En partant de la ***distribution bootstrap*** nous pouvons construire nos intervalles de confiance !
 
 ---
 
@@ -985,16 +985,26 @@ p_value
 ---
 
 
+
 # Comprendre la région de rejet
-* Sous $H_0$, la statistique de test suit une ***distribution normale*** centrée en 0. La ***région de rejet*** (zone verte) correspond aux valeurs de la statistique de test jugées ***trop extrêmes*** pour être compatibles avec $H_0$.
+* Sous $H_0$, la statistique de test suit une ***distribution normale*** centrée en 0.
 
 --
 
-* Sa taille est déterminée par le $\alpha$ : plus $\alpha$ est grand, plus la région de rejet est large.
+* La ***région de rejet*** (zone grisée) correspond aux valeurs de la statistique de test jugées ***trop extrêmes*** pour être compatibles avec $H_0$.
 
 --
 
-* Si notre ***statistique observée*** tombe dans cette région, on ***rejette $H_0$***.
+* Sa taille est déterminée par le ***niveau de signification $\alpha$*** : plus $\alpha$ est grand, plus la région de rejet est large.
+
+--
+
+---
+
+# Comprendre la région de rejet
+
+
+* Si notre ***statistique observée*** tombe dans cette région grisée, on ***rejette $H_0$***.
 
 <div style="display: flex; align-items: center; gap: 12px; margin: 12px 0 6px;">
   <label for="alpha" style="font-size: 15px; min-width: 170px;">Niveau de signification (&alpha;)</label>
@@ -1011,114 +1021,141 @@ p_value
   </select>
 </div>
 
-<div style="position: relative; width: 100%; height: 240px;">
-  <canvas id="chart"></canvas>
-</div>
+<svg id="svgchart" viewBox="0 0 700 240" style="width:100%; height:240px; display:block;">
+  <line x1="40" y1="200" x2="660" y2="200" stroke="#999" stroke-width="1"/>
+  <polygon id="reject-fill" points="" fill="forestgreen" fill-opacity="0.35"/>
+  <path id="curve-path" d="" fill="none" stroke="forestgreen" stroke-width="2.5"/>
+  <line id="crit-line-1" x1="0" y1="0" x2="0" y2="0" stroke="#333" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <line id="crit-line-2" x1="0" y1="0" x2="0" y2="0" stroke="#333" stroke-width="1.5" stroke-dasharray="5,4" visibility="hidden"/>
+  <text x="350" y="225" text-anchor="middle" font-size="14" fill="#666">Statistique de test</text>
+</svg>
 
 <div style="text-align:center; margin-top: 8px; font-size: 15px;">
   Valeur(s) critique(s) : <b id="crit-out">1.64</b>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script>
-function normPdf(x) {
-  return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
-}
-function erf(x) {
-  var sign = x < 0 ? -1 : 1;
-  x = Math.abs(x);
-  var a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
-  var t = 1/(1+p*x);
-  var y = 1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
-  return sign*y;
-}
-function invNorm(p) {
-  var lo=-6, hi=6, mid;
-  for (var i=0;i<60;i++){
-    mid=(lo+hi)/2;
-    var cdf = 0.5*(1+erf(mid/Math.SQRT2));
-    if (cdf<p) lo=mid; else hi=mid;
+<script>
+(function(){
+  function normPdf(x) { return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI); }
+  function erf(x) {
+    var sign = x < 0 ? -1 : 1;
+    x = Math.abs(x);
+    var a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+    var t = 1/(1+p*x);
+    var y = 1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+    return sign*y;
   }
-  return mid;
-}
-
-var xs = [];
-for (var x=-4; x<=4.001; x+=0.05) xs.push(Math.round(x*100)/100);
-var curve = xs.map(function(x){ return normPdf(x); });
-
-var ctx = document.getElementById('chart');
-var chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: xs,
-    datasets: [
-      {
-        label: 'Densité',
-        data: curve,
-        borderColor: 'forestgreen',
-        borderWidth: 2,
-        pointRadius: 0,
-        fill: false,
-        tension: 0.3
-      },
-      {
-        label: 'Région de rejet',
-        data: curve,
-        borderWidth: 0,
-        pointRadius: 0,
-        fill: true,
-        backgroundColor: 'rgba(34,139,34,0.35)'
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 300 },
-    interaction: { intersect: false },
-    plugins: { legend: { display: false }, tooltip: { enabled: false } },
-    scales: {
-      x: {
-        ticks: { maxTicksLimit: 9, font: { size: 11 }, callback: function(val, idx){ var v = xs[idx]; return (Math.round(v*2)%2===0) ? v : ''; } },
-        grid: { display: false },
-        title: { display: true, text: 'Statistique de test', font: { size: 12 } }
-      },
-      y: { display: false, min: 0 }
+  function invNorm(p) {
+    var lo=-6, hi=6, mid;
+    for (var i=0;i<60;i++){
+      mid=(lo+hi)/2;
+      var cdf = 0.5*(1+erf(mid/Math.SQRT2));
+      if (cdf<p) lo=mid; else hi=mid;
     }
-  }
-});
-
-function update() {
-  var alpha = parseFloat(document.getElementById('alpha').value);
-  var side = document.getElementById('side').value;
-  document.getElementById('alpha-out').textContent = alpha.toFixed(2);
-
-  var fillData = xs.map(function(){ return 0; });
-  var critLabel = '';
-
-  if (side === 'right') {
-    var zc = invNorm(1 - alpha);
-    xs.forEach(function(x, i){ if (x >= zc) fillData[i] = curve[i]; });
-    critLabel = zc.toFixed(2);
-  } else if (side === 'left') {
-    var zc2 = invNorm(alpha);
-    xs.forEach(function(x, i){ if (x <= zc2) fillData[i] = curve[i]; });
-    critLabel = zc2.toFixed(2);
-  } else {
-    var zc3 = invNorm(1 - alpha/2);
-    xs.forEach(function(x, i){ if (x >= zc3 || x <= -zc3) fillData[i] = curve[i]; });
-    critLabel = '±' + zc3.toFixed(2);
+    return mid;
   }
 
-  chart.data.datasets[1].data = fillData;
-  chart.update();
-  document.getElementById('crit-out').textContent = critLabel;
-}
+  var W = 700, H = 240;
+  var padL = 40, padR = 40, padT = 20, padB = 40;
+  var plotW = W - padL - padR;
+  var plotH = H - padT - padB;
+  var xMin = -4, xMax = 4;
+  var yMax = normPdf(0) * 1.1;
 
-document.getElementById('alpha').addEventListener('input', update);
-document.getElementById('side').addEventListener('change', update);
-update();
+  function xToPx(x){ return padL + (x - xMin) / (xMax - xMin) * plotW; }
+  function yToPx(y){ return padT + plotH - (y / yMax) * plotH; }
+
+  var N = 160;
+  var xs = [];
+  for (var i=0;i<=N;i++){ xs.push(xMin + (xMax-xMin)*i/N); }
+
+  var curvePts = xs.map(function(x){ return [xToPx(x), yToPx(normPdf(x))]; });
+  var curveD = "M " + curvePts.map(function(p){ return p[0]+","+p[1]; }).join(" L ");
+  document.getElementById("curve-path").setAttribute("d", curveD);
+
+  var baseline = yToPx(0);
+
+  function update(){
+    var alpha = parseFloat(document.getElementById('alpha').value);
+    var side = document.getElementById('side').value;
+    document.getElementById('alpha-out').textContent = alpha.toFixed(2);
+
+    var critLabel = "";
+    var fillXs = [];
+    var line1 = document.getElementById('crit-line-1');
+    var line2 = document.getElementById('crit-line-2');
+
+    if (side === 'right') {
+      var zc = invNorm(1 - alpha);
+      fillXs = xs.filter(function(x){ return x >= zc; });
+      critLabel = zc.toFixed(2);
+      var px = xToPx(zc);
+      line1.setAttribute("x1", px); line1.setAttribute("x2", px);
+      line1.setAttribute("y1", padT); line1.setAttribute("y2", baseline);
+      line1.setAttribute("visibility", "visible");
+      line2.setAttribute("visibility", "hidden");
+    } else if (side === 'left') {
+      var zc2 = invNorm(alpha);
+      fillXs = xs.filter(function(x){ return x <= zc2; });
+      critLabel = zc2.toFixed(2);
+      var px2 = xToPx(zc2);
+      line1.setAttribute("x1", px2); line1.setAttribute("x2", px2);
+      line1.setAttribute("y1", padT); line1.setAttribute("y2", baseline);
+      line1.setAttribute("visibility", "visible");
+      line2.setAttribute("visibility", "hidden");
+    } else {
+      var zc3 = invNorm(1 - alpha/2);
+      fillXs = xs.filter(function(x){ return x >= zc3 || x <= -zc3; });
+      critLabel = "±" + zc3.toFixed(2);
+      var pxr = xToPx(zc3), pxl = xToPx(-zc3);
+      line1.setAttribute("x1", pxr); line1.setAttribute("x2", pxr);
+      line1.setAttribute("y1", padT); line1.setAttribute("y2", baseline);
+      line1.setAttribute("visibility", "visible");
+      line2.setAttribute("x1", pxl); line2.setAttribute("x2", pxl);
+      line2.setAttribute("y1", padT); line2.setAttribute("y2", baseline);
+      line2.setAttribute("visibility", "visible");
+    }
+
+    var runs = [];
+    var current = [];
+    var prevX = null;
+    fillXs.forEach(function(x){
+      if (prevX !== null && Math.abs(x - prevX) > (xMax-xMin)/N*1.5) {
+        runs.push(current);
+        current = [];
+      }
+      current.push(x);
+      prevX = x;
+    });
+    if (current.length) runs.push(current);
+
+    var fillPathD = "";
+    runs.forEach(function(run){
+      if (run.length < 2) return;
+      var pts = run.map(function(x){ return [xToPx(x), yToPx(normPdf(x))]; });
+      fillPathD += "M " + pts[0][0] + "," + baseline + " L " + pts.map(function(p){ return p[0]+","+p[1]; }).join(" L ") + " L " + pts[pts.length-1][0] + "," + baseline + " Z ";
+    });
+
+    var poly = document.getElementById('reject-fill');
+    poly.setAttribute("points", "");
+    var existingPath = document.getElementById('reject-fill-path');
+    if (!existingPath) {
+      existingPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      existingPath.setAttribute("id", "reject-fill-path");
+      existingPath.setAttribute("fill", "forestgreen");
+      existingPath.setAttribute("fill-opacity", "0.35");
+      poly.parentNode.insertBefore(existingPath, poly);
+    }
+    existingPath.setAttribute("d", fillPathD);
+
+    document.getElementById('crit-out').textContent = critLabel;
+  }
+
+  document.getElementById('alpha').addEventListener('input', update);
+  document.getElementById('side').addEventListener('change', update);
+  update();
+})();
 </script>
-
 
 
 
@@ -1168,6 +1205,7 @@ Lorsque l'on teste des hypothèses, il y a deux  ***types d'erreurs***:
 # Comprendre les erreurs de Type I et de Type II
 
 * Reprenons notre exemple de ***discrimination dans les promotions*** :
+
   * $H_0$ : $p_m - p_f = 0$ (***pas de discrimination***).
   * $H_A$ : $p_m - p_f > 0$ (***discrimination*** envers les femmes).
 

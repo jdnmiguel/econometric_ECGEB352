@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>ScPoEconometrics</title>
+    <title>Econométrie</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Florian Oswald, Mylene Feuillade, Gustave Kenedi and Pierre Villedieu" />
+    <meta name="author" content="Jérémy Do Nascimento Miguel" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/countdown/countdown.css" rel="stylesheet" />
     <script src="libs/countdown/countdown.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/5235085b15.js"></script>
     <link rel="stylesheet" href="../css/scpo.css" type="text/css" />
     <link rel="stylesheet" href="../css/scpo-fonts.css" type="text/css" />
@@ -16,17 +18,25 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# ScPoEconometrics
-## Regression Inference
-### Florian Oswald, Mylene Feuillade, Gustave Kenedi and Pierre Villedieu
-### SciencesPo Paris </br> 2022-04-07
+.title[
+# Econométrie
+]
+.subtitle[
+## Inférence
+]
+.author[
+### Jérémy Do Nascimento Miguel
+]
+.date[
+### Université de Namur </br> 2026-08-21
+]
 
 ---
 
 
 layout: true
 
-&lt;div class="my-footer"&gt;&lt;img src="../img/logo/ScPo-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
 
 ---
 
@@ -34,54 +44,42 @@ layout: true
 
 layout: true
 
-&lt;div class="my-footer"&gt;&lt;img src="../img/logo/ScPo-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
 
 ---
 
-# Quick "Quiz" on Last Week's Material
+# Aujourd'hui - Inférence statistique en économétrie
 
-1\. From your ***computer*** 👉 connect to [***www.wooclap.com/SCPOCIHT***](https://app.wooclap.com/SCPOCIHT)
+* Intepréter une ***table de régression*** 
 
-&amp;nbsp; &amp;nbsp; &amp;nbsp; ***OR***
+* Comparer l'inférence  ***basée sur la théorie*** et la ***simulation*** 
 
-2\. From your ***phone*** 👉 flash QR code below
+* Hypothèses du ***Modèle de régression classique***  
 
-&lt;img src="reg_inference_files/figure-html/qr_code_quiz.png" width="300px" style="display: block; margin: auto;" /&gt;
+* Application empiriques :
 
----
-
-# Today - Statistical inference in the regression framework
-
-* Fully understand a ***regression table***
-
-* Compare ***theory-based*** and ***simulation-based*** inference
-
-* ***Classical Regression Model*** assumptions 
-
-* Empirical applications:
-
-  * Class size and student performance
+  * Taille de la classe et performance
   * Returns to education by gender
 
 ---
 
-# Back to class size and student performance
+# Retour à la taille de la classe et performances
 
-* Let's go back the ***STAR*** experiment data, and focus on: 
+* Revenons aux données du programme ***STAR***, et concentrons nous sur : 
 
-  * *small* and *regular* classes,
-  * *Kindergarten* grade.
+  * les *petites* classes et les *classiques* ,
+  * *Maternelle*
 
 --
 
-* We consider the following regression model and estimate it by OLS:
+* On considère le modèle de régression suivant que l'on estime par OLS :
 
-$$ \text{math score}_i = b_0 + b_1 \text{small}_i + e_i$$ 
+$$ \text{math score}_i = \beta_0 + \beta_1 \text{small}_i + u_i$$ 
 
 --
 .pull-left[
 
-```r
+``` r
 library(tidyverse)
 
 star_df = read.csv("https://www.dropbox.com/s/bf1fog8yasw3wjj/star_data.csv?dl=1")
@@ -97,7 +95,7 @@ star_df = star_df %&gt;%
 
 .pull-right[
 
-```r
+``` r
 reg_star = lm(math ~ small, star_df)
 reg_star
 ```
@@ -115,127 +113,128 @@ reg_star
 
 --
 
-* What if we drew another random sample of schools from Tennessee and redid the experiment, would we find a different value for `\(b_1\)`?
+* Que se passerait-il si l'on tirerait un autre échantillon aléatoire d'écoles, trouverait-on une valeur différente de pour `\(\beta_1\)`?
 
-* We know the answer is *yes*, but how different is this estimate likely to be? 
+--
+
+* *Oui*, mais dans quelle mesure l'estimation sera différente ? 
 
 ---
 
 
-# Regression Inference: `\(b_k\)` vs `\(\beta_k\)` 
-
-* `\(b_0, b_1\)` are ***point estimates*** computed from our sample.
+# Inférence : `\(\hat{\beta_k}\)` vs `\(\beta_k\)` 
+* `\(\hat{\beta_0}, \hat{\beta_1}\)` sont des ***estimations ponctuelles*** calculées à partir de notre échantillon.
   
-  * Just like the sample proportion `\(\hat{p}\)` from our pasta example!
+  * Tout comme la proportion d'échantillon `\(\hat{p}\)` dans notre exemple des pâtes !
 
 --
 
 .pull-left[
-
-* In fact, our model's prediction...
-    `$$\hat{y} = b_0 + b_1 x_1$$`
+* En fait, la prédiction de notre modèle...
+    `$$\hat{y} = \hat{\beta_0} + \hat{\beta_1} x_1$$`
 ]
 
 --
 
 .pull-right[
-
-... is an **estimate** about an unknown, **true population line**
+... est une ***estimation*** d'une **véritable droite de population** inconnue
 `$$y = \beta_0 + \beta_1 x_1$$`
 ]
 
-where `\(\beta_0, \beta_1\)` are the ***population parameters*** of interest.
+où `\(\beta_0, \beta_1\)` sont les ***paramètres de population*** qui nous intéressent.
 
 --
 
-* You will often find `\(\hat{\beta_k}\)` rather than `\(b_k\)`, both refer to sample estimate of `\(\beta_k\)`.
+* Vous rencontrerez souvent `\(\hat{\beta_k}\)` pour désigner l'estimation d'échantillon de `\(\beta_k\)`.
 
 --
 
-* Let's bring what we know about ***confidence intervals***, ***hypothesis testing*** and ***standard errors*** to bear on those `\(\hat{\beta_k}\)`!
+* Mobilisons ce que nous savons sur les ***intervalles de confiance***, les ***tests d'hypothèses*** et les ***erreurs types*** pour étudier ces `\(\hat{\beta_k}\)` !
 
 ---
+# Comprendre une table de régression
 
-# Understanding Regression Tables
+Voici notre régression en utilisant le package `fixest` :
 
-Here is our `tidy` regression:
-
-```r
-library(broom)
-tidy(lm(math ~ small, star_df))
+``` r
+library(fixest)
+feols(math ~ small, star_df)
 ```
 
 ```
-## # A tibble: 2 x 5
-##   term        estimate std.error statistic     p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
-## 1 (Intercept)   484.        1.15    421.   0          
-## 2 smallTRUE       8.90      1.68      5.30 0.000000123
+## OLS estimation, Dep. Var.: math
+## Observations: 3,359
+## Standard-errors: IID 
+##              Estimate Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept) 484.44638    1.15034 421.13285  &lt; 2.2e-16 ***
+## smallTRUE     8.89519    1.67833   5.30002 1.2327e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## RMSE: 48.5   Adj. R2: 0.008003
 ```
 
 
 
 
-* There are 3 new columns here: `std.error`, `statistic`, `p.value`.
+* Il y a 3 nouvelles colonnes : `Std error`, `t value`, `Pr(&gt;|t|)`.
 
 --
 
-Entry | Meaning
------ | ----
-`std. error` |  Standard error of `\(b_k\)`
-`statistic` |  Observed test statistic associated to `\(H_0:\beta_k = 0,H_A:\beta_k \neq 0\)`
-`p.value` |  p-value associated to `\(H_0:\beta_k = 0,H_A:\beta_k \neq 0\)`
+Entrée | Signification
+------------------------------- | -------------------------------
+`Std. error`                    |  Erreur type de `\(\beta_k\)`
+`t value`                       |  Test statistique observé associé à `\(H_0:\beta_k = 0,H_A:\beta_k \neq 0\)`
+`Pr(&gt;|t|)`                      |  Valeur-p associée à `\(H_0:\beta_k = 0,H_A:\beta_k \neq 0\)`
 
 --
 
-* Let's focus on the `small` coefficient and make sense of each entry.
+* Regardons le coefficient `small` et faisons sens de chaque valeur
 
 ---
 
-# Standard Error of `\(b_k\)`
+# Erreur type de `\(\beta_k\)`
 
-&gt; ***Standard Error of `\(b_k\)`:*** Standard deviation of the sampling distribution of `\(b_k\)`.
-
---
-
-Let's imagine we could redo the experiment 1,000 times on 1,000 different samples:
-
-* We'd run 1,000 regressions and obtain 1,000 estimates of `\(\beta_k\)`, `\(b_k\)`.
+&gt; ***Erreur type de `\(\hat{\beta_k}\)` :*** écart-type de la distribution d'échantillonnage de `\(\hat{\beta_k}\)`.
 
 --
 
-* The standard error of `\(b_k\)` quantifies how much variation in `\(b_k\)` one would expect across (*an infinity of*) samples.
+Imaginons que nous puissions refaire l'expérience 1000 fois sur 1000 échantillons différents :
+
+* Nous ferions tourner 1000 régressions et obtiendrions 1000 estimations de `\(\beta_k\)`, `\(\hat{\beta_k}\)`.
+
+--
+
+* L'erreur type de `\(\hat{\beta_k}\)` quantifie la variation attendue de `\(\hat{\beta_k}\)` à travers (*une infinité d'*) échantillons.
 
 ---
+# Erreur type de `\(\hat{\beta}_\textrm{small}\)`
 
-# Standard Error of `\(b_\textrm{small}\)`
-
-* From the table, we get `\(\hat{\textrm{SE}}(b_\textrm{small}) = 1.68\)`
+* À partir du tableau, on obtient `\(\hat{\textrm{SE}}(\hat{\beta}_\textrm{small}) = 1.68\)`
   
-  * Notice that we write `\(\hat{\textrm{SE}}\)` and not `\({\textrm{SE}}\)` because 1.68 is an estimate of the real standard error of `\(b_\textrm{small}\)` we get from our sample.
+  * Remarquez que l'on écrit `\(\hat{\textrm{SE}}\)` et non `\({\textrm{SE}}\)` car 1.68 est une estimation de la véritable erreur type de `\(\hat{\beta}_\textrm{small}\)` obtenue à partir de notre échantillon.
 
-  * We would love to know the real standard error `\({\textrm{SE}}\)`, but we have only one sample!
+  * Nous aimerions connaître la véritable erreur type `\({\textrm{SE}}\)`, mais nous n'avons qu'un seul échantillon !
+
 --
 
-* Let's simulate the sampling distribution of `\(b_\textrm{small}\)` to see where it comes from.
-    
+* Simulons la distribution d'échantillonnage de `\(\hat{\beta}_\textrm{small}\)` pour voir d'où elle provient.
+
 ---
 
 class:inverse
 
 # Task 1
 
-<div class="countdown" id="timer_624f1535" style="top:0;right:0;" data-warnwhen="0">
-<code class="countdown-time"><span class="countdown-digits minutes">07</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+<countdown-timer class="countdown" id="timer_c06b3df5" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-As we did for the sampling distribution of the proportion of *green pasta*, we want to generate the bootstrap distribution of `\(b_\textrm{small}\)`. 
+Comme nous l'avons fait pour la distribution d'échantillonnage de la proportion de *pâtes vertes*, nous voulons générer la distribution bootstrap de `\(\hat{\beta}_\textrm{small}\)`. 
 
-1. Copy the loading and cleaning code from slide 3 and run it.
+1. Copiez le code de chargement et de nettoyage de la diapositive 3 et exécutez-le.
 
-1. Generate the bootstrap distribution of `\(b_\textrm{small}\)` based on 1,000 samples drawn from `star_df`.  You can do so through the following code
+1. Générez la distribution bootstrap de `\(\hat{\beta}_\textrm{small}\)` à partir de 1000 échantillons tirés de `star_df`. Vous pouvez le faire avec le code suivant
 
-```r
+
+``` r
 bootstrap_distrib &lt;- star_df %&gt;% 
     mutate(small=as.numeric(small)) %&gt;% 
     specify(response = math, explanatory = small) %&gt;%
@@ -243,138 +242,138 @@ bootstrap_distrib &lt;- star_df %&gt;%
     calculate(stat = "slope")
 ```
 
-
-3. Plot this simulated sampling distribution and compute the mean and standard error of `\(b_\textrm{small}\)`.
+3. Représentez graphiquement cette distribution d'échantillonnage simulée et calculez la moyenne et l'erreur type de `\(\hat{\beta}_\textrm{small}\)`.
 
 ---
 
-# Bootstrap Distribution
+# Distribution Bootstrap
 
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-7-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-6-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 --
 
-***standard error:*** 1.66 `\(\rightarrow\)` very close to the one in the table (1.68)!
+***Erreur type:*** 1.7 `\(\rightarrow\)` très proche de celle dans le tableau (1.68)!
 
-Not exactly equal, because we used bootstrapping instead of the theory approach used by `R`.
+Pas exactement égal, car on utilise le bootstrap à la place de l'approche théorique utilisée par `R`.
 
 ---
 
-# Back to our regression results
+# Revenons à nos moutons
 
 
-```r
-library(broom)
-tidy(lm(math ~ small, star_df))
+``` r
+library(fixest)
+feols(math ~ small, star_df)
 ```
 
 ```
-## # A tibble: 2 x 5
-##   term        estimate std.error statistic     p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
-## 1 (Intercept)   484.        1.15    421.   0          
-## 2 smallTRUE       8.90      1.68      5.30 0.000000123
+## OLS estimation, Dep. Var.: math
+## Observations: 3,359
+## Standard-errors: IID 
+##              Estimate Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept) 484.44638    1.15034 421.13285  &lt; 2.2e-16 ***
+## smallTRUE     8.89519    1.67833   5.30002 1.2327e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## RMSE: 48.5   Adj. R2: 0.008003
 ```
 
-  * We have made sense of the `std.error` column.
+  * On sait ce que la colonne `Std. Error` veut dire.
 
-  * The next two columns in our regression are `statistic` and `p.value`
+  * Les 2 suivantes sont `t value` et `Pr(&gt;|t|)`
 
-  * We know those terms from our previous class on hypothesis testing
+  * Cela ne vous dit rien ? 
   
-  * But which hypothesis test do they correspond to?
+  * A quelle hypothèse cela correspond ?
 
 ---
 
-# Testing `\(\beta_k = 0\)` vs `\(\beta_k \neq 0\)`
+# Tester `\(\beta_k = 0\)` vs `\(\beta_k \neq 0\)`
 
-By default, the regression output provides the results associated with the following hypothesis test: 
+Par défaut, le résultat de la régression vous fournira les résultats des tests suivants : 
 
 `$$\begin{align}H_0:&amp; \beta_k = 0\\H_A:&amp; \beta_k \neq 0\end{align}$$`
 
 --
 
-* It allows to statistically test if there is a true relationship between the outcome and our regressor. 
+* Cela permet de tester statistiquement si il y a une relation entre nos variables dépendante et indépendante. 
 
 --
 
-* If `\(H_0\)` is true, there is **no** relationship between the outcome and our regressor. 
+* Si on ne rejette pas `\(H_0\)`, alors il **n'y a pas** de relation entre elles. 
 
-  * In that case observing `\(b_1 \neq 0\)` was just chance.
-
---
-
-* If `\(H_0\)` is false, then there **is** a true relationship. 
+  * Dans ce cas observer  `\(\beta_1 \neq 0\)` était de la chance.
 
 --
 
-* ***Important:*** This is a ***two-sided*** test!
+* Si on rejette `\(H_0\)`, alors **il y a ** une relation entre elles. 
+
+--
+
+* ***Attention:*** C'est un ***test bilatéral*** !
 
 ---
 
-# Test statistic and p-value
+# t-statistique  et valeur-p
 
-* As we saw in the previous lecture, to conduct such a test we need to:
+* Comme nous l'avons vu au cours précédent, pour mener un tel test nous devons :
 
 --
 
-  * Derive the sampling distribution of our **test statistic** (`statistic`) assuming `\(H_0\)` is true, i.e. the *null distribution*.
+  * Dériver la distribution d'échantillonnage de notre ***t-statistique*** (`statistic`) en supposant que `\(H_0\)` est vraie, c.-à-d. la *distribution nulle*.
   
 --
 
-  * Quantify how extreme the **observed test statistic** is in this hypothetic world.
+  * Quantifier à quel point la ***statistique de test observée*** est extrême dans ce monde hypothétique.
 
 --
-
-* Our *observed test statistic* (`statistic`) equals `\(\frac{b}{\hat{SE}(b)}\)`.
-
-  * Why not just `\(b\)`? We'll come back and explain this formula later.
+* Notre *t-statistique  observée* (`statistic`) est égale à `\(t_\widehat{\beta}\frac{\hat{\beta}}{\hat{SE}(\hat{\beta})}\)`.
 
 --
 
 .pull-left[
 
-```r
+``` r
 observed_stat = reg_star$coefficients[2]/sd(bootstrap_distrib$stat)
 round(observed_stat,2)
 ```
 
 ```
 ## smallTRUE 
-##      5.36
+##      5.22
 ```
 ]
-
 --
-
 .pull-right[
-* Quite close to the observed test statistic we got in the table: `statistic` = 5.3.
+
+* Assez proche de la statistique de test observée obtenue dans le tableau : `statistic` = 5.3.
 ]
---
-
-* The **p-value** measures the area outside of `\(\pm\)` *observed test statistic* under the *null distribution*.
 
 --
 
-* Finally, we check if we can reject `\(H_0\)` at the usual **significance levels**: `\(\alpha\)` = 0.1, 0.05, 0.01.
+* La ***valeur-p*** (`Pr(&gt;|t|)`) mesure l'aire à l'extérieur de `\(\pm\)` *la t statistique de test observée* sous la *distribution nulle*.
+
+--
+
+* Enfin, nous vérifions si nous pouvons rejeter `\(H_0\)` aux ***niveaux de signification*** usuels : `\(\alpha\)` = 0,1, 0,05, 0,01.
 
 ---
 
-# Testing `\(\beta_\textrm{small} = 0\)` vs `\(\beta_\textrm{small} \neq 0\)`
+# Tester `\(\beta_\textrm{small} = 0\)` contre `\(\beta_\textrm{small} \neq 0\)`
 
-* We will approximate the null distribution of `\(\frac{b_\textrm{small}}{\hat{SE}(b_\textrm{small})}\)` through a simulation exercise. 
-
---
-
-* If there is no relationship between math score and class size, i.e. `\(H_0\)` is true and `\(\beta_\textrm{small} = 0\)`, then *reshuffling* / *permuting* the values of `small` across students should play no role.
+* Nous allons approximer la distribution nulle de `\(\frac{\hat{\beta}_\textrm{small}}{\hat{SE}(\hat{\beta}_\textrm{small})}\)` à travers un exercice de simulation. 
 
 --
 
+* S'il n'y a aucune relation entre le score en maths et la taille de la classe, c.-à-d. si `\(H_0\)` est vraie et `\(\beta_\textrm{small} = 0\)`, alors *remélanger* / *permuter* les valeurs de `small` entre les étudiants ne devrait jouer aucun rôle.
+
+--
 .pull-left[
-* Let's generate 1,000 permuted samples and compute `\(b_\textrm{small}\)` for each.
+
+* Générons 1000 échantillons permutés et calculons `\(\hat{\beta}_\textrm{small}\)` pour chacun.
 
 
-```r
+``` r
 null_distribution &lt;- star_df %&gt;% 
   mutate(small=as.numeric(small)) %&gt;% 
   specify(formula = math ~ small) %&gt;%
@@ -388,65 +387,49 @@ null_distribution &lt;- star_df %&gt;%
 
 .pull-right[
 
-* We can compute the distribution of our test statistic `\(\frac{b_\textrm{small}}{\hat{SE}(b_\textrm{small})}\)` under the null:
+* Nous pouvons calculer la distribution de notre statistique de test `\(\frac{\hat{\beta}_\textrm{small}}{\hat{SE}(\hat{\beta}_\textrm{small})}\)` sous l'hypothèse nulle :
 
 
-```r
+``` r
 null_distribution &lt;- null_distribution %&gt;%
   mutate(test_stat = stat/sd(bootstrap_distrib$stat))
 ```
 
-* Remember we got `\(\hat{SE}(b_\textrm{small})\)` = 1.66 from our bootstrap distribution.
+* Rappelez-vous que nous avons obtenu `\(\hat{SE}(\hat{\beta}_\textrm{small})\)` = 1.7 à partir de notre distribution bootstrap.
+
 ]
 
-  
+---
 
+# Tester `\(\beta_\textrm{small} = 0\)` contre `\(\beta_\textrm{small} \neq 0\)`
+
+
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-11-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Testing `\(\beta_\textrm{small} = 0\)` vs `\(\beta_\textrm{small} \neq 0\)`
+# Tester `\(\beta_\textrm{small} = 0\)` contre `\(\beta_\textrm{small} \neq 0\)`
 
 
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-12-1.svg" style="display: block; margin: auto;" /&gt;
-
----
-
-# Testing `\(\beta_\textrm{small} = 0\)` vs `\(\beta_\textrm{small} \neq 0\)`
-
-
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-13-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-12-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 --
 
-Very unlikely to obtain `\(b_\textrm{small}\)` = 8.8951932 when `\(H_0\)` is true.
+Très improbable d'obtenir `\(\beta_\textrm{small}\)` = 8.8951932 lorsque `\(H_0\)` est vraie.
 
 ---
 
-# Testing `\(\beta_\textrm{small} = 0\)` vs `\(\beta_\textrm{small} \neq 0\)`
-
-* To decide if we reject `\(H_0\)`, recall we are considering a **two-sided test** here: *more extreme* means inferior to -5.359 **or** superior to 5.359. 
-
----
-
-# Testing `\(\beta_\textrm{small} = 0\)` vs `\(\beta_\textrm{small} \neq 0\)`
 
 
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-14-1.svg" style="display: block; margin: auto;" /&gt;
+# Tester `\(\beta_\textrm{small} = 0\)` contre `\(\beta_\textrm{small} \neq 0\)`
 
---
-
-What does the p-value correspond to?
-
----
-
-# Testing `\(\beta_\textrm{small} = 0\)` vs `\(\beta_\textrm{small} \neq 0\)`
-
-* To decide if we reject `\(H_0\)`, recall we are considering a **two-sided test** here: *more extreme* means inferior to -5.36 **or** superior to 5.36. 
-
-* Computing the *p-value* we get:
+* Pour décider si l'on rejette `\(H_0\)`, nous devons implémenter un **test bilatéral** avec ici : *plus extrême* signifiant inférieur à -5.22 **ou** supérieur  5.22. 
 
 
-```r
+* La *valeur p* égale à :
+
+
+``` r
 p_value = mean(abs(null_distribution$test_stat) &gt;= observed_stat)
 p_value
 ```
@@ -457,22 +440,22 @@ p_value
 
 --
 
-* This is the same value as in the regression table.
+* Même valeur que dans le tableau de régression.
 
 --
 
-* ***Question:*** Can we reject the null hypothesis at the 5% level?
+* ***Question :*** Est-ce qu'on peut rejeter l'hypothèse nulle au seuil de 5% ?
 
 ---
 
-# Testing `\(\beta_\textrm{small} = 0\)` vs `\(\beta_\textrm{small} \neq 0\)`
+# Tester `\(\beta_\textrm{small} = 0\)` contre `\(\beta_\textrm{small} \neq 0\)`
 
-* To decide if we reject `\(H_0\)`, recall we are considering a **two-sided test** here: *more extreme* means inferior to -5.36 **or** superior to 5.36. 
+* Pour décider si l'on rejette `\(H_0\)`, nous devons implémenter un **test bilatéral** avec ici : *plus extrême* signifiant inférieur à -5.22 **ou** supérieur  5.22. 
 
-* Computing the *p-value* we get:
+* La *valeur p* égale à :
 
 
-```r
+``` r
 p_value = mean(abs(null_distribution$test_stat) &gt;= observed_stat)
 p_value
 ```
@@ -481,13 +464,323 @@ p_value
 ## [1] 0
 ```
 
-* This is the same value as in the regression table.
+* Même valeur que dans le tableau de régression.
 
-* ***Answer:***
+* ***Réponse :***
 
-  * Since the *p-value* is equal to 0 it means that we would reject `\(H_0\)` at any significance level: the p-value would always be inferior to `\(\alpha\)`.
-  * In other words, we can say that `\(b_\textrm{small}\)` is **statistically different from 0** at any significance level.
-  * We also say that `\(b_\textrm{small}\)` is *statistically significant* (at any significance level).
+  * Puisque la *valeur p* est égale à 0, cela signifie que l'on peut rejeter  `\(H_0\)` à n'importe quel seuil de confiance : elle sera toujours inférieur à `\(\alpha\)`.
+  * En d'autres termes, on peut dire que  `\(\beta_\textrm{small}\)` est **statistiquement différent de 0** à tout seuil de confiance.
+  * On dit ausi que `\(\beta_\textrm{small}\)` est *significatif statistiquement* (à tout seuil de confiance).
+
+
+
+---
+# D'un modèle linéaire uni à multivarié 
+
+* Jusqu'à présent, notre modèle n'expliquait le score en maths que par la ***taille de la classe*** (`small`).
+
+--
+
+* Mais on pourrait aussi se demander : le ***genre*** de l'élève joue-t-il un rôle sur le score en maths ?
+
+--
+
+* Ajoutons la variable `gender` à notre régression :
+
+
+``` r
+library(fixest)
+reg_1var &lt;- feols(math ~ small + gender, data = star_df)
+reg_1var
+```
+
+```
+## OLS estimation, Dep. Var.: math
+## Observations: 3,359
+## Standard-errors: IID 
+##              Estimate Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept) 488.85175    1.43274 341.20066  &lt; 2.2e-16 ***
+## smallTRUE     8.93597    1.67208   5.34424 9.6857e-08 ***
+## gendermale   -8.55612    1.67000  -5.12343 3.1696e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## RMSE: 48.3   Adj. R2: 0.015408
+```
+
+--
+
+* Nous avons maintenant ***deux*** coefficients à interpréter : `\(\hat{\beta}_\textrm{small}\)` et `\(\hat{\beta}_\textrm{gender}\)`.
+
+---
+
+# Que voulons-nous tester, intuitivement ?
+
+* On voudrait savoir : ***le genre a-t-il un effet sur le score en maths, une fois que l'on contrôle pour la taille de la classe ?***
+
+--
+
+* C'est exactement le même raisonnement que pour `small` : 
+
+  * `\(H_0: \beta_\textrm{gender} = 0\)` (le genre n'a ***aucun effet***)
+  * `\(H_A: \beta_\textrm{gender} \neq 0\)` (le genre a ***un effet***)
+
+--
+
+* On se demande : *si en réalité le genre n'avait aucun effet sur le score, quelle est la probabilité d'observer un coefficient aussi grand (en valeur absolue) que `\(\hat{\beta}_\textrm{gender}\)` par pur hasard d'échantillonnage ?*
+
+--
+
+* La logique est identique à celle de `small` : on compare la ***statistique de test observée*** `\(\frac{\hat{\beta}_\textrm{gender}}{\hat{SE}(\hat{\beta}_\textrm{gender})}\)` à sa ***distribution nulle***.
+
+--
+
+* Mais une nouvelle question se pose : et si on voulait tester ***plusieurs coefficients à la fois*** ?
+
+---
+
+# Test de restriction linéaire multiple : le F-test?
+
+* Imaginons que l'on se demande : ***`small` et `gender` ont-ils, ensemble, un pouvoir explicatif sur le score en maths ?***
+
+--
+
+* Intuitivement, c'est différent de tester chaque variable séparément !
+
+--
+
+* On pourrait très bien avoir :
+  * `\(\hat{\beta}_\textrm{small}\)` pas significatif individuellement,
+  * `\(\hat{\beta}_\textrm{gender}\)` pas significatif individuellement,
+  * mais les deux ***ensemble*** apportent quand même de l'information sur `math`.
+
+--
+
+* Pour répondre à cette question, on a besoin d'un test ***conjoint*** : le ***test de Fisher (F-test)***.
+
+---
+
+# Intuition du F-test
+
+* L'idée : on compare ***deux modèles*** :
+
+  * Le modèle ***complet*** : `\(\text{score math}_i= \beta_0 + \beta_1\text{small}_i + \beta_2 \text{gender}_i + u_i\)` 
+  * Le modèle ***restreint*** (sous `\(H_0\)`) : `\(\text{score math}_i= \beta_0 + u_i\)` 
+
+--
+
+* ***Hypothèses*** du test :
+
+`$$\begin{align}H_0&amp;: \beta_\textrm{small} = \beta_\textrm{gender} = 0\\H_A&amp;: \text{au moins un des deux } \beta_k \neq 0\end{align}$$`
+
+--
+
+* Intuition : si le modèle complet n'explique ***pas mieux*** `math` que le modèle restreint (sans variables), alors les deux variables ***n'apportent rien*** ensemble.
+
+--
+
+* Le F-test compare la ***réduction de la variance résiduelle*** obtenue en ajoutant nos variables, par rapport à ce que l'on attendrait ***par hasard***.
+
+--
+
+* Plus la statistique F est ***grande***, plus il est improbable d'observer un tel gain d'ajustement ***si `\(H_0\)` était vraie***.
+
+
+---
+
+# Le F-test en pratique
+
+
+``` r
+fitstat(reg_1var, type = "f")
+```
+
+```
+## F-test: stat = 27.276, p = 1.777e-12, on 2 and 3,356 DoF.
+```
+
+--
+
+* ***Décision*** : si la valeur-p est ***inférieure*** à notre seuil `\(\alpha\)` (par exemple 0.05), on ***rejette `\(H_0\)`***.
+
+--
+
+  * Cela signifie que `small` et `gender`, ***pris ensemble***, ont un pouvoir explicatif ***statistiquement significatif*** sur le score en maths.
+
+--
+
+* ⚠️  : rejeter `\(H_0\)` dans un F-test ***ne nous dit pas laquelle*** des deux variables est responsable de cet effet, pour cela, il faut revenir aux tests individuels (`\(t\)`-tests) vus précédemment !
+
+$$
+F = \dfrac{(R^2_{c} - R^2_{r})/q}{R^2_{c}/(n-k-1)}
+$$
+avec `\(q\)` = nombres de restrictions; `\(n-k-1\)` : degrés de liberté dans modèle complet (c)
+
+---
+
+# Et si on voulait comparer deux coefficients entre eux ?
+
+* Une autre question intéressante : est-ce que l'effet de `small` sur `math` est du même ***ordre de grandeur*** que celui de `gender` : `\(\beta_\textrm{small} = \beta_\textrm{gender}\)` ?
+
+--
+
+* ⚠️ Ce n'est ***pas la même chose*** que de tester si chacun est égal à zéro séparément !
+
+  * On pourrait très bien avoir `\(\hat{\beta}_\textrm{small}\)` et `\(\hat{\beta}_\textrm{gender}\)` tous les deux ***significativement différents de zéro***, mais ***très proches l'un de l'autre*** (donc `\(\beta_\textrm{small} = \beta_\textrm{gender}\)` plausible).
+
+--
+
+  * Ou inversement, tous les deux significatifs, mais ***très différents*** l'un de l'autre.
+
+--
+
+* ***Hypothèses*** de ce nouveau test :
+
+`$$\begin{align}H_0&amp;: \beta_\textrm{small} - \beta_\textrm{gender} = 0\\H_A&amp;: \beta_\textrm{small} - \beta_\textrm{gender} \neq 0\end{align}$$`
+
+---
+
+# Intuition : tester une combinaison linéaire de coefficients
+
+* On ne teste plus un seul coefficient, mais une ***différence*** entre deux coefficients.
+
+--
+
+* Idée : on construit une nouvelle ***statistique de test*** basée sur `\(\hat{\beta}_\textrm{small} - \hat{\beta}_\textrm{gender}\)`.
+
+--
+
+* Comme toujours, il nous faut une ***erreur type*** pour cette différence, mais ce n'est ***pas simplement*** `\(\hat{SE}(\hat{\beta}_\textrm{small}) - \hat{SE}(\hat{\beta}_\textrm{gender})\)` !
+
+--
+
+  * `\(\hat{\beta}_\textrm{small}\)` et `\(\hat{\beta}_\textrm{gender}\)` sont estimés ***simultanément*** dans le même modèle, ils peuvent être ***corrélés*** entre eux.
+
+--
+
+  * L'erreur type correcte doit tenir compte de cette ***covariance*** entre les deux estimateurs.
+
+--
+
+* Heureusement, `R` calcule cela automatiquement pour nous !
+
+---
+
+# Tester `\(\beta_\textrm{small} = \beta_\textrm{gender}\)` en pratique
+
+
+``` r
+library(car)
+linearHypothesis(reg_1var, "smallTRUE = gendermale")
+```
+
+```
+## 
+## Linear hypothesis test:
+## smallTRUE - gendermale = 0
+## 
+## Model 1: restricted model
+## Model 2: math ~ small + gender
+## 
+##   Res.Df Df  Chisq Pr(&gt;Chisq)    
+## 1   3357                         
+## 2   3356  1 54.528  1.533e-13 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+--
+
+* On retrouve une structure familière : une ***statistique de test*** (ici un F, car ce test peut aussi être vu comme un cas particulier de F-test à ***une seule contrainte***) et une ***valeur-p***.
+
+--
+
+* ***Décision*** : si la valeur-p est ***inférieure*** à `\(\alpha\)`, on ***rejette*** `\(H_0\)`, c'est-à-dire que l'on conclut que les effets de `small` et `gender` sur `math` sont ***statistiquement différents***.
+
+--
+
+* Sinon, on ***ne peut pas rejeter*** l'hypothèse que ces deux effets sont ***du même ordre de grandeur***.
+
+--
+
+* 💡 Ce test est un exemple de ***test de restriction linéaire*** : on peut tester n'importe quelle combinaison linéaire de coefficients de cette façon (par exemple `\(\beta_\textrm{small} + \beta_\textrm{gender} = 1\)`, etc.) !
+
+---
+
+# Des tests aux intervalles de confiance
+
+* Rappelez-vous : un test d'hypothèse et un intervalle de confiance sont ***deux faces d'une même pièce***.
+
+--
+
+* Plutôt que de se demander *"est-ce que `\(\beta_\textrm{gender} = 0\)` ?"*, on peut se demander : ***"quelle est la plage de valeurs plausibles pour `\(\beta_\textrm{gender}\)` ?"***
+
+
+--
+
+* Un ***intervalle de confiance à 95%*** pour `\(\beta_k\)` répond à la question :
+
+&gt; *Si l'on répétait l'échantillonnage un grand nombre de fois, dans 95% des cas, l'intervalle obtenu contiendrait la vraie valeur de `\(\beta_k\)`.*
+
+--
+
+* Lien avec le test d'hypothèse : si `\(0\)` ***n'est pas*** dans l'intervalle de confiance à 95% de `\(\beta_k\)`, alors on ***rejette*** `\(H_0: \beta_k = 0\)` au seuil de 5%.
+
+---
+
+# Intervalles de confiance en pratique
+
+
+``` r
+confint(reg_1var)
+```
+
+```
+##                 2.5 %     97.5 %
+## (Intercept) 486.04262 491.660879
+## smallTRUE     5.65758  12.214360
+## gendermale  -11.83044  -5.281803
+```
+
+--
+
+* Pour chaque coefficient, on obtient une borne ***inférieure*** et une borne ***supérieure***.
+
+--
+
+* ***Interprétation*** : on est "confiant à 95%" que la vraie valeur de `\(\beta_\textrm{small}\)` (respectivement `\(\beta_\textrm{gender}\)`) se situe dans cet intervalle.
+
+--
+
+* ***Question*** : est-ce que `\(0\)` est contenu dans l'intervalle de confiance de `gender` ? Qu'est-ce que cela implique pour notre test d'hypothèse ?
+
+
+---
+
+# Ajouter des variables améliore-t-il toujours le modèle ?
+
+* Le `\(R^2\)` mesure la part de variance de `math` expliquée par le modèle.
+
+--
+
+* ***Problème*** : le `\(R^2\)` ***augmente mécaniquement*** à chaque fois que l'on ajoute une variable, même si elle n'a ***aucun lien réel*** avec `math` !
+
+--
+
+* On a donc besoin d'une mesure qui ***pénalise*** l'ajout de variables inutiles : le ***$R^2$ ajusté***.
+
+--
+
+`$$\bar{R}^2 = 1 - (1 - R^2) \times \frac{n-1}{n-k-1}$$`
+
+où `\(n\)` est le nombre d'observations et `\(k\)` le nombre de variables explicatives.
+
+--
+
+* ***Intuition*** : le `\(R^2\)` ajusté n'augmente que si la ***nouvelle variable*** améliore l'ajustement ***plus*** que ce que l'on attendrait par pur hasard.
+
+--
+
+* ***Règle pratique*** : pour comparer deux modèles avec un nombre de variables différent, on préfère toujours regarder le `\(R^2\)` ***ajusté*** plutôt que le `\(R^2\)` brut.
 
 
 ---
@@ -495,85 +788,88 @@ p_value
 layout: false
 class: title-slide-section-red, middle
 
-# Regression Inference: Theory
+# Inférence en Régression: Théorie
 
 ---
 
 layout: true
 
-&lt;div class="my-footer"&gt;&lt;img src="../img/logo/ScPo-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
 
 ---
 
-# Regression Inference: Theory
+# Inférence en régression : la théorie
 
-* Up to now we presented simulation-based inference.
-
---
-
-* The values reported by statistical packages in `R` are instead obtained from theory.
+* Jusqu'à présent, nous avons présenté l'inférence basée sur la ***simulation***.
 
 --
 
-* Theoretical inference is based on **large sample approximations**.
-  * One can show that sampling distributions *converge* to suitable distributions `\(\rightarrow\)` ***Central Limit Theorem***
+* Les valeurs rapportées par les packages statistiques dans `R` sont en réalité obtenues à partir de la ***théorie***.
+
+--
+
+* L'inférence basée sur la théorie repose sur des ***approximations en grand échantillon***.
+  * On peut montrer que les distributions d'échantillonnage ***convergent*** vers des distributions adéquates `\(\rightarrow\)` ***théorème central limite***
   
 --
   
-* Let's briefly look into the theory-based approach.
+* Regardons brièvement l'approche théorique.
+
+---
+# Inférence en régression : la théorie
+
+* Repose sur : la distribution d'échantillonnage de la statistique `\(\frac{\hat{\beta} - \beta}{\hat{\textrm{SE}}(\hat{\beta})}\)` ***converge*** vers une ***distribution normale centrée réduite*** à mesure que la taille de l'échantillon augmente.
+
+  * `\(\hat{\textrm{SE}}(\hat{\beta})\)` est l'estimation d'échantillon de l'écart-type de `\(\hat{\beta}\)`.
+
+  * Elle est elle aussi obtenue par une formule théorique ([voir ici](https://scpoecon.github.io/ScPoEconometrics/std-errors.html#se-theory)) mais nous la laisserons de côté.
+
+--
+
+* Une ***distribution normale centrée réduite*** est une *distribution normale* de *moyenne* 0 et d'***écart-type*** 1.
+
+--
+
+* Nous  dérivons de la théorie la distribution d'échantillonnage et l'utilisons pour construire des IC ou mener des tests d'hypothèses.
+
+--
+
+* Notez que si `\(\frac{\hat{\beta} - \beta}{\hat{\textrm{SE}}(\hat{\beta})}\)` ***converge*** vers une ***distribution normale centrée réduite***, alors `\(\hat{\beta}\)` converge vers une ***distribution normale*** de moyenne `\(\beta\)` et d'écart-type `\(\hat{\textrm{SE}}(\hat{\beta})\)`.
 
 ---
 
-# Regression Inference: Theory
-
-* Theory-based approach uses one fundamental result: the sampling distribution of the sample statistic `\(\frac{b - \beta}{\hat{\textrm{SE}(b)}}\)` *converges* to a ***standard normal distribution*** as the sample size gets larger and larger.
-
-  * `\(\hat{\textrm{SE}(b)}\)` is the sample estimate of the standard deviation of `\(b\)`.
-  * It is also obtained through a theoretical formula (which you can find in the [book](https://scpoecon.github.io/ScPoEconometrics/std-errors.html#se-theory)!) but we'll leave it aside.
-
---
-
-* A ***standard normal distribution*** is a *normal distribution* with *mean* 0 and *standard deviation* 1.
-
---
-
-* We don't need to simulate any sampling distribution here, we derive it from theory and use it to construct confidence intervals or to conduct hypothesis tests.
-
---
-
-* Note that if `\(\frac{b - \beta}{\hat{\textrm{SE}(b)}}\)` *converges* to a ***standard normal distribution***, then `\(b\)` converges to a ***normal distribution*** with mean `\(\beta\)` and standard deviation `\(\hat{\textrm{SE}(b)}\)`.
-
----
-
-# Normal Distribution: A Refresher
+# Distribution Normal : Rappel
 
 .center[
-&lt;img src="../img/photos/standard_normal_distrib.png" width="850px" style="display: block; margin: auto;" /&gt;
+&lt;img src="../img/photos/standard_normal_distrib.png" alt="" width="850px" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
-# Theory-Based Inference: Confidence Interval
+# Inférence basée sur la théorie : intervalle de confiance
 
-* Let's take the example of a 95% confidence interval.
 
---
-
-* Since the sampling distribution of `\(b\)` is assumed to be normally shaped, we can use the ***95% rule of thumb*** about normal distributions.
+* Prenons l'exemple d'un intervalle de confiance à 95%.
 
 --
 
-* We know indeed that 95% of the values of a normal distribution lie within approximately 2 standard deviations of the mean (exactly 1.96).
+* Puisque la distribution d'échantillonnage de `\(\hat{\beta}\)` est supposée avoir une forme normale, nous pouvons utiliser la ***règle empirique des 95%*** relative aux distributions normales.
 
 --
 
-* So, we can compute a 95% CI for `\(\beta\)` as: `\(\textrm{CI}_{95\%} = [ b \pm 1.96*\hat{\textrm{SE}}(b)]\)`
+* Nous savons en effet que 95% des valeurs d'une distribution normale se situent à environ 2 écarts-types de la moyenne (exactement 1,96).
 
 --
+
+* On peut donc calculer un IC à 95% pour `\(\beta\)` comme : `\(\textrm{CI}_{95\%} = [ \hat{\beta} \pm 1{,}96*\hat{\textrm{SE}}(\hat{\beta})]\)`
+
+---
+
+# IC à 95% : théorie vs bootstrap
 
 .pull-left[
 
-```r
+``` r
 tidy(lm(math ~ small, star_df),
      conf.int = TRUE, conf.level = 0.95) %&gt;%
   filter(term == "smallTRUE") %&gt;%
@@ -581,7 +877,7 @@ tidy(lm(math ~ small, star_df),
 ```
 
 ```
-## # A tibble: 1 x 3
+## # A tibble: 1 × 3
 ##   term      conf.low conf.high
 ##   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;
 ## 1 smallTRUE     5.60      12.2
@@ -589,9 +885,10 @@ tidy(lm(math ~ small, star_df),
 ]
 
 --
+
 .pull-right[
 
-```r
+``` r
 bootstrap_distrib %&gt;%
   summarise(
     lower_bound = 8.895 - 1.96*sd(stat),
@@ -599,16 +896,16 @@ bootstrap_distrib %&gt;%
 ```
 
 ```
-## # A tibble: 1 x 2
+## # A tibble: 1 × 2
 ##   lower_bound upper_bound
 ##         &lt;dbl&gt;       &lt;dbl&gt;
-## 1        5.64        12.1
+## 1        5.56        12.2
 ```
 ]
 
 --
 
-* This can easily be generalized to any confidence level by taking the appropriate quantile of the normal distribution.
+* Généralisable pour tout seuil de confiance en prenant le quantile correspondant de la distribution normale. 
 
 ---
 
@@ -616,101 +913,263 @@ class:inverse
 
 # Task 2
 
-<div class="countdown" id="timer_624f163f" style="top:0;right:0;" data-warnwhen="0">
-<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+<countdown-timer class="countdown" id="timer_c97a925d" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-1. Using the bootstrap distribution you generated in Task 1, compute the 95% confidence interval using the *percentile method*.
+1. En uilisant la distribution bottstrap générée au 1er exercise, calculer les IC à 95% en utilisant la *méthode des percentiles*.
 
-1. How similar is it to the confidence intervals obtained in the previous slide?
+1. Dans quelle mesure ces IC sont proches de ceux de la diapo précédente  ?
 
 ---
 
-# Confidence Intervals: Visually
+# Intervalle de Confiance : Visuellement
 
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-20-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-22-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Theory-Based Inference: Hypothesis Testing
+# Inférence basée sur la théorie : test d'hypothèse
 
-* Theory tells us that `\(\frac{b - \beta_k}{\hat{\textrm{SE}(b)}}\)` converges to a standard normal distribution
+* La théorie nous dit que `\(\frac{\hat{\beta} - \beta_k}{\hat{\textrm{SE}}(\hat{\beta})}\)` converge vers une distribution normale centrée réduite
 
-* As we already mentioned, the default test that is conducted by any statistical software is:
-
+* Comme nous l'avons déjà mentionné, le test par défaut effectué par tout logiciel statistique est :
 `$$\begin{align}H_0:&amp; \beta_k = 0\\H_A:&amp; \beta_k \neq 0\end{align}$$`
---
-
-* So, **under the null hypothesis**, `\(\beta_k=0\)`, and we get from theory that the sampling distribution of `\(\frac{b}{\hat{\textrm{SE}(b)}}\)` will be a standard normal distribution.
-
 
 --
 
-* So the *standard normal distribution* is the **null distribution** of our test statistic. 
+* Ainsi, ***sous l'hypothèse nulle***, `\(\beta_k=0\)`, et la théorie nous disent que la distribution d'échantillonnage de `\(\frac{\hat{\beta}}{\hat{\textrm{SE}}(\hat{\beta})}\)` sera une distribution normale centrée réduite.
 
 --
 
-* The ***p-value*** associated to our test is then equal to the area of the *standard normal distribution* outside `\(\pm\)` the observed value of `\(\frac{b}{\hat{\textrm{SE}(b)}}\)`.
+* La ***distribution normale centrée réduite*** est donc la ***distribution nulle*** de notre statistique de test. 
 
 --
 
-* Common rule of thumb: if the *estimate* is ***twice the size of the standard error***, then it is significant at the 5% level. Why?
+* La ***valeur-p*** associée à notre test est alors égale à l'aire de la *distribution normale centrée réduite* à l'extérieur de `\(\pm\)` la valeur observée de `\(\frac{\hat{\beta}}{\hat{\textrm{SE}}(\hat{\beta})}\)`.
+
+--
+
+* Règle empirique courante : si l'***estimation*** vaut ***environ deux fois la taille de l'erreur type***, alors elle est significative au seuil de 5%. Pourquoi ?
 
 ---
 
-# Formatting a regression table
+# Mise en forme d'un tableau de régression
 
-* Now that we have learned about all components of a regression table, let's finally learn how to create and read one!
+* Maintenant que nous avons vu tous les éléments d'un tableau de régression, apprenons enfin à en créer et en lire un !
 
 
-```r
-reg_simple_math &lt;- lm(math ~ small, data=star_df)
-reg_gender_math &lt;- lm(math ~ small + gender , data=star_df)
-reg_simple_read &lt;- lm(read ~ small, data=star_df)
-reg_gender_read &lt;- lm(read ~ small + gender , data=star_df)
+``` r
+library(fixest)
+reg_simple_math &lt;- feols(math ~ small, data = star_df)
+reg_gender_math &lt;- feols(math ~ small + gender, data = star_df)
+reg_simple_read &lt;- feols(read ~ small, data = star_df)
+reg_gender_read &lt;- feols(read ~ small + gender, data = star_df)
 
-export_summs(reg_simple_math, reg_gender_math, reg_simple_read, reg_gender_read,
-             model.names = c("Math score", "Math Score",
-                             "Reading score", "Reading score"),
-             coefs=c("Intercept" = "(Intercept)",
-                     "Small class" = "smallTRUE",
-                     "Male gender" = "gendermale"))
+etable(reg_simple_math, reg_gender_math, reg_simple_read,reg_gender_read,
+  headers = c("Math score", "Math score",
+              "Reading score", "Reading score"),
+  dict = c(
+    "(Intercept)" = "Intercept",
+    "smallTRUE"   = "Small class",
+    "gendermale"  = "Male gender"
+  ),
+  keep = c("Intercept", "Small class", "Male gender"),
+  fitstat = ~n + r2,
+  digits = 2,
+  fixef_sizes = FALSE,
+  se.below = TRUE,
+  depvar = FALSE,
+  tex = FALSE
+)
 ```
 
+
 ---
+# Mise en forme d'un tableau de régression (HTML)
 
-# Formatting a regression table
-
-<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:unnamed-chunk-22">
-<col><col><col><col><col><tr>
-<th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Math score</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Math Score</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Reading score</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Reading score</th></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Intercept</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">484.45 ***</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">488.85 ***</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">435.76 ***</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">439.62 ***</td></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.15)&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.43)&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(0.75)&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(0.93)&nbsp;&nbsp;&nbsp;</td></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Small class</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">8.90 ***</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">8.94 ***</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">5.37 ***</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">5.41 ***</td></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.68)&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.67)&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.09)&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.09)&nbsp;&nbsp;&nbsp;</td></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Male gender</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-8.56 ***</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-7.49 ***</td></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.67)&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1.09)&nbsp;&nbsp;&nbsp;</td></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">N</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">3359&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">3359&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">3359&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">3359&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-<tr>
-<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">R2</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.01&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.02&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.01&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.02&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-<tr>
-<th colspan="5" style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"> *** p &lt; 0.001;  ** p &lt; 0.01;  * p &lt; 0.05.</th></tr>
-</table>
-
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Math score &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Math score &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Reading score &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Reading score &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Intercept &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 484.4*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 488.9*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 435.8*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 439.6*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.2) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.4) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.75) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.93) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Small class &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 8.9*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 8.9*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.4*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.4*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Male gender &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -8.6*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -7.5*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; ____________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; S.E. type &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Observations &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.00830 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.01599 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.00712 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.02099 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 ---
 
 # Reading a regression table
 
 .center[
-&lt;img src="reg_inference_files/figure-html/reg_table.png" width="500px" style="display: block; margin: auto;" /&gt;
+&lt;table class="table" style="font-size: 10px; width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; &lt;span style="border: 2px solid #2F528F; padding: 3px; display:inline-block;"&gt;Math score&lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Math score &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Reading score &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Reading score &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Intercept &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 484.4*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 488.9*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 435.8*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 439.6*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.2) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.4) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.75) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.93) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Small class &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; &lt;span style="border: 2px solid #70AD47; padding: 3px; display:inline-block;"&gt;  8.9***&lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 8.9*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.4*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.4*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; &lt;span style="border: 2px solid #FFC000; padding: 3px; display:inline-block;"&gt; (1.7)  &lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Male gender &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -8.6*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -7.5*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; ____________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; S.E. type &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Observations &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; &lt;span style="border: 2px solid #7030A0; padding: 3px; display:inline-block;"&gt;3,359&lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; &lt;span style="border: 2px solid #C00000; padding: 3px; display:inline-block;"&gt;0.00830&lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.01599 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.00712 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.02099 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; *** p &amp;lt; 0.001; ** p &amp;lt; 0.01; * p &amp;lt; 0.05&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
 ]
 
 * Each column corresponds to a regression. For the first regression we have: 
@@ -727,327 +1186,214 @@ export_summs(reg_simple_math, reg_gender_math, reg_simple_read, reg_gender_read,
 layout: false
 class: title-slide-section-red, middle
 
-# Classical Regression Model
+# Modèle de régression classique
 
 ---
 
-# Classical Regression Model
+# Modèle de régression classique
 
-* Whether the inference is made from theory or simulations, some assumptions have to be met for this inference to be valid.
+* Que l'inférence soit basée sur la théorie ou sur des simulations, certaines hypothèses doivent être respectées pour que cette inférence soit valide.
 
-* The set of assumptions needed defines the *Classical Regression Model* (CRM).
-
---
-
-* Before delving into these assumptions, let's see the small but important modifications we apply to our model (back to [*lecture SLR*](https://raw.githack.com/ScPoEcon/ScPoEconometrics-Slides/master/chapter_slr/chapter_slr.html)):
+* L'ensemble des hypothèses nécessaires définit le *Modèle de Régression Classique* (MRC).
 
 --
 
-  * We already mentioned the distinction between the sample estimate `\(b_k\)` (or `\(\hat{\beta_k}\)`) and the population parameter `\(\beta_k\)`.
+
+  * Nous avons déjà mentionné la distinction entre l'estimation d'échantillon `\(\hat{\beta_k}\)` et le paramètre de population `\(\beta_k\)`.
 
 --
 
-  * In the same way, we distinguish `\(e\)`, the sample error (*residual*), from `\(\varepsilon\)`, the error term from the true population model: 
+  * De la même manière, nous distinguons `\(u\)`, l'erreur d'échantillon (*résidu*), de `\(\varepsilon\)`, le terme d'erreur du véritable modèle de population :
   
   `$$y_i = \beta_0 + \beta_1 x_{1,i} + ... + \beta_k x_{k,i} + \varepsilon_i$$`
 --
 
-  * The classical regression model applies to **correctly specified linear regressions**: the model needs to be linear in parameters, include all relevant variables, and variables cannot be collinear.
+  * Le modèle de régression classique s'applique aux **régressions linéaires correctement spécifiées** : le modèle doit être linéaire en paramètres, inclure toutes les variables pertinentes, et les variables ne doivent pas être colinéaires.
 
 
 ---
 
 
-# CRM Assumptions
+# Hypothèses du MRC
 
-1. ***Mean Independence:*** the mean of the residuals conditional on `\(x\)` should be zero, `\(E[\varepsilon|x] = 0\)`. Notice that this also means that `\(Cov(\varepsilon,x) = 0\)`, i.e. that the errors and our explanatory variable(s) should be *uncorrelated*.
+1. ***Indépendance en moyenne :*** la moyenne des résidus conditionnelle à `\(x\)` doit être nulle, `\(E[\varepsilon|x] = 0\)`. Remarquez que cela implique également que `\(Cov(\varepsilon,x) = 0\)`, c'est-à-dire que les erreurs et notre/nos variable(s) explicative(s) doivent être *non corrélées*.
 
 --
 
-* Violating this assumption will lead to **biased** estimates of `\(\beta_k\)`.
+* Violer cette hypothèse conduira à des estimations **biaisées** de `\(\beta_k\)`.
 
 
 ---
 
-# Mean Independence of Error: E[u | small] = ?
+# Indépendance en moyenne de l'erreur : E[u | small] = ?
 
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-24-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-26-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
-
----
-
-# Mean Independence of Error: E[u | small] = ?
-
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-25-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Exogeneity Assumption
+# Indépendance en moyenne de l'erreur : E[u | small] = ?
 
-The CRM assumption #1 is also know as the (strict) **exogeneity assumption**. 
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-27-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
-* When this assumption is violated our estimate `\(b\)` will be a ***biased*** estimate of `\(\beta\)`, i.e. `\(\mathop{\mathbb{E}}[b] \neq \beta\)`
+---
+
+# Hypothèse d'exogénéité
+
+L'hypothèse #1 du MRC est aussi connue sous le nom d'**hypothèse d'exogénéité** (stricte).
+
+* Lorsque cette hypothèse est violée, notre estimation `\(b\)` sera une estimation ***biaisée*** de `\(\beta\)`, c.-à-d. `\(\mathop{\mathbb{E}}[b] \neq \beta\)`
 
 --
 
-* For example, imagine you are interested in the effect of education on wage
+* Par exemple, imaginez que vous vous intéressiez à l'effet de l'éducation sur le salaire
 
-    `$$\text{wage}_i = \beta_0 + \beta_1 \text{education}_i + \varepsilon_i$$`
+    `$$\text{salaire}_i = \beta_0 + \beta_1 \text{éducation}_i + \varepsilon_i$$`
   
-  * Under the exogeneity assumption `\(\beta_1\)` denotes the causal effect of education in the population.
+  * Sous l'hypothèse d'exogénéité, `\(\beta_1\)` désigne l'effet causal de l'éducation dans la population.
 
 --
 
-* Suppose there is *unobserved* ability `\(a_i\)`. 
-  * High ability means higher wage.
-  * It *also* means school is easier, and so `\(i\)` selects into more schooling.
+* Supposons qu'il existe une capacité *non observée* `\(a_i\)`.
+  * Une capacité élevée signifie un salaire plus élevé.
+  * Cela signifie *aussi* que l'école est plus facile, et donc que `\(i\)` choisit de faire plus d'études.
 
 ---
 
-# Exogeneity Assumption 
+# Hypothèse d'exogénéité
 
-* Given ability is *unobserved*,  `\(a_i\)` goes into the error `\(\varepsilon_i\)`
-
---
-
-* Our *ceteris paribus* assumption (all else equal) does not hold. 
+* Étant donné que la capacité est *non observée*, `\(a_i\)` se retrouve dans l'erreur `\(\varepsilon_i\)`
 
 --
 
-* Then regressing the wage on education we will attribute to `education` part of the effect on wages that is actually *caused* by ability `\(a_i\)`!
+* Notre hypothèse *ceteris paribus* (toutes choses égales par ailleurs) n'est plus respectée.
 
 --
 
-  * Remember the formula of the **omitted variable bias**:
+* En régressant alors le salaire sur l'éducation, nous attribuerons à `education` une partie de l'effet sur les salaires qui est en réalité *causée* par la capacité `\(a_i\)` !
+
+--
+
+  * Rappelez-vous la formule du **biais de variable omise** :
   
-  `$$\text{OVB} = \text{multiple regression coefficient on omitted variable} \times \frac{Cov(x,z)}{Var(x)}$$`
+  `$$\text{Bias} = \text{coef de la régression multiple sur la VO} \times \frac{Cov(x,z)}{Var(x)}$$`
 
 --
 
-  * Thus, we have:
+  * Ainsi, nous avons :
   
-  $$ \mathbb{E}(b_1) = \beta_1 + OVB &gt; \beta_1$$ 
+  $$ \mathbb{E}(b_1) = \beta_1 + \text{Biais de variable omise} &gt; \beta_1$$ 
 
-* *Interpretation*: taking repeated sample from the population and computing `\(b_1\)` each time, we would **systematically overestimate** the effect of education on wage.
+* *Interprétation* : en prenant des échantillons répétés de la population et en calculant `\(\widehat{\beta}_1\)` à chaque fois, nous ***surestimerions systématiquement*** l'effet de l'éducation sur le salaire.
 
 
 ---
 
-# CRM Assumptions
+# Hypothèses du MRC
 
-1\. ***Mean Independence:*** the mean of the residuals conditional on `\(x\)` should be zero, `\(E[\varepsilon|x] = 0\)`. Notice that this also means that `\(Cov(\varepsilon,x) = 0\)`, i.e. that the errors and our explanatory variable(s) should be *uncorrelated*.
+1\. ***Indépendance en moyenne :*** la moyenne des résidus conditionnelle à `\(x\)` doit être nulle, `\(E[\varepsilon|x] = 0\)`. Remarquez que cela implique également que `\(Cov(\varepsilon,x) = 0\)`, c'est-à-dire que les erreurs et notre/nos variable(s) explicative(s) doivent être *non corrélées*.
 
 
-* Violating this assumption will lead to **biased** estimates of `\(\beta_k\)`.
-
---
-
-2\. ***Independently and identically distributed:*** the data are drawn from a **random sample** of size `\(n\)`: observation `\((x_i,y_i)\)` comes from the exact same distribution, and is **independent** of observation `\((x_j,y_j)\)`, for all `\(i\neq j\)`.
+* Violer cette hypothèse conduira à des estimations **biaisées** de `\(\beta_k\)`.
 
 --
 
-* Violating this assumption would make your sample less representative of the underlying population. It will lead to **biased** estimates of `\(\beta_k\)`.
+2\. ***Indépendamment et identiquement distribuées :*** les données sont tirées d'un **échantillon aléatoire** de taille `\(n\)` : l'observation `\((x_i,y_i)\)` provient exactement de la même distribution, et est **indépendante** de l'observation `\((x_j,y_j)\)`, pour tout `\(i\neq j\)`.
+
+--
+
+* Violer cette hypothèse rendrait votre échantillon moins représentatif de la population sous-jacente. Cela conduira à des estimations **biaisées** de `\(\beta_k\)`.
 
 ---
 
-# CRM Assumptions
+# Hypothèses du MRC
 
-3\. ***Homoskedasticity:*** the variance of the error term `\(\varepsilon\)` is the same for each value of `\(x\)`: `\(Var(\varepsilon|x) = \sigma^2\)`.
-
---
-
-* If this assumption is violated, you can still obtain unbiased estimates of `\(\beta_k\)`. However your estimate of `\(\hat{\textrm{SE}}(b_k)\)` will be biased, which will affect your test statistic and p-value.
+3\. ***Homoscédasticité :*** la variance du terme d'erreur `\(\varepsilon\)` est la même pour chaque valeur de `\(x\)` : `\(Var(\varepsilon|x) = \sigma^2\)`.
 
 --
 
-4\. ***Normally distributed errors:*** the error term is normally distributed, i.e. `\(\varepsilon \sim \mathcal{N}(0,\sigma^2)\)` 
+* Si cette hypothèse est violée, vous pouvez tout de même obtenir des estimations non biaisées de `\(\beta_k\)`. Cependant, votre estimation de `\(\hat{\textrm{SE}}(b_k)\)` sera biaisée, ce qui affectera votre statistique de test et votre valeur-p.
 
 --
 
-* Not strictly necessary, but makes inference possible even with small sample sizes.
+4\. ***Erreurs normalement distribuées :*** le terme d'erreur est distribué normalement, c.-à-d. `\(\varepsilon \sim \mathcal{N}(0,\sigma^2)\)`
+
+--
+
+* Pas strictement nécessaire, mais rend l'inférence possible même avec de petits échantillons.
  
 --
 
 
-👉 Takeaway: **if assumptions violated, inference is invalid!**
+👉 À retenir : **si les hypothèses sont violées, l'inférence n'est pas valide !**
 
 ---
 
 class:inverse
 
-# Task 3.1
+# Exercice 3.1
 
-<div class="countdown" id="timer_624f1319" style="top:0;right:0;" data-warnwhen="0">
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+<countdown-timer class="countdown" id="timer_de423b9f" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-Let's go back to our question of returns to education and gender. 
+Revenons à notre question des retours à l'éducation et du genre 
 
-1. Load the data `CPS1985` from the `AER` package and look back at the `help` to get the definition of each variable: `?CPS1985`
+1. Télécharger les données `CPS1985` du package `AER` et regarder le fichier `help` pour avoir les définitions : `?CPS1985`
 
-1. Create the `log_wage` variable equal to the log of `wage`.
+1. Créer la variable `log_wage` qui est le log du `wage`.
 
-1. Regress `log_wage` on `gender` and `education`, and save it as `reg1`. 
+1. Regresser `log_wage` sur le `gender` et `education`, et sauvegarder le comme  `reg1`. 
 
-  * Interpret each coefficient.
+  * Interpréter chaque  coefficient.
   
-  * Are the coefficients statistically significant? At which significance level? 
+  * Sont ils statistiquement significatifs ? A quel seuil  ? 
 
-1. Regress the `log_wage` on `gender`, `education` and their interaction `gender*education`, save it as `reg2`. 
+1. Régresser le `log_wage` sur le `gender`, `education` et leur intéraction `gender*education`, sauvegarder la dans `reg2`. 
 
-  * How do you interpret the coefficient associated to `\(female*education\)`?
+  * Interprétation du coeffcient associé à `\(female*education\)`?
   
-  * Can we reject the nullity of this coefficient at the 5% level? At 10%?  
+  * Est ce que l'on peut rejet l'hypothèse nulle de ce coefficient au seuil de 5% level ?  10%?  
   
 ---
 
 class:inverse
 
-# Task 3.2
+# Exercice 3.2
 
-<div class="countdown" id="timer_624f1349" style="top:0;right:0;" data-warnwhen="0">
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+<countdown-timer class="countdown" id="timer_e809c289" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-1. Produce a scatterplot of the relationship between the log wage and the level of education.
+1. Faites un nuage de points de la relatio nentre `log wage` et `education`
 
-1. Add the *regression line* with `geom_smooth`. What does this line represents?
-
-1. Let's illustrate what the shaded area stands for.
-
-  1. Draw one bootstrap sample from our `cps` data. 
-
-  1. Regress the `log_wage` on `gender`, `education` and their interaction `gender*education`, save it as `reg_bootstrap`.
-
-  1. From `reg_bootstrap` extract and save the value of the intercept for men as `intercept_men_bootstrap` and the value of the slope for men as `slope_men_bootstrap`. Do the same for women.
-
-  1. Add both predicted lines from this bootstrap sample to the previous plot (*Hint*: use `geom_abline` (x2))
-
----
-
-# Illustrating Uncertainty
-
-.pull-left[
-
-Let's repeat the procedure you just made 100 times! 
+1. Ajouter la *droite de régression* avec `geom_smooth`. Qu'est-ce qu'elle représente ?
 
 
-```r
-library(AER)
-data("CPS1985")
-cps = CPS1985 %&gt;% mutate(log_wage = log(wage))
-
-set.seed(1)
-bootstrap_sample = cps %&gt;% 
-    rep_sample_n(size = nrow(cps), reps = 100, replace = TRUE)
-
-ggplot(data=cps,aes(y = log_wage, x = education, colour = gender)) +
-  geom_point(size = 1, alpha = 0.7) +
-  geom_smooth(method = "lm", alpha = 2) +
-  geom_smooth(data=bootstrap_sample,
-              size = 0.2,
-              aes(y = log_wage, x = education, group = replicate),
-              method = "lm", se = FALSE) +
-  facet_wrap(~gender) +
-  scale_colour_manual(values = c("darkblue", "darkred")) +
-  labs(x = "Education", y = "Log wage") +
-  guides(colour=FALSE) +
-  theme_bw(base_size = 20)
-```
-]
-
---
-
-.pull-right[
-
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-27-1.svg" style="display: block; margin: auto;" /&gt;
-
-]
-
----
-
-# Illustrating Uncertainty
-
-.pull-left[
-![](../img/gifs/wages.gif)
-
-]
-
-.pull-right[
-&lt;/br&gt;
-
-Even better : [`ungeviz`](https://github.com/wilkelab/ungeviz) and `gganimate` bring you moving lines!
-
-* We took 20 bootstrap samples from our data
-
-* You can see how different data points are included in each bootstrap sample.
-
-* Those different points imply different regression lines.
-
-* On average, 95% of these lines should fall into the shaded area.
-
-* You should remember those moving lines when looking at the shaded area!
-
-]
-
----
-
-# On the way to causality
-
-✅ How to manage data? Read it, tidy it, visualise it!
-
-✅  How to summarise relationships between variables? Simple and multiple linear regression, non-linear regressions, interactions...
-
-✅ What is causality?
-
-✅ What if we don't observe an entire population? Sampling!
-
-✅  **Are our findings just due to randomness?** Confidence intervals and hypothesis testing, regression inference.
-
-❌ How to find exogeneity in practice?
-
-
----
-
-
-
-class: title-slide-final, middle
-
-#  THANKS
-
-To the amazing [moderndive](https://moderndive.com/) team!
-
-Big Thanks 🎉 to [ungeviz](https://github.com/wilkelab/ungeviz) and 🎊 [gganimate](https://github.com/thomasp85/gganimate) for their awesome packages!
 
 ---
 
 class: title-slide-final, middle
-background-image: url(../img/logo/ScPo-econ.png)
+background-image: url(../img/logo/namur-logo.png)
 background-size: 250px
 background-position: 9% 19%
 
-# SEE YOU NEXT WEEK!
+# Bonne journée!
 
 
 
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| &lt;a href="mailto:florian.oswald@sciencespo.fr"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | florian.oswald@sciencespo.fr       |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.ScPored[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;] | Discord |
 | &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
-| &lt;a href="https://scpoecon.github.io/ScPoEconometrics"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Book |
-| &lt;a href="http://twitter.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-twitter fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                         |
 | &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                       |
-
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script src="../js/ru_xaringan.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
@@ -1088,6 +1434,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
