@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Logiciels d’économétrie</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mathilde Col &amp; Jérémy Do Nascimento Miguel" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="../css/scpo.css" type="text/css" />
+    <link rel="stylesheet" href="../css/scpo-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Logiciels d’économétrie
+]
+.subtitle[
+## Séance 1 : Introduction à R
+]
+.author[
+### Mathilde Col &amp; Jérémy Do Nascimento Miguel
+]
+.date[
+### Université de Bordeaux </br> 2026-08-23
+]
+
+---
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt;
+
+---
+
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt;
+
+---
+
+# Ce cours
+
+* Introduction à R
+
+* Bases de la programmation
+
+* Statistiques descriptives et régressions
+
+* Gestion des données dans R
+
+* Communiquer ses résultats dans R (visualisations, tableaux)
+
+---
+
+# IA &amp; Programmation
+
+* Votre cerveau est un muscle : il a besoin d'efforts pour progresser et se maintenir
+
+--
+
+* Les LLM sont plus performants avec des langages populaires comme Python ou JavaScript, mais R est moins répandu : l'IA fait davantage d'erreurs de syntaxe et invente des fonctions. Ne lui faites pas une confiance aveugle
+
+--
+
+* Globalement, l'IA est surtout utile sur le long terme pour les personnes qui savent déjà ce qu'elles font, mais c'est un piège pour les apprenants
+
+--
+
+`\(\rightarrow\)` La meilleure pratique consiste à rédiger vous-même une ébauche de code, et à solliciter l'IA seulement si vous êtes bloqué·e ou que vous ne savez pas comment implémenter ce que vous avez en tête
+
+---
+
+# Matériel du cours
+
+Déposé sur un [dépôt Github](https://github.com/jdnmiguel/Applied-ML) contenant :
+
+* Les fichiers d'installation de R
+
+* Les fichiers de données pour chaque séance
+
+* Des antisèches (*cheat sheets*)
+
+* Les slides de cours
+
+* Les exercices et leurs corrections
+
+---
+
+# Cette séance
+
+* Qu'est-ce que R ?
+
+* Démarrer R et RStudio
+
+* R comme calculatrice : opérations de base
+
+* Organiser un projet
+
+* Types de données
+
+* Opérateurs logiques
+
+* Objets
+
+* Structures de données : vecteurs, matrices, data frames
+
+* Installer des packages
+
+* Sous-ensembles (*subsetting*) de data frames
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# R &amp; RStudio
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt;
+
+---
+
+# R
+
+Qu'est-ce que R ?
+
+* Un langage de programmation et un environnement logiciel pour le calcul statistique
+
+* Il est **gratuit** et **open-source**
+
+* Vous pouvez le télécharger sur : [http://www.r-project.org/](http://www.r-project.org/)
+
+  1. téléchargez R
+  1. choisissez le miroir de téléchargement (peu importe lequel)
+  1. choisissez votre système d'exploitation
+  1. sélectionnez la version dont vous avez besoin
+
+--
+
+* Ou directement les liens pour R 4.5.1 (vous pouvez télécharger une version plus récente, mais nous utiliserons celle-ci) :
+
+  * [Windows](https://cran.asnr.fr/bin/windows/base/R-4.5.1-win.exe)
+  * Apple [Silicon (M1, M2, ...)](https://cran.asnr.fr/bin/macosx/big-sur-arm64/base/R-4.5.1-arm64.pkg) / [Intel Mac](https://cran.asnr.fr/bin/macosx/big-sur-x86_64/base/R-4.5.1-x86_64.pkg)
+  * Linux [Debian](https://cran.asnr.fr/bin/linux/debian/) / [Fedora](https://cran.asnr.fr/bin/linux/fedora/) / [Redhat](https://cran.asnr.fr/bin/linux/fedora/) / [Ubuntu](https://cran.asnr.fr/bin/linux/ubuntu/)
+
+--
+
+* Pour Windows, installez également Rtools : [Rtools 4.5](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html)
+
+---
+
+# R - Interface graphique
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/R_GUI_screenshot.png"
+```
+]
+
+---
+
+# RStudio
+
+* RStudio, un IDE (environnement de développement intégré)
+
+  * on peut écrire du code R sans RStudio
+  * on pourrait même écrire du R dans Notepad, Word ou PowerPoint
+  * mais vous devriez écrire votre code R dans RStudio
+
+--
+
+* L'entreprise qui maintient RStudio s'est rebaptisée Posit
+
+--
+
+* Vous pouvez télécharger RStudio ici : [https://posit.co/downloads/](https://posit.co/downloads/)
+
+---
+
+# RStudio
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/RStudio_IDE_screenshot.png"
+```
+]
+
+---
+
+# RStudio - Console
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/RStudio_IDE_screenshot - Console.png"
+```
+]
+
+---
+
+# La console R
+
+Vous pouvez rapidement tester R comme une calculatrice
+
+
+``` r
+# Addition
+5 + 5
+
+# Soustraction
+5 - 5
+
+# Multiplication
+3 * 5
+
+# Division
+10 / 2
+
+# Exposant
+5^3
+```
+
+---
+
+# Les scripts R
+
+Pour sauvegarder toutes vos commandes, vous devez utiliser des scripts R
+
+* des fichiers texte avec l'extension `.R`
+
+* similaires aux do-files Stata (.do) ou aux scripts Python (.py)
+
+* nouveau fichier via le bouton en haut à gauche
+
+--
+
+Pour exécuter votre code
+
+* Exécutez la ligne courante ou la sélection avec le bouton *Run*
+
+* Ou utilisez ctrl/cmd + enter
+
+--
+
+Vous pouvez ajouter des commentaires avec `\(\#\)`, comme `\(//\)` et `\(*\)` dans Stata
+
+---
+
+# RStudio - Scripts
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/RStudio_IDE_screenshot - Scripts.png"
+```
+]
+
+---
+
+# RStudio - Exécution
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/RStudio_IDE_screenshot - Run.png"
+```
+]
+
+---
+
+# RStudio - Graphiques, aide et plus
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/RStudio_IDE_screenshot - Graphs.png"
+```
+]
+
+---
+
+# RStudio - Environnement, historique et plus
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/RStudio_IDE_screenshot - Environment.png"
+```
+]
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Organisation d'un projet
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt;
+
+---
+
+# Organisation d'un projet
+
+Pour de plus gros projets, comme votre mémoire/thèse :
+
+* votre répertoire de projet
+  * data/
+    * 1_raw/
+    * 2_clean/
+  * code/
+    * 1_clean.R
+    * 2_analyze.R
+    * requirements.R
+    * main.R
+  * docs/
+    * sources.md
+  * results/
+    * figures/
+    * tables/
+  * README.md
+
+---
+
+# Quelques conseils
+
+* Vos données, votre code et tout le reste doivent être stockés dans le même dossier
+
+--
+
+* Gardez une trace de toutes vos sources de données (+ codebooks) dans un fichier
+
+--
+
+* Ne modifiez **jamais** les données brutes
+
+--
+
+* Découpez votre code en plusieurs fichiers
+
+--
+
+* Exécuter l'intégralité du fichier doit toujours produire le même résultat
+
+--
+
+* Le fichier README résume le fonctionnement de votre projet
+  * [Template](https://social-science-data-editors.github.io/template_README/) pour les packages de réplication en sciences sociales
+
+--
+
+* Vous pouvez créer des sections dans votre code avec `\(\#\)` et au moins 4 `\(-\)` ou `=` (comme les sections `\(**\#\)` dans Stata)
+
+
+``` r
+# Section 1 ----
+## Sous-section 1.1 ----
+## Sous-section 1.2 ----
+
+# Section 2 ----
+## Sous-section 2.1 ----
+```
+
+---
+
+# Chemins d'accès (*paths*)
+
+* Répertoire de travail (*working directory*)
+  * là où vous travaillez
+  * là où R va chercher les fichiers et sauvegarder vos éléments
+
+
+``` r
+# Obtenir le répertoire de travail
+getwd()
+setwd("chemin_vers_le_dossier") # Changer le répertoire de travail
+```
+
+--
+
+* Chemin absolu
+  * "C:/Users/nom_utilisateur/documents/session_1/code.R"
+
+--
+
+* Chemin relatif, si vous êtes déjà dans le répertoire *document*
+  * "session_1/code.R"
+
+
+``` r
+# Changer le répertoire de travail
+setwd("chemin_vers_le_dossier")
+```
+
+--
+
+* À partir de là, vous pouvez utiliser des chemins relatifs
+
+---
+
+# Projet R (*R project*)
+
+* Les R-projects définissent automatiquement le répertoire de travail
+
+* Fichier `\(\rightarrow\)` New Project
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/Rproj.png"
+```
+]
+
+* Crée un fichier `.Rproj` dans le dossier, avec le nom du dossier
+
+---
+
+# Organisation d'un projet
+
+Pour de plus gros projets, comme votre mémoire de master :
+
+* **nom_du_projet**
+  * data/
+    * 1_raw/
+    * 2_clean/
+  * code/
+    * 1_clean.R
+    * 2_analyze.R
+    * requirements.R
+    * main.R
+  * docs/
+    * sources.md
+  * results/
+    * figures/
+    * tables/
+  * README.md
+  * `nom_du_projet.Rproj`
+
+---
+
+class:inverse
+
+# Exercice 0
+
+<countdown-timer class="countdown" id="timer_194bc33e" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+1. Créez un répertoire pour stocker tous vos fichiers relatifs à ce cours
+
+1. Créez un sous-répertoire en tant que R-project pour la séance 1
+
+1. Ouvrez et sauvegardez un nouveau script R dans le répertoire de la séance 1
+
+1. Vérifiez le répertoire de travail
+
+1. Changez-le vers le répertoire de la séance 1 si nécessaire
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Les objets en R
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt;
+
+---
+
+# Types de données de base
+
+Similaires à d'autres langages de programmation
+
+* Numeric (ou Double)
+  * le type par défaut pour les nombres
+  * 2, 2.3, 0, -12.8, -Inf, Inf, NaN
+
+* Integer
+  * des nombres entiers : 1, 2, 0, -1, ...
+  * notation 1L, 2L, ... pour garantir qu'un nombre est un entier et non un double
+  * les entiers sont un sous-ensemble des numeric
+
+* Logical
+  * deux valeurs : `TRUE` / `FALSE`
+
+* Character (chaînes de caractères)
+  * "Éthiopie", "Addis-Abeba"
+
+--
+
+Il existe aussi la valeur manquante `NA`, pour tous les types de données
+
+Vous pouvez vérifier le type de n'importe quel objet avec la fonction `typeof()`
+
+---
+
+# Opérateurs de comparaison et logiques
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/logical_operators.png"
+```
+]
+
+Attention aux valeurs manquantes, `NA`
+
+---
+
+# Les objets
+
+Des valeurs et des objets peuvent être stockés dans des objets à l'aide des opérateurs d'assignation
+
+* `&lt;-` (Alt + -)
+* `=`
+
+
+``` r
+# Stocke la valeur 4 dans x
+x &lt;- 4
+x
+# [1] 4
+```
+
+--
+
+Ces valeurs peuvent être manipulées
+
+
+``` r
+x &lt;- 4
+y &lt;- 5
+z &lt;- x + y
+z
+# [1] 9
+```
+
+---
+
+# Structures de données : vecteurs et matrices
+
+Utilisez la fonction de combinaison `c()` pour créer un vecteur atomique
+
+
+``` r
+vecteur_numerique &lt;- c(-12, 0, 13, NA)
+vecteur_numerique
+# [1] -12   0  13  NA
+
+vecteur_caractere &lt;- c("France", "Espagne", "Royaume-Uni", "")
+vecteur_caractere
+# [1] "France"      "Espagne"     "Royaume-Uni" ""
+```
+
+--
+
+Utilisez la fonction `matrix()` pour créer une matrice
+
+
+``` r
+mat &lt;- matrix(1:9, nrow = 3, byrow = TRUE)
+mat
+#      [,1] [,2] [,3]
+# [1,]    1    2    3
+# [2,]    4    5    6
+# [3,]    7    8    9
+```
+
+---
+
+# Structures de données : data frames
+
+.pull-left[
+* La plupart des jeux de données que vous utiliserez seront stockés sous forme de data frames
+
+* Un data frame est un tableau similaire à Excel, avec des variables en colonnes et des observations en lignes
+
+* Contrairement à une matrice, vous pouvez stocker des types de données différents dans chaque colonne
+]
+
+.pull-right[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/iris_data.png"
+```
+]
+
+---
+
+# Structures de données : data frames
+
+* On peut créer un data frame
+
+
+``` r
+mon_df &lt;- data.frame(
+    x = c(1, 2, 5, 7, 9, 1),
+    y = c("a", "b", "c", "d", "e", "f"),
+    z = c(TRUE, FALSE, TRUE, FALSE, TRUE, FALSE)
+)
+```
+
+--
+
+* Des exemples de données sont inclus dans R
+
+
+``` r
+data("iris")
+iris
+```
+
+--
+
+* Mais en général, vous importerez des données existantes depuis un fichier
+
+---
+
+# Importer des données
+
+Exemple avec des données de population urbaine
+
+* Utilisez la fonction `read.csv()` pour lire un fichier CSV
+
+
+``` r
+urbanpop &lt;- read.csv("urbanpop_1960_1966.csv", sep = ";")
+```
+
+--
+
+* Elle prend différents arguments
+  * un nom de fichier : "urbanpop_1960_1966.csv"
+  * le séparateur entre les colonnes : ";"
+
+--
+
+* Le résultat de la fonction est un `data.frame`
+
+* Si vous voulez le réutiliser plus tard, il faut le stocker dans un objet
+
+* Ici, on le garde dans l'objet **urbanpop**
+
+--
+
+* Vous pouvez consulter la documentation de n'importe quelle fonction avec la fonction `help()`
+
+
+``` r
+help(read.csv)
+help(read.csv, package = "utils") # Si le package n'est pas chargé
+?read.csv
+```
+
+---
+
+# Les packages R
+
+R repose beaucoup sur des packages
+
+* Les packages R sont des collections de fonctions, de données et de code compilé
+
+* En général, si vous devez faire quelque chose qui n'est pas possible par défaut dans R, il existe probablement un package pour ça
+
+* Des milliers de packages sont disponibles au téléchargement sur le Comprehensive R Archive Network (CRAN) : [https://cran.r-project.org](https://cran.r-project.org)
+
+* Certains packages incluent du code venant d'autres langages (C, C++, ...) et peuvent nécessiter Rtools pour être installés
+
+---
+
+# Les packages R : les utiliser
+
+1. Installer le package (le télécharger)
+   * Utilisez la fonction `install.packages()` pour télécharger la dernière version du package depuis le CRAN
+
+   
+   ``` r
+   install.packages("haven") # installe le package haven
+   ```
+
+--
+
+1. Charger le package dans R
+   * Utilisez la fonction `library()` pour charger le package dans votre session R
+
+   
+   ``` r
+   library(haven)
+   ```
+
+--
+
+* La prochaine fois que vous ouvrez R, vous n'avez pas besoin de réinstaller le package
+
+* En revanche, vous devez le recharger avec la fonction `library()`
+
+---
+
+# Les packages R : dépannage
+
+* Le package est-il installé ? Si non, utilisez `install.packages()` pour l'installer depuis le CRAN
+
+* Vérifiez bien que vous utilisez une chaîne de caractères entre guillemets, sinon R cherchera un objet portant le nom du package
+
+* `install.packages()` ne fonctionne pas, mais le package existe ? Trouvez la source et suivez les instructions
+
+* Message "Packages which are only available in source form, and may need compilation" : vérifiez que Rtools est bien installé
+
+* Le package est-il chargé ? Si non, utilisez `library()`
+
+* Impossible de mettre à jour un package car un autre package chargé en dépend : redémarrez RStudio
+
+---
+
+# Importer des données : packages utiles
+
+* Le package `readr` : de nombreuses fonctions pour les formats CSV, TSV, largeur fixe
+
+* Le package `readxl` : la fonction `read_excel()` pour les formats xls et xlsx
+
+* Le package `haven` : différentes fonctions pour SAS, SPSS, Stata
+
+* Le package `data.table` : la fonction `fread()` pour les formats CSV, Jay, XLSX, et texte brut avec compression (.tar, .gz, .zip, .gz2, .tgz)
+
+---
+
+# Les packages R : le tidyverse
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/4_tidyverse-packages.png"
+```
+]
+
+---
+
+class:inverse
+
+# Exercice 1
+
+<countdown-timer class="countdown" id="timer_92231ee9" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Nous allons utiliser les données de population par woreda
+
+* Importer les données au format Excel dans R
+
+1. Installez le package `readxl` avec la fonction `install.packages()`
+
+1. Chargez le package dans R avec la fonction `library()`
+
+1. Consultez la documentation de la fonction `read_excel()` avec la fonction `help()`
+
+1. Importez les données "ethiopia_pop.xls" dans un objet nommé **ethio_pop**
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Manipulation de base des données
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt;
+
+---
+
+# Data frames : caractéristiques de base
+
+Vous pouvez facilement obtenir les informations de base sur un jeu de données avec les commandes suivantes :
+
+
+``` r
+urbanpop &lt;- readxl::read_excel("urbanpop.xls", na = "no data")
+
+nrow(urbanpop) # Nombre de lignes
+ncol(urbanpop) # Nombre de colonnes
+
+data_1960 &lt;- urbanpop$year1960
+data_1960
+
+length(data_1960) # longueur d'un vecteur
+```
+
+---
+
+# Data frames : sous-ensembles (*subsetting*)
+
+.pull-left[
+* Vous pouvez sélectionner des éléments d'un data frame avec les crochets [ ]
+
+* La syntaxe est
+
+
+``` r
+df[lignes, colonnes]
+```
+]
+
+.pull-right[
+
+``` r
+nouveau_df &lt;- data.frame(
+  id = c("B2CF4", "TSIH6", "973R8",
+         "ESCA7", "464FF", "J1019"),
+  age = c(9, 15, 84, 80, 75, 73),
+  genre = c("H", "F", "F", "H", "F", "H"),
+  x = paste0("x", 1:6)
+)
+```
+]
+
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/data_frame.png"
+```
+]
+
+---
+
+# Data frames : sous-ensembles (*subsetting*)
+
+Quelques exemples
+
+
+``` r
+nouveau_df[1, 2]     # valeur de la ligne 1, colonne 2, du data frame nouveau_df
+nouveau_df[1:3, 3:4] # valeurs des lignes 1 à 3, colonnes 3 à 4
+nouveau_df[1, ]      # valeurs de la ligne 1, toutes les colonnes
+nouveau_df[, 1]      # valeurs de toutes les lignes, colonne 1
+nouveau_df[, "x"]    # valeurs de toutes les lignes, colonne nommée "x"
+```
+
+---
+
+# Packages utiles pour nettoyer/manipuler les données
+
+.pull-left[
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/logo_dplyr.png"
+```
+]
+Objectif : transformer facilement les données
+]
+
+.pull-right[
+.center[
+
+```
+## Error in `knitr::include_graphics()`:
+## ! Cannot find the file(s): "chapter_intro_r/figure-html/logo_tidyr.png"
+```
+]
+Objectif : créer des données "tidy"
+]
+
+Deux packages du [Tidyverse](https://www.tidyverse.org/packages/)
+
+Des antisèches (*cheat sheets*) sont disponibles sur GitHub
+
+
+``` r
+library(dplyr)
+library(tidyr)
+```
+
+---
+
+# L'opérateur pipe
+
+L'*opérateur pipe* : `%&gt;%` ou `|&gt;` (nouvelle version) - Cmd/Ctrl + Shift + M
+
+1. Prend le résultat situé à gauche
+
+1. Le transmet à la fonction suivante en tant que premier argument
+
+
+``` r
+urbanpop %&gt;%
+    select(country, year1962) %&gt;%
+    filter(year1962 &gt; 0)
+```
+
+1. On prend nos données **urbanpop** et on les transmet à la fonction `select()` en tant que premier argument (*.data* selon l'aide)
+
+1. On prend les nouvelles données avec les colonnes sélectionnées, et on les transmet à la fonction `filter()` en tant que premier argument (également *.data* selon l'aide)
+
+1. On obtient les données avec les colonnes sélectionnées et les observations filtrées
+
+---
+
+# L'opérateur pipe et les fonctions du tidyverse
+
+L'opérateur pipe transmet les données au premier argument par défaut, et utilise les fonctions du tidyverse (`filter()`, `group_by()`, `summarise()` ici) pour appliquer des modifications au jeu de données initial, que l'on stocke dans un nouvel objet :
+
+
+``` r
+urbanpop_agrege &lt;- urbanpop %&gt;%
+    filter(year1962 &gt; 0) %&gt;%
+    group_by(region) %&gt;%
+    summarise(
+        pop_moyenne = mean(year1962, na.rm = TRUE),
+        pop_ecart_type = sd(year1962, na.rm = TRUE),
+        pop_totale = sum(year1962, na.rm = TRUE)
+    )
+```
+
+---
+
+# Data frames : sélectionner des variables avec dplyr
+
+Une façon très simple de sélectionner des variables (colonnes) dans un jeu de données est la commande dplyr `select()` :
+
+
+``` r
+urbanpop1962 &lt;- urbanpop %&gt;%
+    select(country, year1962)
+# sélectionne les variables country et year1962
+```
+
+--
+
+Si vous voulez sélectionner toutes les variables qui :
+
+* commencent par le préfixe "year", vous pouvez combiner `select()` avec `starts_with()` : `select(starts_with("year"))`
+
+* se terminent par le suffixe "_1962", vous pouvez combiner `select()` avec `ends_with()` : `select(ends_with("_1962"))`
+
+---
+
+# Data frames : sélectionner des observations avec dplyr
+
+Une façon très simple de sélectionner des observations (lignes) dans un jeu de données est la commande dplyr `filter()` :
+
+
+``` r
+urbanpop_moins100k &lt;- urbanpop %&gt;%
+    filter(year1962 &lt; 100000)
+# tous les pays avec une population urbaine 1962 inférieure à 100k
+urbanpop_moins_mediane1962 &lt;- urbanpop %&gt;%
+    filter(year1962 &lt; median(year1962, na.rm = TRUE))
+```
+
+---
+
+class:inverse
+
+# Exercice 2
+
+<countdown-timer class="countdown" id="timer_7aa9faa4" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Dans **ethio_pop**, nous voulons comparer la population moyenne dans les woredas pastoraux et Afar, avec la moyenne dans les woredas agricoles et Amhara. Les données incluent les variables indicatrices (0 ou 1) **pastoralist**, **agricultural**, **afar** et **amhara**.
+
+1. Sélectionnez tous les woredas pastoraux et situés en Afar (pastoralist et afar égaux à 1), et stockez les nouvelles données dans un objet nommé **past_afar**
+
+1. Sélectionnez tous les woredas agricoles et situés en Amhara, et stockez les nouvelles données dans un objet nommé **ag_amhara**
+
+1. À partir du data frame **past_afar**, sélectionnez la colonne **t_tl** et stockez-la dans un objet nommé **pop_pa**
+
+1. Faites de même avec le data frame **ag_amhara**, et stockez-la dans un objet nommé **pop_aa**
+
+1. Calculez la moyenne, la médiane, le minimum et le maximum pour les deux vecteurs
+
+1. Comptez le nombre de woredas dans chaque vecteur
+
+---
+
+# Travail à la maison
+
+Si vous voulez vous entraîner, et que vous souhaitez qu'on regarde votre script, merci de faire les exercices 1 à 3, et de les déposer sur le dossier Drive (lien ci-dessous, mais également envoyé par email)
+
+* Ce doit être un fichier `.R`, comme vu en cours
+
+* Nommez-le "NOM_Prenom_seance_1.R", et déposez-le sur ce [dossier Drive](https://drive.google.com/drive/folders/1aXqLCIHHR8tJbHAMWo2veoAptNR8I8P2?usp=sharing)
+
+---
+
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+# Bonne journée !
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="../js/ru_xaringan.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
