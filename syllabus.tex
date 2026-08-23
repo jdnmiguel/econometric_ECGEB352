@@ -1,0 +1,513 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Introduction à l'économétrie},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Introduction à l'économétrie}
+\author{}
+\date{\vspace{-2.5em}Printemps 2026}
+
+\begin{document}
+\maketitle
+
+\section{Organisation du cours}\label{organisation-du-cours}
+
+\textbf{Enseignant(s) :} \emph{À compléter}\\
+\textbf{Email :} \emph{À compléter}\\
+\textbf{Organisation :} 12 séances.
+
+\section{Description du cours}\label{description-du-cours}
+
+Ce cours propose une introduction aux méthodes fondamentales de
+l'économétrie et à leur mise en œuvre avec \textbf{R}. Il vise à donner
+aux étudiants les outils nécessaires pour analyser des données
+économiques, estimer et interpréter des modèles de régression, réaliser
+des tests statistiques et comprendre les principales méthodes
+d'identification causale utilisées en économie empirique. Une attention
+particulière est portée à la reproductibilité des analyses et à
+l'interprétation économique des résultats.
+
+Chaque séance combine des éléments théoriques, des illustrations
+empiriques et des applications sous \textbf{R}.
+
+\section{Logiciels}\label{logiciels}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{R} et \textbf{RStudio}. Les étudiants devront installer les
+  dernières versions de \textbf{R} et \textbf{RStudio} avant le premier
+  cours.
+\item
+  Une connaissance élémentaire de \textbf{R Markdown} est recommandée.
+\end{itemize}
+
+\section{Prérequis}\label{pruxe9requis}
+
+Connaissances de base en statistiques descriptives et en économie.
+
+\section{Supports pédagogiques}\label{supports-puxe9dagogiques}
+
+Les diapositives de cours, les jeux de données et les scripts \textbf{R}
+seront mis à disposition au fur et à mesure du semestre.
+
+Les principaux ouvrages de référence sont :
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Introduction to Econometrics with R}
+\item
+  \emph{Mastering Metrics} (Angrist \& Pischke)
+\item
+  \emph{ModernDive}
+\item
+  \emph{R for Data Science}
+\end{itemize}
+
+Les lectures indiquées en \textbf{gras} sont \textbf{fortement
+recommandées}.
+
+\section{Plan du cours}\label{plan-du-cours}
+
+\subsection{Séance 1 : Introduction}\label{suxe9ance-1-introduction}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Qu'est-ce que l'économétrie ?
+\item
+  Corrélation et causalité
+\item
+  Introduction à R
+\item
+  La « Credibility Revolution » en économie empirique
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Sections 1.1 et 1.2, \emph{Introduction to Econometrics with
+  R}}
+\item
+  \textbf{Introduction, \emph{Mastering Metrics}}
+\item
+  \textbf{Angrist \& Pischke (2010), \emph{The Credibility Revolution in
+  Empirical Economics}}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séances 2 et 3 : Manipulation, visualisation et description
+des
+données}\label{suxe9ances-2-et-3-manipulation-visualisation-et-description-des-donnuxe9es}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Manipulation des données avec le \emph{tidyverse}
+\item
+  Nettoyage des données
+\item
+  Statistiques descriptives
+\item
+  Visualisation graphique des données
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre « Data Transformation », \emph{R for Data Science}}
+\item
+  \textbf{Schwabish (2014), \emph{An Economist's Guide to Visualizing
+  Data}}
+\item
+  Chapitres 2 et 3 de \emph{ModernDive}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 4 : Régression linéaire
+simple}\label{suxe9ance-4-ruxe9gression-linuxe9aire-simple}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Le modèle de régression linéaire simple
+\item
+  Estimation par les moindres carrés ordinaires (MCO)
+\item
+  Interprétation des coefficients
+\item
+  Qualité de l'ajustement
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre 3, \emph{Introduction to Econometrics with R}}
+\item
+  Chapitre 5 de \emph{ModernDive}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 5 : Introduction à la
+causalité}\label{suxe9ance-5-introduction-uxe0-la-causalituxe9}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Résultats potentiels
+\item
+  Raisonnement contrefactuel
+\item
+  Effet moyen d'un traitement
+\item
+  Identification des effets causaux
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre 7, \emph{Introduction to Econometrics with R}}
+\item
+  \textbf{Chapitre 1, \emph{Mastering Metrics}}
+\item
+  Cunningham, \emph{Causal Inference: The Mixtape}
+\item
+  Morgan \& Winship (2015)
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 6 : Régression linéaire
+multiple}\label{suxe9ance-6-ruxe9gression-linuxe9aire-multiple}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Régression multiple
+\item
+  Variables de contrôle
+\item
+  Biais de variable omise
+\item
+  Interprétation des coefficients
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre 4, \emph{Introduction to Econometrics with R}}
+\item
+  \textbf{Chapitre 2, \emph{Mastering Metrics}}
+\item
+  Chapitre 6 de \emph{ModernDive}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 7 :
+Échantillonnage}\label{suxe9ance-7-uxe9chantillonnage}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Échantillonnage aléatoire
+\item
+  Distributions d'échantillonnage
+\item
+  Introduction au bootstrap
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre 7 de \emph{ModernDive}}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 8 : Intervalles de confiance et tests
+d'hypothèses}\label{suxe9ance-8-intervalles-de-confiance-et-tests-dhypothuxe8ses}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Inférence statistique
+\item
+  Intervalles de confiance
+\item
+  Tests d'hypothèses
+\item
+  Valeurs \emph{p}
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitres 8 et 9 de \emph{ModernDive}}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 9 : Inférence en
+régression}\label{suxe9ance-9-infuxe9rence-en-ruxe9gression}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Erreurs standards
+\item
+  Significativité statistique
+\item
+  Intervalles de confiance
+\item
+  Tests sur les coefficients de régression
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre 6, \emph{Introduction to Econometrics with R}}
+\item
+  \textbf{Chapitre 10 de \emph{ModernDive}}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{\texorpdfstring{Séance 10 : La méthode des doubles
+différences
+(\emph{Differences-in-Differences})}{Séance 10 : La méthode des doubles différences (Differences-in-Differences)}}\label{suxe9ance-10-la-muxe9thode-des-doubles-diffuxe9rences-differences-in-differences}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Estimateur en doubles différences
+\item
+  Hypothèse de tendances parallèles
+\item
+  Effets fixes
+\item
+  Applications empiriques
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre 5, \emph{Mastering Metrics}}
+\item
+  \textbf{Card \& Krueger (1994), « Minimum Wages and Employment: A Case
+  Study of the Fast-Food Industry in New Jersey and Pennsylvania »}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 11 : Régression sur
+discontinuité}\label{suxe9ance-11-ruxe9gression-sur-discontinuituxe9}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Discontinuité franche et floue
+\item
+  Hypothèses d'identification
+\item
+  Estimation et interprétation
+\item
+  Applications empiriques
+\end{itemize}
+
+\textbf{Lectures recommandées}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chapitre 4, \emph{Mastering Metrics}}
+\item
+  \textbf{Les diapositives et vidéos d'Andrew Heiss}
+\item
+  Chris Walters (2020), \emph{Regression Discontinuity Designs}
+\item
+  \textbf{Carpenter \& Dobkin (2009), « The Effect of Alcohol
+  Consumption on Mortality »}
+\end{itemize}
+
+\textbf{Lectures complémentaires}
+
+\begin{itemize}
+\tightlist
+\item
+  Imbens \& Lemieux (2008)
+\item
+  Lee \& Lemieux (2010)
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Séance 12 : Séance de
+révision}\label{suxe9ance-12-suxe9ance-de-ruxe9vision}
+
+\textbf{Contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  Synthèse des notions abordées
+\item
+  Exercices de révision
+\item
+  Questions et discussion
+\end{itemize}
+
+\section{Références}\label{ruxe9fuxe9rences}
+
+\subsection{Ouvrages principaux}\label{ouvrages-principaux}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Angrist, J. D. \& Pischke, J.-S. (2015). \emph{Mastering
+  Metrics}.}
+\item
+  \textbf{Introduction to Econometrics with R.}
+\item
+  \textbf{ModernDive.}
+\item
+  \textbf{Wickham, H. \& Grolemund, G. \emph{R for Data Science}.}
+\end{itemize}
+
+\subsection{Articles de référence}\label{articles-de-ruxe9fuxe9rence}
+
+\begin{itemize}
+\tightlist
+\item
+  Angrist, J. D. \& Pischke, J.-S. (2010). \emph{The Credibility
+  Revolution in Empirical Economics.}
+\item
+  Schwabish, J. (2014). \emph{An Economist's Guide to Visualizing Data.}
+\item
+  Card, D. \& Krueger, A. (1994). \emph{Minimum Wages and Employment: A
+  Case Study of the Fast-Food Industry in New Jersey and Pennsylvania.}
+\item
+  Carpenter, C. \& Dobkin, C. (2009). \emph{The Effect of Alcohol
+  Consumption on Mortality: Regression Discontinuity Evidence from the
+  Minimum Drinking Age.}
+\end{itemize}
+
+\subsection{Lectures complémentaires}\label{lectures-compluxe9mentaires}
+
+\begin{itemize}
+\tightlist
+\item
+  Cunningham, S. \emph{Causal Inference: The Mixtape.}
+\item
+  Morgan, S. L. \& Winship, C. \emph{Counterfactuals and Causal
+  Inference.}
+\item
+  Imbens, G. \& Lemieux, T. (2008).
+\item
+  Lee, D. \& Lemieux, T. (2010).
+\end{itemize}
+
+\end{document}

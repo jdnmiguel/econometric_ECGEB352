@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econométrie</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="érémy Do Nascimento Miguel" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="../css/scpo.css" type="text/css" />
+    <link rel="stylesheet" href="../css/scpo-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Econométrie
+]
+.subtitle[
+## Visualisation
+]
+.author[
+### érémy Do Nascimento Miguel
+]
+.date[
+### Université de Namur </br> 2026-08-23
+]
+
+---
+
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+
+
+
+# Crédit
+
+Ce cours est basé sur celui de [Grant McDermott's](https://grantmcdermott.com/).
+
+---
+layout: false
+class: title-slide-section-red, middle
+
+# Visualising Data
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+background-image: url("../img/logo/ggplot2.svg")
+background-position: 90% 5%
+background-size: 150px
+
+# Base `R` et `ggplot2`
+
+* Bien que l'outil graphique basique de `R` est plutôt bon.
+
+* Il y a une excellente et puissante alternative : `ggplot2`
+
+* Nous allons utiliser la base de données du package `gapminder` pour générer des exemples.
+
+---
+
+# La base de données `gapminder` 
+
+* Chargeons la base `gapminder` comme suivant:
+    
+    ``` r
+    library(dslabs)
+    data(gapminder, package = "dslabs")
+    ```
+    
+    
+
+--
+
+* Voici les 3ères et 2 dernières lignes.
+    
+    ``` r
+    head(gapminder, n = 3)
+    ```
+    
+    ```
+    ##   country year infant_mortality life_expectancy fertility population
+    ## 1 Albania 1960            115.4           62.87      6.19    1636054
+    ## 2 Algeria 1960            148.2           47.50      7.65   11124892
+    ## 3  Angola 1960            208.0           35.98      7.32    5270844
+    ##           gdp continent          region
+    ## 1          NA    Europe Southern Europe
+    ## 2 13828152297    Africa Northern Africa
+    ## 3          NA    Africa   Middle Africa
+    ```
+    
+    ``` r
+    tail(gapminder, n = 2)
+    ```
+    
+    ```
+    ##        country year infant_mortality life_expectancy fertility population gdp
+    ## 10544   Zambia 2016               NA           57.10        NA         NA  NA
+    ## 10545 Zimbabwe 2016               NA           61.69        NA         NA  NA
+    ##       continent         region
+    ## 10544    Africa Eastern Africa
+    ## 10545    Africa Eastern Africa
+    ```
+
+---
+
+class: inverse
+
+# Task 2: Understanding the data
+
+<countdown-timer class="countdown" id="timer_8486bd83" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Load the data by running the following code:
+
+
+``` r
+library(dslabs)
+data(gapminder, package = "dslabs")
+```
+
+1. Compute the average population per continent per year, `mean_pop`, and assign the output to a new object `gapminder_mean`. (*Hint: you should have one observation (row) per continent for each year. You'll have to use `group_by` and `summarise`.*)
+
+
+
+---
+
+# gg est pour la grammaire des graphiques &lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+[1]: Les slides suivantes viennent du super [guide de `ggplot2`](https://pkg.garrickadenbuie.com/gentle-ggplot2/#1) de  [Garrick Aden-Buie](https://www.garrickadenbuie.com/)
+]
+
+---
+
+# gg est pour la grammaire des graphiques
+
+
+.left-thin[
+### Data
+
+```r
+data %&gt;%
+  ggplot()
+```
+
+ou 
+
+```r
+ggplot(data)
+```
+]
+
+--
+
+.right-wide[
+
+#### Préparons les données 
+
+1. Chaque variable forme une  ***colonne***
+
+2. Chaque observation forme une ***ligne***
+
+]
+
+--
+
+.right-wide[
+#### On commence par se demander 
+
+1. Quelles informations je souhaite dans mon graphique ?
+
+1. Est ce que les données sont dans ***une colonne/ligne*** pour une point ?
+]
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+# gg est pour la grammaire des graphiques
+
+.left-thin[
+### Données
+### Esthétique
+
+```r
++ aes()
+```
+
+]
+---
+
+.right-wide[
+Assigne les données à des éléments visuels
+
+- `year` : année
+
+- population
+
+- `country`: pays
+]
+
+---
+
+.right-wide[
+Assigne les données à des éléments visuels
+
+- `year` → **x**
+
+- `population` → **y**
+
+- `country` → *shape*, *color*, etc.
+]
+
+---
+
+.right-wide[
+Assigne les données à des éléments visuels
+
+```r
+aes(
+  x = year,
+  y = population,
+  color = country
+)
+```
+]
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+# gg est pour la grammaire des graphiques
+
+.left-thin[
+### Données
+### Esthétique
+### Geométrie
+
+```r
++ geom_*()
+```
+]
+
+---
+
+.right-wide[
+Les objets géométriques que l'on met dans le graphique 
+
+&lt;img src="chapter_r_gg_files/figure-html/geom_demo-1.svg" alt="" width="650px" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.right-wide[
+ [Une liste des formes les plus utilisées](https://eric.netlify.com/2017/08/10/most-popular-ggplot2-geoms/)
+
+.small[
+| Type | Function |
+|:----:|:--------:|
+| Point | `geom_point()` |
+| Line | `geom_line()` |
+| Bar | `geom_bar()`, `geom_col()` |
+| Histogram | `geom_histogram()` |
+| Regression | `geom_smooth()` |
+| Boxplot | `geom_boxplot()` |
+| Text | `geom_text()` |
+| Vert./Horiz. Line | `geom_{vh}line()` |
+| Count | `geom_count()` |
+| Density | `geom_density()` |
+
+&lt;https://eric.netlify.com/2017/08/10/most-popular-ggplot2-geoms/&gt;
+]
+]
+
+
+---
+
+.right-wide[
+Comme à taper `geom_` dans `RStudio` pour voir toutes les options
+
+&lt;img src="chapter_r_gg_files/figure-html/geom.gif" width="300px" style="float: center;"&gt;
+
+]
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+# (V)Notre premier graphique!
+---
+
+.left-thin[
+
+``` r
+gapminder_mean
+```
+]
+
+.right-wide[
+
+```
+## # A tibble: 285 × 3
+## # Groups:   continent [5]
+##    continent  year mean_pop
+##    &lt;fct&gt;     &lt;int&gt;    &lt;dbl&gt;
+##  1 Africa     1960 5464985.
+##  2 Africa     1961 5598112.
+##  3 Africa     1962 5736073.
+##  4 Africa     1963 5878867.
+##  5 Africa     1964 6026474.
+##  6 Africa     1965 6178906.
+##  7 Africa     1966 6336258.
+##  8 Africa     1967 6498656.
+##  9 Africa     1968 6666202.
+## 10 Africa     1969 6839011.
+## # ℹ 275 more rows
+```
+]
+
+---
+
+.left-thin[
+
+``` r
+gapminder_mean %&gt;%
+* ggplot()
+```
+]
+
+.right-wide[
+&lt;img src="chapter_r_gg_files/figure-html/first-plot1a-out-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-thin[
+
+``` r
+gapminder_mean %&gt;%
+  ggplot() +
+* aes(x = year,
+*     y = mean_pop)
+```
+]
+
+.right-wide[
+&lt;img src="chapter_r_gg_files/figure-html/first-plot1b-out-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-thin[
+
+``` r
+gapminder_mean %&gt;%
+  ggplot() +
+  aes(x = year,
+      y = mean_pop) +
+* geom_point()
+```
+]
+
+.right-wide[
+&lt;img src="chapter_r_gg_files/figure-html/first-plot1c-out-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-thin[
+
+``` r
+gapminder_mean %&gt;%
+  ggplot() +
+  aes(x = year,
+      y = mean_pop,
+*     color = continent) +
+  geom_point()
+```
+]
+
+.right-wide[
+&lt;img src="chapter_r_gg_files/figure-html/first-plot1-out-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-thin[
+
+``` r
+gapminder_mean %&gt;%
+  ggplot() +
+  aes(x = year,
+      y = mean_pop,
+      color = continent) +
+  geom_point() +
+* geom_line()
+```
+]
+
+.right-wide[
+&lt;img src="chapter_r_gg_files/figure-html/first-plot2-fake-out-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-thin[
+
+``` r
+gapminder_mean %&gt;%
+  ggplot() +
+  aes(x = year,
+      y = mean_pop,
+      color = continent) +
+* # geom_point() +
+  geom_line()
+```
+]
+
+.right-wide[
+&lt;img src="chapter_r_gg_files/figure-html/first-plot2-line-out-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-thin[
+
+``` r
+g = gapminder_mean %&gt;%
+  ggplot() +
+  aes(x = year,
+      y = mean_pop,
+      color = continent) +
+* # geom_point() +
+  geom_line()
+g
+# graphs peuvent être sauver comme des
+# objects!
+```
+]
+
+.right-wide[
+&lt;img src="chapter_r_gg_files/figure-html/save-plot-out-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+# gg est pour Grammaire de Graphique
+
+.left-thin[
+### Données
+### Esthétique
+### Géométrie
+### Facet
+
+```r
++ facet_wrap() 
++ facet_grid()
+```
+]
+---
+
+
+
+.right-wide[
+
+``` r
+g + facet_wrap(~ continent)
+```
+
+&lt;img src="chapter_r_gg_files/figure-html/geom_facet-1.svg" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.right-wide[
+
+``` r
+g + facet_grid(~ continent)
+```
+
+&lt;img src="chapter_r_gg_files/figure-html/geom_grid-1.svg" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+# gg est pour Grammaire de Graphique
+
+.left-thin[
+### Données
+### Esthétique
+### Géométrie
+### Facet
+### Labels
+
+```r
++ labs()
+```
+]
+---
+
+.right-wide[
+
+``` r
+g + labs(x = "Year", y = "Average Population", color = "Continent")
+```
+
+&lt;img src="chapter_r_gg_files/figure-html/labs-ex-1.svg" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+# gg est pour Grammaire de Graphique
+
+.left-thin[
+### Données
+### Esthétique
+### Géométrie
+### Facet
+### Labels
+### Echelle
+
+```r
++ scale_*_*()
+```
+]
+---
+
+.right-wide[ 
+`scale` + `_` + `&lt;aes&gt;` + `_` + `&lt;type&gt;` + `()`
+
+Quels parameètres voulez vous ajuster ? → `&lt;aes&gt;` &lt;br&gt;
+Quel type de paramètre ? → `&lt;type&gt;`
+
+- Je veux changer mon axe-x discret&lt;br&gt;`scale_x_discrete()`
+- Je veux change range of point sizes from continuous variable&lt;br&gt;`scale_size_continuous()`
+- Je veux rescale l'axe-y en log10&lt;br&gt;`scale_y_log10()`
+- Je veux utiliser une différente palette de couleur&lt;br&gt;`scale_fill_discrete()`&lt;br&gt;`scale_color_manual()`
+]
+
+---
+
+.right-wide[
+
+``` r
+g + scale_color_viridis_d()
+```
+
+&lt;img src="chapter_r_gg_files/figure-html/scale_ex1-1.svg" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.right-wide[
+
+``` r
+g + scale_y_log10()
+```
+
+&lt;img src="chapter_r_gg_files/figure-html/scale_ex2-1.svg" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.right-wide[
+
+``` r
+g + scale_x_continuous(breaks = seq(1950, 2020, 10))
+```
+
+&lt;img src="chapter_r_gg_files/figure-html/scale_ex4-1.svg" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+# gg est pour Grammaire de Graphique
+
+.left-thin[
+### Données
+### Esthétique
+### Géométrie
+### Facet
+### Labels
+### Echelle
+
+---
+
+layout:true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Plus de détails sur `ggplot2`
+
+* Chaque graphique est unique et `ggplot2` fourni une infinité d'option pour créer le graphique parfait.
+
+--
+
+* Retrouvez le cheatsheet sur [site du projet](https://ggplot2.tidyverse.org).
+
+--
+
+* Le [guide](https://pkg.garrickadenbuie.com/gentle-ggplot2/#1) de [Garrick Aden-Buie](https://www.garrickadenbuie.com/) que j'ai utilisé pour les diapos précédentes/
+
+---
+
+# Types de Gaphiques
+
+***Histogrammes:*** compte le nombre d'observations dans des intervalles.
+
+--
+
+***Boxplots:*** montre la distribution d'une variable.
+
+--
+
+&lt;img src="chapter_r_gg_files/figure-html/boxplot_explanation.png" alt="" width="850px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Types de Gaphiques
+
+***Histogrammes :*** compte le nombre d'observations dans des intervalles.
+
+***Boxplots :*** montre la distribution d'une variable.
+
+***Nuages de points :*** mpntre la relation entre deux variables.
+
+---
+
+class: inverse
+
+# Task 3: Visualising data
+
+<countdown-timer class="countdown" id="timer_29cbd55a" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+
+Using the `gapminder` data, create the following plots using `ggplot2`.
+
+1. A histogram of life expectancy in 2015. (*Hint: do you need to specify a `y` in `aes()` for a histogram?*) Once you've created the histogram, within the appropriate `geom_*` set: `binwidth` to 5, `boundary` to 45, `colour` to "white" and `fill` to "#d90502". What does each of these options do? &lt;br&gt; *Optional:* Using the previous graph, facet it by continent such that each continent's plot is a new row. (*Hint: check the help for `facet_grid`.*)
+
+1. A boxplot of average life expectancy per year by continent. Within the appropriate `geom_*` set: `colour` to "black" and `fill` to "#d90502". (*Hint: you need to group by both `continent` and `year`.*)
+
+1. A scatter plot of fertility rate (y-axis) with respect to infant mortality (x-axis) in 2015. Once you've created the scatter plot, within the appropriate `geom_*` set: `size` to 3, `alpha` to 0.5, `colour` to "#d90502". Add labels (`labs`) to the plot so that it is cleaner.
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Résumer les données
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Résumer les données
+
+
+* En général, on découvre des info sur nos données en utilisant des graphiques et/ou en calculant des statistiques descriptives 
+
+--
+
+* Regardons brievemment cela !
+
+--
+
+* En particulier, regardons : *tendance centrale* et *la dispersion*.
+
+---
+
+# Tendance Centrale
+
+
+.pull-left[
+`mean(x)`: la moyenne de toutes ls valeurs de `x`.
+`$$\bar{x} = \frac{1}{N}\sum_{i=1}^N x_i$$`
+
+
+``` r
+x &lt;- c(1,2,2,2,2,100)
+mean(x)
+```
+
+```
+## [1] 18.16667
+```
+
+``` r
+mean(x) == sum(x) / length(x)
+```
+
+```
+## [1] TRUE
+```
+]
+
+--
+
+.pull-right[
+`median`: la valeur de `\(x_j\)` au dessous et dessus duquel 50% des valeurs de `x` sont. `\(m\)` est la médianne si 
+    `$$\Pr(X \leq m) \geq 0.5 \text{ and } \Pr(X \geq m) \geq 0.5$$`
+    
+La médiane est robuste contre les *valeurs extrêmes*.
+
+
+``` r
+median(x)
+```
+
+```
+## [1] 2
+```
+]
+
+---
+
+# Dispersion
+
+.pull-left[
+Une autre caractéristiques intéressantes d'une variable est de savoir à quelle point elle est  *dispersée* autour de son centre  (la moyenne ici).
+
+La *variance* est une mesure.
+    `$$Var(X) = \frac{1}{N} \sum_{i=1}^N(x_i-\bar{x})^2$$`
+    
+Considérons 2 `distribution normalle` avec des moyennes égales à  `0`:
+]
+
+--
+
+.pull-right[
+&lt;img src="chapter_r_gg_files/figure-html/unnamed-chunk-9-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+Calculé avec:
+
+``` r
+var(x)
+```
+]
+---
+
+# Tabuler des données
+
+`table(x)` est une fonction utile qui compte le nombre d'occurence unique de `x`:
+
+``` r
+table(gapminder$continent)
+```
+
+```
+## 
+##   Africa Americas     Asia   Europe  Oceania 
+##     2907     2052     2679     2223      684
+```
+
+--
+
+Peut aussi utiliser la fonction `count`de `dplyr`
+
+``` r
+gapminder %&gt;% count(continent)
+```
+
+```
+##   continent    n
+## 1    Africa 2907
+## 2  Americas 2052
+## 3      Asia 2679
+## 4    Europe 2223
+## 5   Oceania  684
+```
+
+---
+
+# Tabuler des données
+
+
+Pour 2 variables, `table` produit une table :
+
+``` r
+gapminder_new &lt;- gapminder %&gt;%
+  filter(year == 2015) %&gt;%
+  mutate(fertility_above_2 = (fertility &gt; 2.1)) #  variable binaire pour le taux de fertilité au dessus du taux de remlacement 
+```
+
+.pull-left[
+
+``` r
+table(gapminder_new$fertility_above_2)
+```
+
+```
+## 
+## FALSE  TRUE 
+##    80   104
+```
+]
+
+--
+
+.pull-right[
+
+``` r
+table(gapminder_new$fertility_above_2,gapminder_new$continent)
+```
+
+```
+##        
+##         Africa Americas Asia Europe Oceania
+##   FALSE      2       15   20     39       4
+##   TRUE      49       20   27      0       8
+```
+]
+
+--
+
+Avec `prop.table`, on peut obtenir des proportions :
+
+``` r
+# proportions by row
+prop.table(table(gapminder_new$fertility_above_2,gapminder_new$continent), margin = 1)
+# proportions by column
+prop.table(table(gapminder_new$fertility_above_2,gapminder_new$continent), margin = 2) 
+```
+
+* ⚠️ Pour obtenir la `table` ou `crosstable`s avec `NA`s, utilisez  `useNA = "always"` ou `useNA = "ifany"`
+
+---
+
+# Tabuler des données
+
+Encore la fonction `count` fait l'affaire:
+
+
+``` r
+gapminder_new %&gt;%
+  count(continent, fertility_above_2)
+```
+
+```
+##    continent fertility_above_2  n
+## 1     Africa             FALSE  2
+## 2     Africa              TRUE 49
+## 3   Americas             FALSE 15
+## 4   Americas              TRUE 20
+## 5   Americas                NA  1
+## 6       Asia             FALSE 20
+## 7       Asia              TRUE 27
+## 8     Europe             FALSE 39
+## 9    Oceania             FALSE  4
+## 10   Oceania              TRUE  8
+```
+
+Note :  `count` montre les `NA` que s'il y en a.
+
+---
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+# BONNE JOURNÉE !
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.ScPored[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;] | Discord |
+| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                       |
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="../js/ru_xaringan.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

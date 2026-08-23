@@ -1,8 +1,8 @@
 ---
-title: "Logiciels d'économétrie"
-subtitle: "Séance 1 : Introduction à R"
+title: "Econométrie"
+subtitle: "Introduction à R"
 author: "Mathilde Col & Jérémy Do Nascimento Miguel"
-date: "Université de Bordeaux </br> `r Sys.Date()`"
+date: "Université de Namur </br> `r Sys.Date()`"
 output:
   xaringan::moon_reader:
     lib_dir: libs

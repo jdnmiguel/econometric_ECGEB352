@@ -1,87 +1,246 @@
-The material below is a complement to the lecture slides and should be used as reference. Readings in **bold** are **very highly** recommended.
+---
+title: "Introduction à l'économétrie"
+date: "Printemps 2026"
+output:
+  pdf_document:
+    toc: false
+    number_sections: false
+geometry: margin=1in
+fontsize: 11pt
+---
 
+# Organisation du cours
 
-### Lecture 1: Introduction
+**Enseignant(s) :** *À compléter*  
+**Email :** *À compléter*  
+**Organisation :** 12 séances.
 
-[**1.1 and 1.2, Introduction to Econometrics with R**](https://scpoecon.github.io/ScPoEconometrics/R-intro.html)
+# Description du cours
 
-**Introduction, Mastering Metrics**
+Ce cours propose une introduction aux méthodes fondamentales de l'économétrie et à leur mise en œuvre avec **R**. Il vise à donner aux étudiants les outils nécessaires pour analyser des données économiques, estimer et interpréter des modèles de régression, réaliser des tests statistiques et comprendre les principales méthodes d'identification causale utilisées en économie empirique. Une attention particulière est portée à la reproductibilité des analyses et à l'interprétation économique des résultats.
 
-[**Angrist and Pischke (2010 JEP), *The Credibility Revolution in Empirical Economics***](https://www.aeaweb.org/articles?id=10.1257/jep.24.2.3)  
+Chaque séance combine des éléments théoriques, des illustrations empiriques et des applications sous **R**.
 
+# Logiciels
 
-### Lecture 2/3: Tidying, Visualising and Summarising Data
+- **R** et **RStudio**. Les étudiants devront installer les dernières versions de **R** et **RStudio** avant le premier cours.
+- Une connaissance élémentaire de **R Markdown** est recommandée.
 
-[**Data transformation, R for Data Science**](https://r4ds.had.co.nz/transform.html)
+# Prérequis
 
-[**Schwabish (2014 JEP), An Economist's Guide to Visualizing Data**](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209)
+Connaissances de base en statistiques descriptives et en économie.
 
-Chapters [2](https://moderndive.com/2-viz.html) and [3](https://moderndive.com/3-wrangling.html), ModernDive
+# Supports pédagogiques
 
+Les diapositives de cours, les jeux de données et les scripts **R** seront mis à disposition au fur et à mesure du semestre.
 
-### Lecture 4: Simple Linear Regression
+Les principaux ouvrages de référence sont :
 
-[**Chapter 3, Introduction to Econometrics with R**](https://scpoecon.github.io/ScPoEconometrics/linreg.html)
+- *Introduction to Econometrics with R*
+- *Mastering Metrics* (Angrist & Pischke)
+- *ModernDive*
+- *R for Data Science*
 
-[Chapter 5, ModernDive](https://moderndive.com/5-regression.html)
+Les lectures indiquées en **gras** sont **fortement recommandées**.
 
+# Plan du cours
 
-### Lecture 5: Introduction to Causality
+## Séance 1 : Introduction
 
-[**Chapter 7, Introduction to Econometrics with R**](https://scpoecon.github.io/ScPoEconometrics/causality.html)
+**Contenu**
 
-**Chapter 1, Mastering Metrics**
+- Qu'est-ce que l'économétrie ?
+- Corrélation et causalité
+- Introduction à R
+- La « Credibility Revolution » en économie empirique
 
-["Potential outcomes causal model", Causal Inference: The Mixtape, Scott Cunningham](http://scunning.com/cunningham_mixtape.pdf)
+**Lectures recommandées**
 
-"Introduction" and "Counterfactuals and the Potential Outcome Model", Counterfactuals and Causal Inference, Morgan and Winship, 2015
+- **Sections 1.1 et 1.2, *Introduction to Econometrics with R***
+- **Introduction, *Mastering Metrics***
+- **Angrist & Pischke (2010), *The Credibility Revolution in Empirical Economics***
 
+---
 
-### Lecture 6: Multiple Linear Regression
+## Séances 2 et 3 : Manipulation, visualisation et description des données
 
-[**Chapter 4, Introduction to Econometrics with R**](https://scpoecon.github.io/ScPoEconometrics/multiple-reg.html)
+**Contenu**
 
-**Chapter 2, Mastering Metrics**
+- Manipulation des données avec le *tidyverse*
+- Nettoyage des données
+- Statistiques descriptives
+- Visualisation graphique des données
 
-[Chapter 6, ModernDive](https://moderndive.com/6-multiple-regression.html)
+**Lectures recommandées**
 
+- **Chapitre « Data Transformation », *R for Data Science***
+- **Schwabish (2014), *An Economist's Guide to Visualizing Data***
+- Chapitres 2 et 3 de *ModernDive*
 
-### Lecture 7: Sampling
+---
 
-[**Chapter 7, ModernDive**](https://moderndive.com/7-sampling.html)
+## Séance 4 : Régression linéaire simple
 
+**Contenu**
 
-### Lecture 8: Confidence Intervals and Hypothesis Testing
+- Le modèle de régression linéaire simple
+- Estimation par les moindres carrés ordinaires (MCO)
+- Interprétation des coefficients
+- Qualité de l'ajustement
 
-**Chapters [8](https://moderndive.com/8-confidence-intervals.html) and [9](https://moderndive.com/9-hypothesis-testing.html), ModernDive**
+**Lectures recommandées**
 
-### Lecture 9: Regression Inference
+- **Chapitre 3, *Introduction to Econometrics with R***
+- Chapitre 5 de *ModernDive*
 
-[**Chapter 6, Introduction to Econometrics with R**](https://scpoecon.github.io/ScPoEconometrics/std-errors.html)
+---
 
-[**Chapter 10, ModernDive**](https://moderndive.com/10-inference-for-regression.html)
+## Séance 5 : Introduction à la causalité
 
-### Lecture 10: Differences-in-Differences
+**Contenu**
 
-**Chapter 5, Mastering Metrics**
+- Résultats potentiels
+- Raisonnement contrefactuel
+- Effet moyen d'un traitement
+- Identification des effets causaux
 
-[**Card and Krueger (1994 AER), "Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania"**](http://davidcard.berkeley.edu/papers/njmin-aer.pdf)
+**Lectures recommandées**
 
+- **Chapitre 7, *Introduction to Econometrics with R***
+- **Chapitre 1, *Mastering Metrics***
+- Cunningham, *Causal Inference: The Mixtape*
+- Morgan & Winship (2015)
 
-### Lecture 11: Regression Discontinuity
+---
 
-**Chapter 4, Mastering Metrics**
+## Séance 6 : Régression linéaire multiple
 
-**Andrew Heiss' excellent [slides](https://evalsp20.classes.andrewheiss.com/slides/PMAP-8521_2020-04-01.pdf) and [lecture videos](https://evalsp20.classes.andrewheiss.com/class/11-class/)**]
+**Contenu**
 
-[Chris Walters (2020), Regression Discontinuity Designs](https://www.aeaweb.org/webcasts/2020/mastering-mostly-harmless-econometrics-part-7)
+- Régression multiple
+- Variables de contrôle
+- Biais de variable omise
+- Interprétation des coefficients
 
-[**Carpenter and Dobkin (2009, AEJ: Applied), "The Effect of Alcohol Consumption on Mortality: Regression Discontinuity Evidence from the Minimum Drinking Age"**](https://www.aeaweb.org/articles?id=10.1257/app.1.1.164)
+**Lectures recommandées**
 
-*Literature reviews:*  
-[Imbens and Lemieux (2008 JMetrics), "Regression discontinuity designs: A guide to practice"](https://faculty.smu.edu/millimet/classes/eco7377/papers/imbens%20lemieux%202008.pdf)  
-[Lee and Lemieux (2010 JEL), "Regression Discontinuity Designs in Economics"](https://www.princeton.edu/~davidlee/wp/RDDEconomics.pdf)
+- **Chapitre 4, *Introduction to Econometrics with R***
+- **Chapitre 2, *Mastering Metrics***
+- Chapitre 6 de *ModernDive*
 
+---
 
-### Lecture 12: Review Session
+## Séance 7 : Échantillonnage
 
+**Contenu**
+
+- Échantillonnage aléatoire
+- Distributions d'échantillonnage
+- Introduction au bootstrap
+
+**Lectures recommandées**
+
+- **Chapitre 7 de *ModernDive***
+
+---
+
+## Séance 8 : Intervalles de confiance et tests d'hypothèses
+
+**Contenu**
+
+- Inférence statistique
+- Intervalles de confiance
+- Tests d'hypothèses
+- Valeurs *p*
+
+**Lectures recommandées**
+
+- **Chapitres 8 et 9 de *ModernDive***
+
+---
+
+## Séance 9 : Inférence en régression
+
+**Contenu**
+
+- Erreurs standards
+- Significativité statistique
+- Intervalles de confiance
+- Tests sur les coefficients de régression
+
+**Lectures recommandées**
+
+- **Chapitre 6, *Introduction to Econometrics with R***
+- **Chapitre 10 de *ModernDive***
+
+---
+
+## Séance 10 : La méthode des doubles différences (*Differences-in-Differences*)
+
+**Contenu**
+
+- Estimateur en doubles différences
+- Hypothèse de tendances parallèles
+- Effets fixes
+- Applications empiriques
+
+**Lectures recommandées**
+
+- **Chapitre 5, *Mastering Metrics***
+- **Card & Krueger (1994), « Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania »**
+
+---
+
+## Séance 11 : Régression sur discontinuité
+
+**Contenu**
+
+- Discontinuité franche et floue
+- Hypothèses d'identification
+- Estimation et interprétation
+- Applications empiriques
+
+**Lectures recommandées**
+
+- **Chapitre 4, *Mastering Metrics***
+- **Les diapositives et vidéos d'Andrew Heiss**
+- Chris Walters (2020), *Regression Discontinuity Designs*
+- **Carpenter & Dobkin (2009), « The Effect of Alcohol Consumption on Mortality »**
+
+**Lectures complémentaires**
+
+- Imbens & Lemieux (2008)
+- Lee & Lemieux (2010)
+
+---
+
+## Séance 12 : Séance de révision
+
+**Contenu**
+
+- Synthèse des notions abordées
+- Exercices de révision
+- Questions et discussion
+
+# Références
+
+## Ouvrages principaux
+
+- **Angrist, J. D. & Pischke, J.-S. (2015). *Mastering Metrics*.**
+- **Introduction to Econometrics with R.**
+- **ModernDive.**
+- **Wickham, H. & Grolemund, G. *R for Data Science*.**
+
+## Articles de référence
+
+- Angrist, J. D. & Pischke, J.-S. (2010). *The Credibility Revolution in Empirical Economics.*
+- Schwabish, J. (2014). *An Economist's Guide to Visualizing Data.*
+- Card, D. & Krueger, A. (1994). *Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania.*
+- Carpenter, C. & Dobkin, C. (2009). *The Effect of Alcohol Consumption on Mortality: Regression Discontinuity Evidence from the Minimum Drinking Age.*
+
+## Lectures complémentaires
+
+- Cunningham, S. *Causal Inference: The Mixtape.*
+- Morgan, S. L. & Winship, C. *Counterfactuals and Causal Inference.*
+- Imbens, G. & Lemieux, T. (2008).
+- Lee, D. & Lemieux, T. (2010).
