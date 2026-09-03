@@ -489,29 +489,28 @@ class: inverse
 `r countdown(minutes = 7, top = 0)`
 
 ```{r, echo=F}
-murders <- read.csv("https://www.dropbox.com/s/zuk0qcfm3kyzs4e/gun_murders.csv?dl=1")
+murders <- read.csv("https://raw.githubusercontent.com/rafalab/dslabs/master/inst/extdata/murders.csv")
 ```
 
-1. Découvrez (en utilisant `help()` ou Google) comment importer un fichier .csv. N'utilisez PAS le bouton ``Import Dataset´´, ni n'installez de package.
+1. Découvrez (en utilisant `help()` ou Google) comment importer un fichier .csv. N'utilisez PAS le bouton « Import Dataset », et n'installez pas de package.
 
 1. Importez [gun_murders.csv](https://www.dropbox.com/s/zuk0qcfm3kyzs4e/gun_murders.csv?dl=1)<sup>1</sup> dans un nouvel objet `murders`. Ce fichier contient des données sur les homicides par arme à feu par État américain en 2010. (Indice : les objets sont créés à l'aide de `=` ou `<-`).
 
-1. Assurez-vous que `murders` est un data.frame en exécutant :
-    ```{r,eval=F}
-        class(murder) # vérifier la classe
-    ```
+1. Assurez-vous que `murders` est bien un data.frame en exécutant :
+```{r,eval=F}
+    class(murder) # vérifier la classe
+```
 
 1. Découvrez quelles variables sont contenues dans `murders` en exécutant :
-    ```{r, eval = F}
-        names(murders) # obtenir les noms des variables
-    ```
-    
-1. Visualisez le contenu de `murders` en cliquant sur `murders` dans votre espace de travail. À quoi correspond la variable `total` ?
+```{r, eval = F}
+    names(murders) # obtenir les noms des variables
+```
+
+1. Visualisez le contenu de `murders` en cliquant sur `murders` dans votre espace de travail (workspace). À quoi correspond la variable `total` ?
 
 .footnote[
 [1]: Ce jeu de données est tiré du package `dslabs`.
 ]
-
 ---
 
 # `data.frame`s
@@ -796,7 +795,7 @@ background-position: 9% 19%
 | <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
 | <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
----                    |
+---                    
 
 ```{r makepdf, echo=FALSE,eval=FALSE}
 system("decktape chapter1.html chapter1.pdf --chrome-arg=--disable-web-security")
