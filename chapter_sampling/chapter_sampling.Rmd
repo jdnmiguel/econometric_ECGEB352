@@ -180,7 +180,7 @@ Sample # | Count | Proportion
 
 class: inverse
 
-# Task 1
+# Tâche 1
 
 `r countdown(minutes = 5, top = 0)`
 
@@ -450,7 +450,7 @@ ggplot(virtual_prop_green, aes(x = prop_green)) +
 
 class: inverse
 
-# Task 2
+# Tâche 2
 
 `r countdown(minutes = 10, top = 0)`
 
@@ -816,22 +816,6 @@ Scénario | Paramètre de population | Notation | Estimation ponctuelle | Symbol
 <iframe width="684" height="464" src="https://www.youtube.com/watch?v=vWTKVMf5HQI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ]
 
----
-
-# On the way to causality [chapter sampling]
-
-`r emo::ji("white heavy check mark")` How to manage data? Read it, tidy it, visualise it!
-
-`r emo::ji("white heavy check mark")`  How to summarise relationships between variables? Simple and multiple linear regression, non-linear regressions, interactions...
-
-`r emo::ji("white heavy check mark")` What is causality?
-
-`r emo::ji("white heavy check mark")` **What if we don't observe an entire population?** Sampling!
-
-`r emo::ji("cross mark")`  Are our findings just due to randomness?
-
-`r emo::ji("cross mark")` How to find exogeneity in practice?
-
 
 
 ---
@@ -846,10 +830,8 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| <a href="mailto:jeremy.donascimento@unamur.be">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.ScPored <i class="fab fa-link fa-fw"></i></a> | Discord |
-| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |
-| <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
----                    |
-
+---  

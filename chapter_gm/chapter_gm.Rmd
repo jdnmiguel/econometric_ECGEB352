@@ -488,23 +488,6 @@ Il existe une infinité d'estimateurs linéaires et sans biais possibles pour $\
 ---
 
 
----
-# En route vers la causalité
-
-`r emo::ji("white heavy check mark")` Comment gérer les données ? Les lire, les nettoyer, les visualiser !
-
-`r emo::ji("white heavy check mark")`  **Comment résumer les relations entre variables ?** Régression linéaire simple et multivariée, régressions non-linéaires, interactions...
-
-`r emo::ji("white heavy check mark")` Qu'est-ce que la causalité ?
-
-`r emo::ji("cross mark")` Que faire si on n'observe pas toute une population ?
-
-`r emo::ji("cross mark")`  Nos résultats sont-ils simplement dus au hasard ?
-
-`r emo::ji("cross mark")` Comment trouver l'exogénéité en pratique ?
-
-
----
 
 
 class: title-slide-final, middle
@@ -517,9 +500,9 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| <a href="mailto:jeremy.donascimento@unamur.be">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.ScPored <i class="fab fa-link fa-fw"></i></a> | Discord |
-| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |
-| <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
 
 ---

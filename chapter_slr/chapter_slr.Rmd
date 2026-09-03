@@ -168,7 +168,7 @@ Comment résumer visuellement cette relation ? On utilise le plus souvent une **
 g_abs_avg +
     ylim(0, 15) +
     theme_bw(base_size = 14) +
-  geom_hline(yintercept = 3, col = "#d90502")
+  geom_hline(yintercept = 3, col = "forestgreen")
 ```
 ]
 
@@ -194,7 +194,7 @@ Comment résumer visuellement cette relation ? On utilise le plus souvent une **
 g_abs_avg +
     ylim(0, 15) +
     theme_bw(base_size = 14) +
-  geom_abline(intercept = 4,slope = 0.6, col = "#d90502")
+  geom_abline(intercept = 4,slope = 0.6, col = "forestgreen")
 ```
 ]
 
@@ -259,7 +259,7 @@ base_plot <- ggplot() +
     annotate(geom = "text", x = -4.3 + space, y = 94, label = "=", size = 8, hjust = 0) +
     annotate(geom = "text", x = -4.3 + 2*space, y = 94, label = "b[0]", color = "#DE9854", parse = TRUE, size = 8, hjust = 0) +
     annotate(geom = "text", x = -4.3 + 2*space + .6, y = 94, label = "+", size = 8, hjust = 0) +
-    annotate(geom = "text", x = -4.3 + 3*space + .6, y = 94, label = "b[1]", parse = TRUE, color = "#d90502", size = 8, hjust = 0) +
+    annotate(geom = "text", x = -4.3 + 3*space + .6, y = 94, label = "b[1]", parse = TRUE, color = "forestgreen", size = 8, hjust = 0) +
     annotate(geom = "text", x = -4.3 + 4*space + .6, y = 94, label = "x", parse = TRUE, size = 8, hjust = 0)
 base_plot
 ```
@@ -286,10 +286,10 @@ plot_b_0
 
 ```{r, echo = F, fig.width = 10, fig.height = 5}
 plot_b_0 + 
-    annotate(geom = "segment", x = 5, xend = 6, y = b_0+5*b_1, yend = b_0+5*b_1, arrow = arrow(angle = 12, type = "closed", length = unit(.4, "cm")), color = "#d90502") +
-    annotate(geom = "text", x = 5.5, y = 49, label = "1", size = 5, color = "#d90502") +
-    annotate(geom = "segment", x = 6, xend = 6, y = b_0+5*b_1, yend = b_0+6*b_1, arrow = arrow(angle = 12, type = "closed", length = unit(.2, "cm")), color = "#d90502") +
-    annotate(geom = "text", x = 6.5, y = (b_0+6*b_1 + b_0+5*b_1)/2, label = "b[1]", parse = TRUE, size = 6, color = "#d90502")
+    annotate(geom = "segment", x = 5, xend = 6, y = b_0+5*b_1, yend = b_0+5*b_1, arrow = arrow(angle = 12, type = "closed", length = unit(.4, "cm")), color = "forestgreen") +
+    annotate(geom = "text", x = 5.5, y = 49, label = "1", size = 5, color = "forestgreen") +
+    annotate(geom = "segment", x = 6, xend = 6, y = b_0+5*b_1, yend = b_0+6*b_1, arrow = arrow(angle = 12, type = "closed", length = unit(.2, "cm")), color = "forestgreen") +
+    annotate(geom = "text", x = 6.5, y = (b_0+6*b_1 + b_0+5*b_1)/2, label = "b[1]", parse = TRUE, size = 6, color = "forestgreen")
 ```
 
 ---
@@ -323,7 +323,7 @@ plot_ex
 * Si l'ensemble des points étaient __sur__ la droite, alors $\widehat{y}_i = y_i$.
 
 ```{r, echo = FALSE, fig.height = 4,fig.width=7}
-plot_ex + geom_line(color = "#d90502")
+plot_ex + geom_line(color = "forestgreen")
 ```
 
 ---
@@ -363,8 +363,8 @@ plot_1
 Ajoutons la droite de régression linéaire
 ```{r, echo = F, fig.width = 10, fig.height = 5}
 plot_2 <- plot_1 +
-  stat_smooth(data = g_abs, method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6)
+  stat_smooth(data = g_abs, method = "lm", se = FALSE, colour = "forestgreen") +
+  annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6)
 plot_2
 ```
 
@@ -376,10 +376,10 @@ Concentrons nous sur les observations avec un score = 2
 g_abs_avg +
     ylim(0, 10) +
     theme_bw(base_size = 14) +
-  stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
-  geom_point(data = g_abs %>% filter(score_bin == 3.1), aes(x = score_bin, y = avg_abs ), color = "#d90502", size = 4) +
-  annotate("text", x = 3.1, y = 6, label = "y[x = 3.1]", parse = TRUE, colour = "#d90502", size = 6)
+  stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6) +
+  geom_point(data = g_abs %>% filter(score_bin == 3.1), aes(x = score_bin, y = avg_abs ), color = "forestgreen", size = 4) +
+  annotate("text", x = 3.1, y = 6, label = "y[x = 3.1]", parse = TRUE, colour = "forestgreen", size = 6)
 ```
 
 ---
@@ -391,10 +391,10 @@ On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base 
 g_abs_avg +
     ylim(0, 10) +
     theme_bw(base_size = 14) +
-  stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
+  stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6) +
   geom_segment(data = abs_score_reg,
-               aes(xend = score_bin, yend = .fitted), color = "#d90502", size = 0.5)
+               aes(xend = score_bin, yend = .fitted), color = "forestgreen", size = 0.5)
 ```
 
 ---
@@ -406,17 +406,17 @@ g_abs_avg +
 g_abs_avg +
     ylim(0, 10) +
     theme_bw(base_size = 14) +
-  stat_smooth(method = "lm", se = FALSE, colour = "#d90502") +
-  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "#d90502", size = 6) +
+  stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6) +
   geom_segment(data = abs_score_reg,
-               aes(xend = score_bin, yend = .fitted), color = "#d90502", size = 0.5)
+               aes(xend = score_bin, yend = .fitted), color = "forestgreen", size = 0.5)
 ```
 ]
 
 .right-thin[
 <br>
 <br>
-<p style="text-align: center; font-weight: bold; font-size: 35px; color: #d90502;">Quel critère de *minimisation* devons nous utiliser?</strong>
+<p style="text-align: center; font-weight: bold; font-size: 35px; color: forestgreen;">Quel critère de *minimisation* devons nous utiliser?</strong>
 ]
 ---
 # Quelle est la relation entre x et u ?
@@ -645,27 +645,26 @@ $$
 
 class: inverse
 
-# Task 2: OLS Regression
+# Tâche 2 : Régression OLS
 
 `r countdown(minutes = 10, top = 0)`
 
-Run the following code to aggregate the data at the class size level:
+Exécutez le code suivant pour agréger les données au niveau de la taille de classe :
 
 ```{r, eval = F}
 grades_avg_cs <- grades %>%
   group_by(classize) %>%
   summarise(avgmath_cs = mean(avgmath),
             avgverb_cs = mean(avgverb))
+
 ```
+1. Régressez le score verbal moyen (variable dépendante) sur la taille de classe (variable indépendante). Interprétez les coefficients.
 
-1. Regress average verbal score (dependent variable) on class size (independant variable). Interpret the coefficients.
+1. Calculez les coefficients OLS $b_0$ et $b_1$ de la régression précédente en utilisant les formules de la diapositive 25. (*Indice :* vous devez utiliser les fonctions `cov`, `var`, et `mean`.)
 
-1. Compute the OLS coefficients $b_0$ and $b_1$ of the previous regression using the formulas on slide 25. (*Hint:* you need to use the `cov`, `var`, and `mean` functions.)
+1. Quel est le score verbal moyen prédit lorsque la taille de classe est égale à 0 ? (Est-ce que cela a même du sens ?!)
 
-1. What is the predicted average verbal score when class size is equal to 0? (Does that even make sense?!)
-
-1. What is the predicted average verbal score when the class size is equal to 30 students?
-
+1. Quel est le score verbal moyen prédit lorsque la taille de classe est égale à 30 élèves ?
 ---
 
 # Propriété des OLS: Pedictions et Residus
@@ -729,7 +728,7 @@ for(i in 1:4) {
 op <- par(mfrow = c(2, 2), mar = 0.1+c(4,4,1,1), oma =  c(0, 0, 0, 0))
 for(i in 1:4) {
   ff[2:3] <- lapply(paste0(c("y","x"), i), as.name)
-  plot(ff, data = anscombe, col = "black", pch = 21, bg = "#d90502", cex = 1.2,
+  plot(ff, data = anscombe, col = "black", pch = 21, bg = "forestgreen", cex = 1.2,
        xlim = c(3, 19), ylim = c(3, 13),main=paste("dataset",i))
   abline(mods[[i]], col = "#DE9854")
 }
@@ -775,7 +774,7 @@ mtcars %>% ggplot(aes(x = hp, y = mpg)) +
     geom_point() +
     stat_smooth(method='lm', formula = y~poly(x,2), se = FALSE, aes(colour="Nonlinear")) +
     stat_smooth(method='lm', se = FALSE, aes(colour="Linear")) +
-    scale_colour_manual(name="legend", values=c("darkgreen", "#d90502")) +
+    scale_colour_manual(name="legend", values=c("darkgreen", "forestgreen")) +
     labs(x = "x",
          y = "y",
          title = "Relation non-linéaire entre x et y") +
@@ -840,20 +839,20 @@ $$
 
 class: inverse
 
-# Task 3: $R^2$ and goodness of fit
+# Tâche 3 : $R^2$ et qualité de l'ajustement
 
 `r countdown(minutes = 10, top = 0)`
 
-1. Regress `avgmath_cs` on `classize`. Assign to an object `math_reg`.
+1. Régressez `avgmath_cs` sur `classize`. Assignez le résultat à un objet `math_reg`.
 
-1. Pass `math_reg` in the `summary()` function. What is the (multiple) $R^2$ for this regression? How can you interpret it?
+1. Passez `math_reg` dans la fonction `summary()`. Quel est le $R^2$ (multiple) pour cette régression ? Comment pouvez-vous
+l'interpréter ?
 
-1. Compute the squared correlation between `classize` and `avgmath_cs`. What does this tell you about the relationship between $R^2$ and the correlation in a regression with only one regressor?
+1. Calculez la corrélation au carré entre `classize` et `avgmath_cs`. Que vous apprend cela sur la relation entre le $R^2$ et la corrélation dans une régression à un seul régresseur ?
 
-1. Repeat steps 1 and 2 for `avgverb_cs`. For which exam does the variance in class size explain more of the variance in students' scores?
+1. Répétez les étapes 1 et 2 pour `avgverb_cs`. Pour quel examen la variance de la taille de classe explique-t-elle davantage la variance des scores des élèves ?
 
-1. (Optional) Install and load the `broom` package. Pass `math_reg` in the `augment()` function and assign it to a new object. Use the variance in `avgmath_cs` (SST) and the variance in `.fitted` (predicted values; SSE) to find the $R^2$ using the formula on the previous slide.
-
+1. (Optionnel) Installez et chargez le package `broom`. Passez `math_reg` dans la fonction `augment()` et assignez le résultat à un nouvel objet. Utilisez la variance de `avgmath_cs` (SST) et la variance de `.fitted` (valeurs prédites ; SSE) pour trouver le $R^2$ à l'aide de la formule de la diapositive précédente.
 ---
 
 
@@ -867,6 +866,8 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| <a href="mailto:jeremy.donascimento@unamur.be">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |                    |
-| <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
+---  

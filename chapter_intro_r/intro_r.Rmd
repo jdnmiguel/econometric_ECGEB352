@@ -72,39 +72,7 @@ layout: true
 
 * Communiquer ses résultats dans R (visualisations, tableaux)
 
----
 
-# IA & Programmation
-
-* Votre cerveau est un muscle : il a besoin d'efforts pour progresser et se maintenir
-
---
-
-* Les LLM sont plus performants avec des langages populaires comme Python ou JavaScript, mais R est moins répandu : l'IA fait davantage d'erreurs de syntaxe et invente des fonctions. Ne lui faites pas une confiance aveugle
-
---
-
-* Globalement, l'IA est surtout utile sur le long terme pour les personnes qui savent déjà ce qu'elles font, mais c'est un piège pour les apprenants
-
---
-
-$\rightarrow$ La meilleure pratique consiste à rédiger vous-même une ébauche de code, et à solliciter l'IA seulement si vous êtes bloqué·e ou que vous ne savez pas comment implémenter ce que vous avez en tête
-
----
-
-# Matériel du cours
-
-Déposé sur un [dépôt Github](https://github.com/jdnmiguel/Applied-ML) contenant :
-
-* Les fichiers d'installation de R
-
-* Les fichiers de données pour chaque séance
-
-* Des antisèches (*cheat sheets*)
-
-* Les slides de cours
-
-* Les exercices et leurs corrections
 
 ---
 
@@ -963,15 +931,6 @@ Dans **ethio_pop**, nous voulons comparer la population moyenne dans les woredas
 
 1. Comptez le nombre de woredas dans chaque vecteur
 
----
-
-# Travail à la maison
-
-Si vous voulez vous entraîner, et que vous souhaitez qu'on regarde votre script, merci de faire les exercices 1 à 3, et de les déposer sur le dossier Drive (lien ci-dessous, mais également envoyé par email)
-
-* Ce doit être un fichier `.R`, comme vu en cours
-
-* Nommez-le "NOM_Prenom_seance_1.R", et déposez-le sur ce [dossier Drive](https://drive.google.com/drive/folders/1aXqLCIHHR8tJbHAMWo2veoAptNR8I8P2?usp=sharing)
 
 ---
 
@@ -981,3 +940,11 @@ background-size: 250px
 background-position: 9% 19%
 
 # Bonne journée !
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
+---  

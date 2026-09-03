@@ -376,25 +376,28 @@ knitr::include_graphics("chapter_intro_files/figure-html/RStudio_IDE_screenshot.
 
 class: inverse
 
-# Task 1
+# Tâche 1
 
 `r countdown(minutes = 5, top = 0)`
 
-1. Create a new R script (File $\rightarrow$ New File $\rightarrow$ R Script). Save it somewhere as `lecture_intro.R`.
+1. Créez un nouveau script R (Fichier $\rightarrow$ Nouveau fichier $\rightarrow$ Script R). Enregistrez-le quelque part sous le nom `lecture_intro.R`.
 
-1. Type the following code in your script and run it. To run the code press `Ctrl` or `Cmd` + `Enter` (you can either highlight the code or just put your cursor at the end of the line)
-    ```{r, eval = F}
+1. Tapez le code suivant dans votre script et exécutez-le. Pour exécuter le code, appuyez sur `Ctrl` ou `Cmd` + `Entrée` (vous pouvez soit surligner le code, soit simplement placer votre curseur à la fin de la ligne)
+
+```{r, eval = F}
     4 * 8
-    ```
+```
 
-1. Type the following code in your script and run it. What happens if you only run the first line of the code?
-    ```{r, eval = F}
-    x = 5 # equivalently x <- 5
+1. Tapez le code suivant dans votre script et exécutez-le. Que se passe-t-il si vous n'exécutez que la première ligne du code ?
+
+```{r, eval = F}
+    x = 5 # de manière équivalente x <- 5
     x
-    ```
-Congratulations, you have created your first `R` "object"! Everything is an object in R! Objects are assigned using `=` or `<-`.
+```
 
-1. Create a new object named `x_3` to which you assign the cube of `x`. Note that to assign you need to use `=` or `<-`. Use code to compute the cube, not a calculator.
+Félicitations, vous venez de créer votre premier « objet » `R` ! Tout est un objet en R ! Les objets sont assignés à l'aide de `=` ou de `<-`.
+
+1. Créez un nouvel objet nommé `x_3` auquel vous assignez le cube de `x`. Notez que pour faire une assignation, vous devez utiliser `=` ou `<-`. Utilisez du code pour calculer le cube, pas une calculatrice.
 
 ---
 
@@ -481,7 +484,7 @@ example_data
 
 class: inverse
 
-# Task 2
+# Tâche 2
 
 `r countdown(minutes = 7, top = 0)`
 
@@ -489,24 +492,24 @@ class: inverse
 murders <- read.csv("https://www.dropbox.com/s/zuk0qcfm3kyzs4e/gun_murders.csv?dl=1")
 ```
 
-1. Find out (using `help()` or google) how to import a .csv file. Do NOT use the "Import Dataset" button, nor install a package.
+1. Découvrez (en utilisant `help()` ou Google) comment importer un fichier .csv. N'utilisez PAS le bouton ``Import Dataset´´, ni n'installez de package.
 
-1. Import [gun_murders.csv](https://www.dropbox.com/s/zuk0qcfm3kyzs4e/gun_murders.csv?dl=1)<sup>1</sup> in a new object `murders`. This file contains data on gun murders by US state in 2010. (Hint: objects are created using `=` or `<-`).
+1. Importez [gun_murders.csv](https://www.dropbox.com/s/zuk0qcfm3kyzs4e/gun_murders.csv?dl=1)<sup>1</sup> dans un nouvel objet `murders`. Ce fichier contient des données sur les homicides par arme à feu par État américain en 2010. (Indice : les objets sont créés à l'aide de `=` ou `<-`).
 
-1. Ensure that `murders` is a data.frame by running:
+1. Assurez-vous que `murders` est un data.frame en exécutant :
     ```{r,eval=F}
-    class(murder) # check class
+        class(murder) # vérifier la classe
     ```
 
-1. Find out what variables are contained in `murders` by running:
+1. Découvrez quelles variables sont contenues dans `murders` en exécutant :
     ```{r, eval = F}
-    names(murders) # obtain variable names
+        names(murders) # obtenir les noms des variables
     ```
-
-1. View the contents of `murders` by clicking on `murders` in your workspace. What does the `total` variable correspond to?
+    
+1. Visualisez le contenu de `murders` en cliquant sur `murders` dans votre espace de travail. À quoi correspond la variable `total` ?
 
 .footnote[
-[1]: This dataset is taken from the `dslabs` package.
+[1]: Ce jeu de données est tiré du package `dslabs`.
 ]
 
 ---
@@ -585,24 +588,24 @@ ncol(murders) # nombre de colonnes
 
 class: inverse
 
-# Task 3
+# Tâche 3
 
 `r countdown(minutes = 10, top = 0)`
 
-1. How many observations are there in `murders`?
+1. Combien y a-t-il d'observations dans `murders` ?
 
-1. How many variables? What are the data types of each variable?
+1. Combien de variables ? Quels sont les types de données de chaque variable ?
 
-1. Remember that the colon operator `1:10` is just short for *construct a sequence from `1` to `10`* (i.e. 1, 2, 3, etc). Create a new object `murders_2` containing the rows 10 to 25 of `murders`.
+1. Rappelez-vous que l'opérateur deux-points `1:10` est simplement une abréviation pour *construire une séquence de `1` à `10`* (c'est-à-dire 1, 2, 3, etc.). Créez un nouvel objet `murders_2` contenant les lignes 10 à 25 de `murders`.
 
-1. Create a new object `murders_3` which only contains the columns `state` and `total`. (Recall that `c` creates vectors.)
+1. Créez un nouvel objet `murders_3` qui ne contient que les colonnes `state` et `total`. (Rappelez-vous que `c` crée des vecteurs.)
 
-1. Create a `total_percap` variable equal to the number of murders per 10,000 inhabitants by running the following code.
-    ```{r}
+1. Créez une variable `total_percap` égale au nombre d'homicides pour 10 000 habitants en exécutant le code suivant.
+```{r}
     murders$total_percap = (murders$total / murders$population) * 10000
-    ```
+```
 
-Congratulations, you've created your first variable! Click on the `murders` object to see the new variable.
+Félicitations, vous venez de créer votre première variable ! Cliquez sur l'objet `murders` pour voir la nouvelle variable.
 
 ---
 
@@ -654,36 +657,40 @@ layout: true
 Cours 1 (aujourd'hui): ***Introduction***
 
 
-Cours 2 et 3: ***Tidying, Visualising et Summarising Data***
+Cours 2 et 3 : ***Tidying, Visualising et Summarising Data***
 
-Cours 4: ***Regression Linéaire Simple***
+Cours 4  : ***Regression Linéaire Simple***
 
-Cours 5: ***Introduction à la causalité***
+Cours 5 et 6 : ***Régression Linéaire Multivarié***
 
-Cours 6: ***Régression Linéaire Multivarié***
-
-Cours 7: ***Régression Linéaire : extension***
+Cours 7  : ***Régression Linéaire : extension***
 ]
 
 .pull-right[
 
-Cours 8: ***Echantillonnage***
+Cours 8 : ***Echantillonnage***
 
-Cours 9: ***Intervales de Confiance et Tests d'Hypothèses***
+Cours 9 : ***Intervales de Confiance et Tests d'Hypothèses***
 
-Cours 10: ***Inférence Statistique***
+Cours 10 : ***Inférence Statistique***
 
-Cours 11: ***Regression Discontinuité***
+Cours 11 : ***Introduction à la causalité***
 
-Cours 12: ***Recap***
+Cours 12 : ***Variable Instrumentale***
+
+Cours 13 : ***Double Différence***
+
+Cours 14 : ***Regression Discontinuité***
+
+Cours 15 : ***Recap***
 
 ]
 
 ---
 
-# Course Materials and Useful Resources
+# Matériel de cours et ressources utiles
 
-&nbsp; &nbsp; &nbsp; &nbsp; [Book](https://scpoecon.github.io/ScPoEconometrics/) &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp; &nbsp; [Slides](https://github.com/ScPoEcon/ScPoEconometrics-Slides) &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp; &nbsp; [Reading Suggestions](https://github.com/ScPoEcon/ScPoEconometrics-Slides/blob/master/syllabus.md) &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp; &nbsp;  [Interactive R Apps](https://github.com/ScPoEcon/ScPoApps) &nbsp; &nbsp; &nbsp; &nbsp;
+ &nbsp; &nbsp; &nbsp; [Slides](https://github.com/jdnmiguel/econometric_ECGEB352) &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp; &nbsp; [Reading Suggestions]() &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp; &nbsp;  
 -- | -- | --
 
 --
@@ -708,13 +715,28 @@ Cours 12: ***Recap***
 
 ---
 
+# Matériel du cours
+
+Déposé sur [mon Github](https://github.com/jdnmiguel/econometric_ECGEB352) contenant :
+
+* Les fichiers d'installation de R
+
+* Les fichiers de données pour chaque séance
+
+* Des antisèches (*cheat sheets*)
+
+* Les slides de cours
+
+* Les exercices et leurs corrections
+
+---
+
 # Politique du cours
 
 - *Soyez sympa, honnête, et ne trichez pas.*
 
-- En cas de question par [email](jeremy.donascimento@unamur.be), j'y répondrai au cours suivant pour en faire profiter le plus grand nombre. 
+- En cas de question, utilisez [le discord](https://discord.gg/RcdCRFBcc) du cours, je tâcherai d'y répondre le plus rapidement possible. 
 
-- Vous pouvez venir à mon bureau, batiment xx, le X entre X et X. 
 
 ***Conduite en cours et attentes***
 
@@ -736,6 +758,11 @@ Cours 12: ***Recap***
 - Un outil très utile dans le temps long, notamment pour ceux qui ont une bonne base de connaissance, mais c'est un piège pour les débutants !
 
 - Je préfère une copie maladroite avec vos mots, qu'une copie 100% par IA
+
+
+
+
+
 ---
 
 # Santé Mentale
@@ -763,14 +790,13 @@ background-position: 9% 19%
 # Bonne journée !
 
 
-
-
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
-| <a href="https://scpoecon.github.io/ScPoEconometrics">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Book |
-| <a href="http://twitter.com/ScPoEcon">.Namurgreen[<i class="fa fa-twitter fa-fw"></i>]                          | @ScPoEcon                         |
-| <a href="http://github.com/ScPoEcon">.Namurgreen[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
+---                    |
 
 ```{r makepdf, echo=FALSE,eval=FALSE}
 system("decktape chapter1.html chapter1.pdf --chrome-arg=--disable-web-security")

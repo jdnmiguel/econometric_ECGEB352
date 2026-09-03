@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-08-17
+### Université de Namur </br> 2026-09-03
 ]
 
 ---
@@ -410,20 +410,19 @@ Il est ***essentiel*** de faire attention si l'on parle de changements en ***poi
 
 class:inverse
 
-# Task 1
+# Tâche 1
+<countdown-timer class="countdown" id="timer_fd60739b" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-<countdown-timer class="countdown" id="timer_1f620f65" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+Analysons les résultats de régression en utilisant le score de **lecture** comme variable dépendante.
 
-Let's analyse the regression results using **reading** score as the dependent variable.
+1. Chargez les données depuis [ici](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) en utilisant la fonction `read_dta()` du package `haven`. Assignez-les à un objet `grades`.
 
-1. Load the data from [here](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) using the `read_dta()` function from the `haven` package. Assign it to an object `grades`.
+1. Régressez `avgverb` sur `classize` et `disadvantaged` et assignez le résultat à un nouvel objet `reg`. Interprétez les coefficients. Comment se comparent-ils à la régression linéaire simple ? Comment se comparent-ils aux coefficients de la régression du score de mathématiques ?
 
-1. Regress `avgverb` on `classize` and `disadvantaged` and assign the output to a new object `reg`. Interpret the coefficients. How do they compare to the simple linear regression? How do they compare with the math score regression coefficients?
-
-1. (Optional) What are the other available variables that we may add in the regression? 
-  * Run the regression with all these variables and assign it to `reg_full`.
-  * Look at the coefficients.
-  * Discuss all coefficients: sign and magnitude.
+1. (Optionnel) Quelles sont les autres variables disponibles que nous pourrions ajouter à la régression ?
+  * Exécutez la régression avec toutes ces variables et assignez-la à `reg_full`.
+  * Examinez les coefficients.
+  * Discutez de tous les coefficients : signe et magnitude.
 
 ---
 
@@ -733,22 +732,21 @@ Cela s'applique dans les cas avec plus de deux catégories. Vous n'avez pas à c
 
 class: inverse
 
-# Task 2: Dummy Variable Trap
+# Tâche 2: Piège variables binaires
 
-<countdown-timer class="countdown" id="timer_a4d5b890" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_59854c55" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-Let's run a regression where there is perfect linear dependence between regressors.
+Exécutons une régression où il existe une dépendance linéaire parfaite entre les régresseurs.
 
-1. Load the *STAR* data from [here](https://www.dropbox.com/s/bf1fog8yasw3wjj/star_data.csv?dl=1), using `read.csv`, and assign it to an object called `star_df`. Keep only cases with no `NA`s with the following code:  
-`star_df &lt;- star_df[complete.cases(star_df),]` 
+1. Chargez les données *STAR* depuis [ici](https://www.dropbox.com/s/bf1fog8yasw3wjj/star_data.csv?dl=1), en utilisant `read.csv`, et assignez-les à un objet appelé `star_df`. Ne conservez que les observations sans `NA` avec le code suivant : `star_df &lt;- star_df[complete.cases(star_df),]` 
 
-1. Create three dummy variables: (i) `small` equal to `TRUE` if students are in a small class and `FALSE` otherwise; (ii) `regular` equal to `TRUE` if students are in a regular class and `FALSE` otherwise; (iii) `regular_plus` equal to `TRUE` if students are in a regular+aide class and `FALSE` otherwise. (*Hint: To create a dummy, write* `dummy = (variable=="value")`, *inside the appropriate dplyr verb*) Create a last variable, `sum`, equal to the sum of `small`, `regular` and `regular_plus`. What is `sum` equal to? What does this mean?
+1. Créez trois variables muettes (dummy) : (i) `small` égale à `TRUE` si les élèves sont dans une petite classe et `FALSE` sinon ; (ii) `regular` égale à `TRUE` si les élèves sont dans une classe régulière et `FALSE` sinon ; (iii) `regular_plus` égale à `TRUE` si les élèves sont dans une classe régulière+assistant et `FALSE` sinon. (*Indice : pour créer une variable muette, écrivez* `dummy = (variable=="value")`, *à l'intérieur du verbe dplyr approprié*) Créez une dernière variable, `sum`, égale à la somme de `small`, `regular` et `regular_plus`. À quoi `sum` est-elle égale ? Que signifie ce résultat ?
 
-1. Regress `math` on `regular_plus`. What is the average predicted `math` score of students in a regular+aide class?
+1. Régressez `math` sur `regular_plus`. Quel est le score moyen prédit de `math` pour les élèves dans une classe régulière+assistant ?
 
-1. Regress `math` on `small`, `regular` and `regular_plus`. What do you notice? What's the omitted (reference) category? Does this match the previous question?
+1. Régressez `math` sur `small`, `regular` et `regular_plus`. Que remarquez-vous ? Quelle est la catégorie omise (de référence) ? Cela correspond-il à la question précédente ?
 
-1. Regress `math` on `star`. What do you notice? What's the omitted category? Interpret the coefficient.
+1. Régressez `math` sur `star`. Que remarquez-vous ? Quelle est la catégorie omise ? Interprétez le coefficient.
 
 ---
 
@@ -899,21 +897,21 @@ On obtient : `$$\tilde{\beta_1} = 0.331 = \underbrace{0.335}_{\beta_1} + \underb
 ---
 class: inverse
 
-# Task 3: Recap
+# Tâche 3 : Récapitulatif
 
-<countdown-timer class="countdown" id="timer_2eb63ddc" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_9f44740b" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-Let's use the *STAR* data (used in the previous task) to review the main concepts covered.
+Utilisons les données *STAR* (utilisées dans la tâche précédente) pour revoir les principaux concepts abordés.
 
-1. Using the filtered data from the previous task, regress `math` on `school` (tabulate the variable to know what it contains). Interpret the coefficients. What's the omitted category? Do you find them surprising? Why? What might be an omitted variable?
+1. En utilisant les données filtrées de la tâche précédente, régressez `math` sur `school` (tabulez la variable pour savoir ce qu'elle contient). Interprétez les coefficients. Quelle est la catégorie omise ? Les trouvez-vous surprenants ? Pourquoi ? Quelle pourrait être une variable omise ?
 
-1. Compute the share of students qualifying for free lunch (i.e. `lunch` equals "free") by school location category. What do you observe? Add `free` to the previous question's regression. How do the coefficients change?
+1. Calculez la part des élèves éligibles au déjeuner gratuit (c'est-à-dire `lunch` égal à "free") par catégorie de localisation de l'école. Que constatez-vous ? Ajoutez `free` à la régression de la question précédente. Comment les coefficients changent-ils ?
 
-1. Regress `math` on `star`. After interpreting the coefficients, regress `math` on `star`, `gender`, `ethnicity`, `lunch`, `degree`, `experience` and `school`. Recalling that this is a randomized experiment, does it look like the randomization was well done?
+1. Régressez `math` sur `star`. Après avoir interprété les coefficients, régressez `math` sur `star`, `gender`, `ethnicity`, `lunch`, `degree`, `experience` et `school`. En vous rappelant qu'il s'agit d'une expérience randomisée, la randomisation semble-t-elle avoir été bien faite ?
 
-1. What's the adjusted `\(R^2\)` from the previous multiple regression. How do you interpret it? What might you deduce about the importance of observable individual, teacher and school characteristics in explaining educational outcomes?
+1. Quel est le `\(R^2\)` ajusté de la régression multiple précédente ? Comment l'interprétez-vous ? Que pourriez-vous en déduire quant à l'importance des caractéristiques observables individuelles, des enseignants et des écoles dans l'explication des résultats scolaires ?
 
-1. (Optional) Regress `math` on `gender` and `experience` (the teacher's experience). Interpret the coefficients. How would these regression results look like visually?
+1. (Optionnel) Régressez `math` sur `gender` et `experience` (l'expérience de l'enseignant). Interprétez les coefficients. À quoi ressembleraient ces résultats de régression visuellement ?
 
 
 ---
@@ -929,9 +927,11 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
-| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |                    |
-| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon          
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen &lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt; | Discord |
+| &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+
+---  
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

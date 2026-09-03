@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-08-07
+### Université de Namur </br> 2026-09-03
 ]
 
 ---
@@ -73,7 +73,7 @@ class:: inverse
 
 # Exo 1: Connaitre les données
 
-<countdown-timer class="countdown" id="timer_a26fec3d" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_d94676e0" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
  
 1. Télécharger les données depuis [ici](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) comme `data`. *Indice : Utiliser la fonction `read_dta` de la librairie `haven` pour importer les données, qui est en format .dta.* (FYI: *.dta* est une extension utilisée pour les fichiers utilisés dans [*Stata*](https://www.stata.com/))
 
@@ -250,7 +250,14 @@ Regardons la distribution jointe de nos deux variables
 
 # Régression linéaire simple : graphiquement
 Ajoutons la droite de régression linéaire
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-12-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+```
+## Error in `stat_smooth()`:
+## ! Problem while computing aesthetics.
+## ℹ Error occurred in the 2nd layer.
+## Caused by error:
+## ! objet 'score' introuvable
+```
 
 ---
 
@@ -260,34 +267,31 @@ Concentrons nous sur les observations avec un score = 2
 
 ---
 
+
 # Régression linéaire simple : graphiquement
-L'erreur associée à la prédiction faite est la distance entre sa valeur réelle et la valeur de la droite à ce `\(x\)`  
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-14-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base de données. Notre nouvel objectif est de minimiser la distance entre la droite (`\(\widehat{y_i}\)`) et les valeurs réelles (`\(y_i\)`), cad les erreurs
 
 ```
 ## Error:
-## ! Cannot add &lt;ggproto&gt; objects together.
-## ℹ Did you forget to add this object to a &lt;ggplot&gt; object?
+## ! objet 'abs_score_reg' introuvable
 ```
-
----
-
-# Régression linéaire simple : graphiquement
-On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base de données. Notre nouvel objectif est de minimiser la distance entre la droite (`\(\widehat{y_i}\)`) et les valeurs réelles (`\(y_i\)`)
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-15-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Régression linéaire simple : graphiquement
 
 .left-wide[
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-16-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+```
+## Error:
+## ! objet 'abs_score_reg' introuvable
+```
 ]
 
 .right-thin[
 &lt;br&gt;
 &lt;br&gt;
-&lt;p style="text-align: center; font-weight: bold; font-size: 35px; color: #d90502;"&gt;Quel critère de *minimisation* devons nous utiliser?&lt;/strong&gt;
+&lt;p style="text-align: center; font-weight: bold; font-size: 35px; color: forestgreen;"&gt;Quel critère de *minimisation* devons nous utiliser?&lt;/strong&gt;
 ]
 ---
 # Quelle est la relation entre x et u ?
@@ -406,7 +410,7 @@ En utilisant (1) et (2) ainsi que la définition de  `\(y_i\)`, on peut trouver 
 
 ---
 
-# **O**rdinary **L**east **S**quares (OLS): Interpretation
+# **O**rdinary **L**east **S**quares (OLS) : Interpretation
 
 Pour le moment, faisons l'hypothèse que nos variables dépendante `\((y)\)` et indépendante  `\((x)\)` sont numériques.
 
@@ -416,7 +420,7 @@ Pour le moment, faisons l'hypothèse que nos variables dépendante `\((y)\)` et 
 
 --
 
-&gt; Pente `\((\beta_1)\)`: **Le changement prédit, en moyenne, dans la valeur de `\(y\)` *associé* à une hasse de une unité de$x$.**
+&gt; Pente `\((\beta_1)\)`: **Le changement prédit, en moyenne, dans la valeur de `\(y\)` *associé* à une hasse de une unité de `\(x\)`.**
 
 --
 
@@ -512,11 +516,11 @@ $$
 
 class: inverse
 
-# Task 2: OLS Regression
+# Tâche 2 : Régression OLS
 
-<countdown-timer class="countdown" id="timer_f61b7558" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_4c7356af" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-Run the following code to aggregate the data at the class size level:
+Exécutez le code suivant pour agréger les données au niveau de la taille de classe :
 
 
 ``` r
@@ -525,15 +529,13 @@ grades_avg_cs &lt;- grades %&gt;%
   summarise(avgmath_cs = mean(avgmath),
             avgverb_cs = mean(avgverb))
 ```
+1. Régressez le score verbal moyen (variable dépendante) sur la taille de classe (variable indépendante). Interprétez les coefficients.
 
-1. Regress average verbal score (dependent variable) on class size (independant variable). Interpret the coefficients.
+1. Calculez les coefficients OLS `\(b_0\)` et `\(b_1\)` de la régression précédente en utilisant les formules de la diapositive 25. (*Indice :* vous devez utiliser les fonctions `cov`, `var`, et `mean`.)
 
-1. Compute the OLS coefficients `\(b_0\)` and `\(b_1\)` of the previous regression using the formulas on slide 25. (*Hint:* you need to use the `cov`, `var`, and `mean` functions.)
+1. Quel est le score verbal moyen prédit lorsque la taille de classe est égale à 0 ? (Est-ce que cela a même du sens ?!)
 
-1. What is the predicted average verbal score when class size is equal to 0? (Does that even make sense?!)
-
-1. What is the predicted average verbal score when the class size is equal to 30 students?
-
+1. Quel est le score verbal moyen prédit lorsque la taille de classe est égale à 30 élèves ?
 ---
 
 # Propriété des OLS: Pedictions et Residus
@@ -579,7 +581,7 @@ Valeurs prédites correspondent à tout valeur de `\(\widehat{y}_i\)` qui se tro
 
 .left-wide[
 
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-26-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-25-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -702,20 +704,20 @@ $$
 
 class: inverse
 
-# Task 3: `\(R^2\)` and goodness of fit
+# Tâche 3 : `\(R^2\)` et qualité de l'ajustement
 
-<countdown-timer class="countdown" id="timer_908c0f7c" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_f221a088" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-1. Regress `avgmath_cs` on `classize`. Assign to an object `math_reg`.
+1. Régressez `avgmath_cs` sur `classize`. Assignez le résultat à un objet `math_reg`.
 
-1. Pass `math_reg` in the `summary()` function. What is the (multiple) `\(R^2\)` for this regression? How can you interpret it?
+1. Passez `math_reg` dans la fonction `summary()`. Quel est le `\(R^2\)` (multiple) pour cette régression ? Comment pouvez-vous
+l'interpréter ?
 
-1. Compute the squared correlation between `classize` and `avgmath_cs`. What does this tell you about the relationship between `\(R^2\)` and the correlation in a regression with only one regressor?
+1. Calculez la corrélation au carré entre `classize` et `avgmath_cs`. Que vous apprend cela sur la relation entre le `\(R^2\)` et la corrélation dans une régression à un seul régresseur ?
 
-1. Repeat steps 1 and 2 for `avgverb_cs`. For which exam does the variance in class size explain more of the variance in students' scores?
+1. Répétez les étapes 1 et 2 pour `avgverb_cs`. Pour quel examen la variance de la taille de classe explique-t-elle davantage la variance des scores des élèves ?
 
-1. (Optional) Install and load the `broom` package. Pass `math_reg` in the `augment()` function and assign it to a new object. Use the variance in `avgmath_cs` (SST) and the variance in `.fitted` (predicted values; SSE) to find the `\(R^2\)` using the formula on the previous slide.
-
+1. (Optionnel) Installez et chargez le package `broom`. Passez `math_reg` dans la fonction `augment()` et assignez le résultat à un nouvel objet. Utilisez la variance de `avgmath_cs` (SST) et la variance de `.fitted` (valeurs prédites ; SSE) pour trouver le `\(R^2\)` à l'aide de la formule de la diapositive précédente.
 ---
 
 
@@ -729,9 +731,11 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
-| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |                    |
-| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                       |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen &lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt; | Discord |
+| &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+
+---  
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

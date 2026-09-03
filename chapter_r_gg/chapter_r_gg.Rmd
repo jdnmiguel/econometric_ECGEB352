@@ -114,18 +114,18 @@ background-size: 150px
 
 class: inverse
 
-# Task 2: Understanding the data
+# Tâche 1 : Comprendre les données
 
 `r countdown(minutes = 5, top = 0)`
 
-Load the data by running the following code:
+Charger les données avec :
 
 ```{r, echo = T, eval = F}
 library(dslabs)
 data(gapminder, package = "dslabs")
 ```
 
-1. Compute the average population per continent per year, `mean_pop`, and assign the output to a new object `gapminder_mean`. (*Hint: you should have one observation (row) per continent for each year. You'll have to use `group_by` and `summarise`.*)
+1. Calculer la population moyenne par année par continent, `mean_pop`, assigner le résultat à un nouvel objet `gapminder_mean`. (*Indice: vous devez utiliser une observation (ligne) par continent par année. Vous devez utiliser `group_by` et `summarise`.*)
 
 ```{r, echo = F}
 gapminder_mean <- gapminder %>%
@@ -658,17 +658,17 @@ knitr::include_graphics("chapter_r_gg_files/figure-html/boxplot_explanation.png"
 
 class: inverse
 
-# Task 3: Visualising data
+# Tâche 2 : Visualisation des données
 
 `r countdown(minutes = 10, top = 0)`
 
-Using the `gapminder` data, create the following plots using `ggplot2`.
+En utilisant les données `gapminder`, créez les graphiques suivants avec `ggplot2`.
 
-1. A histogram of life expectancy in 2015. (*Hint: do you need to specify a `y` in `aes()` for a histogram?*) Once you've created the histogram, within the appropriate `geom_*` set: `binwidth` to 5, `boundary` to 45, `colour` to "white" and `fill` to "#d90502". What does each of these options do? <br> *Optional:* Using the previous graph, facet it by continent such that each continent's plot is a new row. (*Hint: check the help for `facet_grid`.*)
+1. Un histogramme de l'espérance de vie en 2015. (*Indice : avez-vous besoin de spécifier un `y` dans `aes()` pour un histogramme ?*) Une fois l'histogramme créé, dans le `geom_*` approprié, réglez : `binwidth` à 5, `boundary` à 45, `colour` à "white" et `fill` à "forestgreen". Que fait chacune de ces options ? <br> *Optionnel :* En utilisant le graphique précédent, faites-en un facet par continent de sorte que le graphique de chaque continent soit sur une nouvelle ligne. (*Indice : consultez l'aide de `facet_grid`.*)
 
-1. A boxplot of average life expectancy per year by continent. Within the appropriate `geom_*` set: `colour` to "black" and `fill` to "#d90502". (*Hint: you need to group by both `continent` and `year`.*)
+1. Un boxplot de l'espérance de vie moyenne par année et par continent. Dans le `geom_*` approprié, réglez : `colour` à "black" et `fill` à "forestgreen". (*Indice : vous devez grouper à la fois par `continent` et par `year`.*)
 
-1. A scatter plot of fertility rate (y-axis) with respect to infant mortality (x-axis) in 2015. Once you've created the scatter plot, within the appropriate `geom_*` set: `size` to 3, `alpha` to 0.5, `colour` to "#d90502". Add labels (`labs`) to the plot so that it is cleaner.
+1. Un nuage de points du taux de fécondité (axe y) en fonction de la mortalité infantile (axe x) en 2015. Une fois le nuage de points créé, dans le `geom_*` approprié, réglez : `size` à 3, `alpha` à 0.5, `colour` à "forestgreen". Ajoutez des étiquettes (`labs`) au graphique pour qu'il soit plus clair.
 
 ---
 
@@ -839,7 +839,8 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| <a href="mailto:jeremy.donascimento@unamur.be">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.ScPored[<i class="fab fa-link fa-fw"></i>] | Discord |
-| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |
-| <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
+---  

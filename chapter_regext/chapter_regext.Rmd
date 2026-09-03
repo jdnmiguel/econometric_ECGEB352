@@ -502,7 +502,7 @@ knitr::include_graphics("chapter_regext_files/figure-html/curve_fitting.png")
 
 class:inverse
 
-# Task 1 : Relations non-linéaires
+# Tâche 1 : Relations non-linéaires
 
 `r countdown(minutes = 10, top = 0)`
 
@@ -682,7 +682,7 @@ knitr::include_graphics("chapter_regext_files/figure-html/graph_reg_b0_b1_b2_b3.
 
 class:inverse
 
-# Task 2 : Salaires, éducation et genre en 1985
+# Tâche 2 : Salaires, éducation et genre en 1985
 
 `r countdown(minutes = 10, top = 0)`
 
@@ -783,7 +783,7 @@ Si le ***régresseur*** $x_k$ est standardisé, i.e. le modèle est $y = \beta_0
 
 class:inverse
 
-# Task 3 : Régression standardisée
+# Tâche 3 : Régression standardisée
 
 `r countdown(minutes = 7, top = 0)`
 
@@ -826,21 +826,6 @@ reg_full$coefficients
   * Nous présenterons la notion d'**échantillonnage**, et
   
   * Comprendrons ce qu'est **l'inférence statistique** et comment la réaliser. 
----
-
-# En route vers la causalité
-
-`r emo::ji("white heavy check mark")` Comment gérer les données ? Les lire, les nettoyer, les visualiser !
-
-`r emo::ji("white heavy check mark")`  **Comment résumer les relations entre variables ?** Régression linéaire simple et multivariée, régressions non-linéaires, interactions...
-
-`r emo::ji("white heavy check mark")` Qu'est-ce que la causalité ?
-
-`r emo::ji("cross mark")` Que faire si on n'observe pas toute une population ?
-
-`r emo::ji("cross mark")`  Nos résultats sont-ils simplement dus au hasard ?
-
-`r emo::ji("cross mark")` Comment trouver l'exogénéité en pratique ?
 
 
 ---
@@ -856,9 +841,10 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| <a href="mailto:jeremy.donascimento@unamur.be">.ScPored[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides">.ScPored[<i class="fa fa-link fa-fw"></i>] | Slides |
-| <a href="http://github.com/ScPoEcon">.ScPored[<i class="fa fa-github fa-fw"></i>]                          | @ScPoEcon                       |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
 
 ---
 name: log_approx
