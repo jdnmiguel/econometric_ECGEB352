@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-03
+### Université de Namur </br> 2026-09-11
 ]
 
 ---
@@ -73,7 +73,7 @@ class:: inverse
 
 # Exo 1: Connaitre les données
 
-<countdown-timer class="countdown" id="timer_d94676e0" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_c8b215d1" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
  
 1. Télécharger les données depuis [ici](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) comme `data`. *Indice : Utiliser la fonction `read_dta` de la librairie `haven` pour importer les données, qui est en format .dta.* (FYI: *.dta* est une extension utilisée pour les fichiers utilisés dans [*Stata*](https://www.stata.com/))
 
@@ -250,14 +250,7 @@ Regardons la distribution jointe de nos deux variables
 
 # Régression linéaire simple : graphiquement
 Ajoutons la droite de régression linéaire
-
-```
-## Error in `stat_smooth()`:
-## ! Problem while computing aesthetics.
-## ℹ Error occurred in the 2nd layer.
-## Caused by error:
-## ! objet 'score' introuvable
-```
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-12-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -270,22 +263,14 @@ Concentrons nous sur les observations avec un score = 2
 
 # Régression linéaire simple : graphiquement
 On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base de données. Notre nouvel objectif est de minimiser la distance entre la droite (`\(\widehat{y_i}\)`) et les valeurs réelles (`\(y_i\)`), cad les erreurs
-
-```
-## Error:
-## ! objet 'abs_score_reg' introuvable
-```
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-14-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Régression linéaire simple : graphiquement
 
 .left-wide[
-
-```
-## Error:
-## ! objet 'abs_score_reg' introuvable
-```
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-15-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 .right-thin[
@@ -359,11 +344,7 @@ En utilisant (1) et (2) ainsi que la définition de  `\(y_i\)`, on peut trouver 
 
 --
 
-
-```
-## Error:
-## ! objet 'g_math_cs' introuvable
-```
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-16-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -375,27 +356,11 @@ En utilisant (1) et (2) ainsi que la définition de  `\(y_i\)`, on peut trouver 
 
 * Donc on choisi `\((\beta_0,\beta_1)\)` tel que `\(\sum_{i = 1}^N u_1^2 + \dots + u_N^2\)` est aussi **petite que possible**.
 
-
-```
-## Error:
-## ! objet 'g_math_cs' introuvable
-```
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-17-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# **O**rdinary **L**east **S**quares (OLS) Estimation
-
-&lt;iframe src="https://gustavek.shinyapps.io/reg_simple/" width="100%" height="400px" data-external="1" style="border: none;"&gt;&lt;/iframe&gt;
-
----
-
-# **O**rdinary **L**east **S**quares (OLS) Estimation
-
-&lt;iframe src="https://gustavek.shinyapps.io/SSR_cone/" width="100%" height="400px" data-external="1" style="border: none;"&gt;&lt;/iframe&gt;
-
----
-
-# **O**rdinary **L**east **S**quares (OLS): Coefficient Formulas
+# **O**rdinary **L**east **S**quares (OLS): Formule des coefs
 
 * **OLS**: méthode d'*estimation* consiste à minimiser la somme des carrés des erreur.
 
@@ -518,7 +483,7 @@ class: inverse
 
 # Tâche 2 : Régression OLS
 
-<countdown-timer class="countdown" id="timer_4c7356af" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_ba0d36f4" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Exécutez le code suivant pour agréger les données au niveau de la taille de classe :
 
@@ -581,7 +546,7 @@ Valeurs prédites correspondent à tout valeur de `\(\widehat{y}_i\)` qui se tro
 
 .left-wide[
 
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-25-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-23-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -698,7 +663,7 @@ $$
 
 --
     
-* ⚠️ Le `\(R^2\)`  n'est __PAS__ un indicateur de causalité entre deux relations. On verra ça plus tard dans le cours l!
+* ⚠️ Le `\(R^2\)`  n'est __PAS__ un indicateur de causalité entre deux relations. On verra ça plus tard dans le cours !
 
 ---
 
@@ -706,7 +671,7 @@ class: inverse
 
 # Tâche 3 : `\(R^2\)` et qualité de l'ajustement
 
-<countdown-timer class="countdown" id="timer_f221a088" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_75d978a2" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Régressez `avgmath_cs` sur `classize`. Assignez le résultat à un objet `math_reg`.
 

@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-03
+### Université de Namur </br> 2026-09-09
 ]
 
 ---
@@ -217,11 +217,11 @@ layout: true
 
 * La base de données `gapminder` contient des données sur l'espérance de vie, le PIB/hab, et la population par pays entre 1952 et 2007.
 
-* Suppose we want to know the average life expectancy and average GDP per capita for each continent in each year.
+* Immaginons que l'on souhaite connaitre l'espérance de vie moyenne et le PIB/hab pour chaque continent chaque année.
 
 --
 
-* We need to group the data by continent *and* year, then compute the average life expectancy and average GDP per capita
+* On doit regrouper les données par continent *et* année, puis calculer la moyenne des deux variables
 
 --
 
@@ -252,15 +252,13 @@ head(gapminder,n = 4)
 
 ---
 
-# In Practice: Data Wrangling
+# En pratique
 
-* There are always several ways to achieve a goal. (As in life 😁)
-
-* Here we will only focus on the `dplyr` way:
+* Il y a plusieurs façons de faire, ici on utilisera `dplyr` :
 
 
 ``` r
-# compute the required statistics
+# calcul des stats
 gapminder_dplyr &lt;- gapminder %&gt;% 
   group_by(continent, year) %&gt;% 
   summarise(count = n(),
@@ -270,7 +268,7 @@ gapminder_dplyr &lt;- gapminder %&gt;%
 
 
 ``` r
-# show first 5 lines of the new data
+# Montre les 5ere lignes
 head(gapminder_dplyr, n = 5)
 ```
 
@@ -291,9 +289,9 @@ head(gapminder_dplyr, n = 5)
 # Visualisation
 
 .pull-left[
-* Now we could *look* at the result in `gapminder_dplyr`, or compute some statistics from it. 
+* Maintenant on peut *voir* les résultats de `gapminder_dplyr`, ou calculer les statistiques qui en sont issues. 
 
-* Nothing beats a picture, though:
+* Rien ne bat un graphique :
 
 
 ``` r
@@ -303,10 +301,10 @@ ggplot(data = gapminder_dplyr,
                      color = continent,
                      size = count)) +
   geom_point(alpha = 1/2) +
-  labs(x = "Average life expectancy",
-       y = "Average GDP per capita",
+  labs(x = "Espérance de vie moyenne",
+       y = "PIB/hab moyen",
        color = "Continent",
-       size = "Nb of countries") +
+       size = "Nb de pays") +
   theme_bw()
 ```
 ]
@@ -412,7 +410,7 @@ class: inverse
 
 # Tâche 1
 
-<countdown-timer class="countdown" id="timer_9110d232" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_78659c82" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Créez un nouveau script R (Fichier `\(\rightarrow\)` Nouveau fichier `\(\rightarrow\)` Script R). Enregistrez-le quelque part sous le nom `lecture_intro.R`.
 
@@ -554,7 +552,7 @@ class: inverse
 
 # Tâche 2
 
-<countdown-timer class="countdown" id="timer_0b41352c" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_005560c7" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 
 
@@ -728,7 +726,7 @@ class: inverse
 
 # Tâche 3
 
-<countdown-timer class="countdown" id="timer_b97c0369" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_bc2bf620" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Combien y a-t-il d'observations dans `murders` ?
 
@@ -782,11 +780,11 @@ layout: true
 
 --
 
-1. Il y aura ***un devoir maison*** `\(\rightarrow\)` 15%
+1. Il y aura ***un travail de groupe*** avec un oral `\(\rightarrow\)` 25%
 
 --
 
-1. Il y aura un exam final avec une partie théorique et appliquée `\(\rightarrow\)` 30%
+1. Il y aura un exam final avec une partie théorique (50%) et appliquée `\(\rightarrow\)` (50%)
 
 ---
 
@@ -796,7 +794,7 @@ layout: true
 Cours 1 (aujourd'hui): ***Introduction***
 
 
-Cours 2 et 3 : ***Tidying, Visualising et Summarising Data***
+Cours 2 et 3 : ***Manipulation, visualisation et description des données***
 
 Cours 4  : ***Regression Linéaire Simple***
 
@@ -874,7 +872,9 @@ Déposé sur [mon Github](https://github.com/jdnmiguel/econometric_ECGEB352) con
 
 - *Soyez sympa, honnête, et ne trichez pas.*
 
-- En cas de question, utilisez [le discord](https://discord.gg/RcdCRFBcc) du cours, je tâcherai d'y répondre le plus rapidement possible. 
+- En cas de question, utilisez [le discord](https://discord.gg/RcdCRFBcc) du cours, je tâcherai d'y répondre le plus rapidement possible. Pour d'autres questions : [mail](jeremy.donascimento@unamur.be)
+
+- Pour les TPs : Marine Gueben est en charge [mail](marine.gueben@unamur.be)
 
 
 ***Conduite en cours et attentes***

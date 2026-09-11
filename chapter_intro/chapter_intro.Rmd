@@ -233,11 +233,11 @@ layout: true
 
 * La base de données `gapminder` contient des données sur l'espérance de vie, le PIB/hab, et la population par pays entre 1952 et 2007.
 
-* Suppose we want to know the average life expectancy and average GDP per capita for each continent in each year.
+* Immaginons que l'on souhaite connaitre l'espérance de vie moyenne et le PIB/hab pour chaque continent chaque année.
 
 --
 
-* We need to group the data by continent *and* year, then compute the average life expectancy and average GDP per capita
+* On doit regrouper les données par continent *et* année, puis calculer la moyenne des deux variables
 
 --
 
@@ -259,14 +259,12 @@ head(gapminder,n = 4)
 
 ---
 
-# In Practice: Data Wrangling
+# En pratique
 
-* There are always several ways to achieve a goal. (As in life 😁)
-
-* Here we will only focus on the `dplyr` way:
+* Il y a plusieurs façons de faire, ici on utilisera `dplyr` :
 
 ```{r}
-# compute the required statistics
+# calcul des stats
 gapminder_dplyr <- gapminder %>% 
   group_by(continent, year) %>% 
   summarise(count = n(),
@@ -275,7 +273,7 @@ gapminder_dplyr <- gapminder %>%
 ```
 
 ```{r}
-# show first 5 lines of the new data
+# Montre les 5ere lignes
 head(gapminder_dplyr, n = 5)
 ```
 
@@ -284,9 +282,9 @@ head(gapminder_dplyr, n = 5)
 # Visualisation
 
 .pull-left[
-* Now we could *look* at the result in `gapminder_dplyr`, or compute some statistics from it. 
+* Maintenant on peut *voir* les résultats de `gapminder_dplyr`, ou calculer les statistiques qui en sont issues. 
 
-* Nothing beats a picture, though:
+* Rien ne bat un graphique :
 
 ```{r gampminder_plot, eval = FALSE}
 ggplot(data = gapminder_dplyr, 
@@ -295,10 +293,10 @@ ggplot(data = gapminder_dplyr,
                      color = continent,
                      size = count)) +
   geom_point(alpha = 1/2) +
-  labs(x = "Average life expectancy",
-       y = "Average GDP per capita",
+  labs(x = "Espérance de vie moyenne",
+       y = "PIB/hab moyen",
        color = "Continent",
-       size = "Nb of countries") +
+       size = "Nb de pays") +
   theme_bw()
 ```
 ]
@@ -638,15 +636,15 @@ layout: true
 
 ## Notes
 
-1. Il y aura ***3 quizz*** pendant les séances de TP. La date sera indiquée dans WebCampus  $\rightarrow$ 15%
+1. Il y aura ***3 quizz*** pendant les séances de TP. La date sera indiquée dans WebCampus $\rightarrow$ 15%
 
 --
 
-1. Il y aura ***un devoir maison*** $\rightarrow$ 15%
+1. Il y aura ***un travail de groupe*** avec un oral $\rightarrow$ 25%
 
 --
 
-1. Il y aura un exam final avec une partie théorique et appliquée $\rightarrow$ 30%
+1. Il y aura un exam final avec une partie théorique (50%) et appliquée $\rightarrow$ (50%)
 
 ---
 
@@ -656,32 +654,36 @@ layout: true
 Cours 1 (aujourd'hui): ***Introduction***
 
 
-Cours 2 et 3 : ***Tidying, Visualising et Summarising Data***
+Cours 2 et 3 : ***Manipulation, visualisation et description des données***
 
 Cours 4  : ***Regression Linéaire Simple***
 
 Cours 5 et 6 : ***Régression Linéaire Multivarié***
 
 Cours 7  : ***Régression Linéaire : extension***
+
+Cours 8 : ***Echantillonnage***
+
 ]
 
 .pull-right[
 
-Cours 8 : ***Echantillonnage***
 
 Cours 9 : ***Intervales de Confiance et Tests d'Hypothèses***
 
 Cours 10 : ***Inférence Statistique***
 
-Cours 11 : ***Introduction à la causalité***
+Cours 11 : ***Modèle binaire***
 
-Cours 12 : ***Variable Instrumentale***
+Cours 12 : ***Introduction à la causalité***
 
-Cours 13 : ***Double Différence***
+Cours 13 : ***Variable Instrumentale***
 
-Cours 14 : ***Regression Discontinuité***
+Cours 14 : ***Double Différence***
 
-Cours 15 : ***Recap***
+Cours 15 : ***Regression Discontinuité***
+
+Cours 16 : ***Recap***
 
 ]
 
@@ -695,7 +697,7 @@ Cours 15 : ***Recap***
 --
 
 .pull-left[
-## Econometrics
+## Econometrie
 - [*Mastering Metrics* by Angrist and Pischke](https://uspc-spo.primo.exlibrisgroup.com/permalink/33USPC_SPO/1d4eftp/alma991003947949705808)
 - [*Introductory Econometrics: A Modern Approach* by Wooldridge](https://uspc-spo.primo.exlibrisgroup.com/permalink/33USPC_SPO/mgsi7h/alma991003442469705808)
 - [*Introduction to Econometrics* by Stock and Watson](https://uspc-spo.primo.exlibrisgroup.com/permalink/33USPC_SPO/mgsi7h/alma991003436429705808)
@@ -704,7 +706,7 @@ Cours 15 : ***Recap***
 ]
 
 .pull-right[
-## Metrics and `R`
+##  `R`
 - [ModernDive](https://moderndive.com/)
 - [Introduction to Econometrics with R](https://www.econometrics-with-r.org/)
 - [R for Data Science](https://r4ds.had.co.nz/)
@@ -734,7 +736,9 @@ Déposé sur [mon Github](https://github.com/jdnmiguel/econometric_ECGEB352) con
 
 - *Soyez sympa, honnête, et ne trichez pas.*
 
-- En cas de question, utilisez [le discord](https://discord.gg/RcdCRFBcc) du cours, je tâcherai d'y répondre le plus rapidement possible. 
+- En cas de question, utilisez [le discord](https://discord.gg/RcdCRFBcc) du cours, je tâcherai d'y répondre le plus rapidement possible. Pour d'autres questions : [mail](jeremy.donascimento@unamur.be)
+
+- Pour les TPs : Marine Gueben est en charge [mail](marine.gueben@unamur.be)
 
 
 ***Conduite en cours et attentes***
@@ -774,7 +778,7 @@ Demander de l'aide est un signe de conscience de soi, et non de [faiblesse](http
 
 --
 
-N'hésitez pas à ***demander de l'aide*** auprès de vos amis, famille, l'équipe pédagogique (moi inclus) si vous en avez besoin.
+N'hésitez pas à ***demander de l'aide*** auprès de vos ami.e.s, famille, l'équipe pédagogique (moi inclus) si vous en avez besoin.
 
 ***U. Namur*** offre un [suivi psychologique gratuit](https://www.unamur.be/fr/campus/bien-etre/cmp) avec des professionnels (cmp@unamur.be)
 

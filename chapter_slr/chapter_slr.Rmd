@@ -362,10 +362,11 @@ plot_1
 # Régression linéaire simple : graphiquement
 Ajoutons la droite de régression linéaire
 ```{r, echo = F, fig.width = 10, fig.height = 5}
-plot_2 <- plot_1 +
-  stat_smooth(data = g_abs, method = "lm", se = FALSE, colour = "forestgreen") +
-  annotate("text", x = 6.5, y = 64, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6)
-plot_2
+g_abs_avg +
+    ylim(0, 10) +
+    theme_bw(base_size = 14) +
+  stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6)
 ```
 
 ---
@@ -388,13 +389,13 @@ g_abs_avg +
 # Régression linéaire simple : graphiquement
 On trouve la même chose lorsque l'on se concentre sur l'ensemble de notre base de données. Notre nouvel objectif est de minimiser la distance entre la droite ($\widehat{y_i}$) et les valeurs réelles ($y_i$), cad les erreurs
 ```{r, echo = F, fig.width = 10, fig.height = 5}
+
 g_abs_avg +
     ylim(0, 10) +
     theme_bw(base_size = 14) +
   stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
   annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6) +
-  geom_segment(data = abs_score_reg,
-               aes(xend = score_bin, yend = .fitted), color = "forestgreen", size = 0.5)
+  geom_point(colour = "orange", size = 4)
 ```
 
 ---
@@ -403,13 +404,27 @@ g_abs_avg +
 
 .left-wide[
 ```{r, echo = F, out.width = "100%", fig.height = 4.5}
+# 1. Récupérer les données utilisées par g_abs_avg
+df_abs <- g_abs_avg$data
+
+# 2. Modèle sur les données complètes (lm gère les NA en interne)
+mod_abs <- lm(avg_abs ~ score_bin, data = df_abs)
+
+# 3. Prédiction alignée sur toutes les lignes de df_abs
+df_abs <- df_abs %>%
+  mutate(.fitted = predict(mod_abs, newdata = df_abs))
+
+# 4. Le graphique
 g_abs_avg +
     ylim(0, 10) +
     theme_bw(base_size = 14) +
   stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
   annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6) +
-  geom_segment(data = abs_score_reg,
-               aes(xend = score_bin, yend = .fitted), color = "forestgreen", size = 0.5)
+  geom_point(colour = "orange", size = 4) +
+  geom_segment(data = df_abs,
+               aes(x = score_bin, xend = score_bin, 
+                   y = avg_abs, yend = .fitted), 
+               colour = "black", size = 0.5)
 ```
 ]
 
@@ -485,12 +500,12 @@ $$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$
 --
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE,fig.width=7,fig.height = 3.5}
-g_math_cs +
-    ylim(50, 80) +
-    xlim(0, 50) +
+g_abs_avg +
+    ylim(0, 10) +
     theme_bw(base_size = 14) +
-    stat_smooth(method = "lm", se = FALSE, colour = "darkgreen") +
-  coord_fixed(ratio = 0.65)
+  stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6) +
+  geom_point(colour = "orange", size = 2) 
 ```
 
 ---
@@ -504,41 +519,36 @@ $$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$
 * Donc on choisi $(\beta_0,\beta_1)$ tel que $\sum_{i = 1}^N u_1^2 + \dots + u_N^2$ est aussi **petite que possible**.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE,fig.width=7,fig.height = 3.5}
-g_math_cs +
-    ylim(50, 80) +
-    xlim(0, 50) +
+# 1. Récupérer les données utilisées par g_abs_avg, sans NA
+df_abs <- g_abs_avg$data %>%
+  filter(!is.na(avg_abs), !is.na(score_bin))
+
+# 2. Modèle + résidus
+mod_abs <- lm(avg_abs ~ score_bin, data = df_abs)
+df_abs <- df_abs %>%
+  mutate(.resid = resid(mod_abs))
+
+# 3. Le graphique avec les rectangles représentant le carré des résidus
+g_abs_avg +
+    ylim(0, 10) +
     theme_bw(base_size = 14) +
-    stat_smooth(method = "lm", se = FALSE, colour = "darkgreen") +
-    geom_rect(data = math_class_reg,
-              aes(
-              xmin = classize,
-              xmax = classize + abs(.resid)*0.65,
-              ymin = avgmath_cs,
-              ymax = avgmath_cs - .resid),
-              fill = "darkgreen",
-              alpha = 0.3) +
-  coord_fixed(ratio = 0.65)
+  stat_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
+  annotate("text", x = 5, y = 2.5, label = "hat(y)", parse = TRUE, colour = "forestgreen", size = 6) +
+  geom_point(colour = "orange", size = 2) +
+  geom_rect(data = df_abs,
+            aes(
+            xmin = score_bin,
+            xmax = score_bin + abs(.resid) * 0.65,
+            ymin = avg_abs,
+            ymax = avg_abs - .resid),
+            fill = "forestgreen",
+            alpha = 0.3) +
+  coord_fixed(ratio = 1)
 ```
 
 ---
 
-# **O**rdinary **L**east **S**quares (OLS) Estimation
-
-```{r, echo = F, out.extra = 'style="border: none;"'}
-knitr::include_url("https://gustavek.shinyapps.io/reg_simple/")
-```
-
----
-
-# **O**rdinary **L**east **S**quares (OLS) Estimation
-
-```{r, echo = F, out.extra = 'style="border: none;"'}
-knitr::include_url("https://gustavek.shinyapps.io/SSR_cone/")
-```
-
----
-
-# **O**rdinary **L**east **S**quares (OLS): Coefficient Formulas
+# **O**rdinary **L**east **S**quares (OLS): Formule des coefs
 
 * **OLS**: méthode d'*estimation* consiste à minimiser la somme des carrés des erreur.
 
@@ -833,7 +843,7 @@ $$
 
 --
     
-* `r emo::ji("warning")` Le $R^2$  n'est __PAS__ un indicateur de causalité entre deux relations. On verra ça plus tard dans le cours l!
+* `r emo::ji("warning")` Le $R^2$  n'est __PAS__ un indicateur de causalité entre deux relations. On verra ça plus tard dans le cours !
 
 ---
 
