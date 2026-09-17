@@ -441,7 +441,7 @@ Exemple : Le % d'élèves défavorisés dans la classe passe de 10 à 25 % ?
 
 --
 
-1. C'est une augmentation de $\frac{25-10}{10} \%= 150$ ***pourcent***.
+1. C'est une augmentation de $\frac{25-10}{10} \%= 150$ ***pour cent***.
 
 --
 
@@ -454,11 +454,11 @@ class:inverse
 # Tâche 1
 `r countdown(minutes = 10, top = 0)`
 
-Analysons les résultats de régression en utilisant le score de **lecture** comme variable dépendante.
+Analysons les résultats de régression en utilisant l'absentéisme comme variable dépendante.
 
-1. Chargez les données depuis [ici](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) en utilisant la fonction `read_dta()` du package `haven`. Assignez-les à un objet `grades`.
+1. Chargez les données depuis [ici](https://www.dropbox.com/scl/fi/aycl7xc9qe3kwu8cxecr7/pupil_data.dta?rlkey=5xz5tworxm4hz2tm69c05pmfp&dl=1) en utilisant la fonction `read_dta()` du package `haven`. Assignez-les à un objet `data`.
 
-1. Régressez `avgverb` sur `classize` et `disadvantaged` et assignez le résultat à un nouvel objet `reg`. Interprétez les coefficients. Comment se comparent-ils à la régression linéaire simple ? Comment se comparent-ils aux coefficients de la régression du score de mathématiques ?
+1. Régressez `absdays_98` d'abord sur `score`, puis ajoutez `pup_pop` et assignez le résultat à un nouvel objet `reg1` et `reg2`. Interprétez les coefficients. Comment se comparent-ils à la régression linéaire simple ?
 
 1. (Optionnel) Quelles sont les autres variables disponibles que nous pourrions ajouter à la régression ?
   * Exécutez la régression avec toutes ces variables et assignez-la à `reg_full`.
@@ -524,27 +524,32 @@ $$
 
 Nous avons les égalités suivantes :
 
+$$
 \begin{equation}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Score} = n_1}) = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Score} = n_1}) = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}
 \end{equation}
+$$
 
 --
 
+$$
 \begin{multline}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Santé} = n_1+1}) = \\ \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Santé} = n_1+1}) = \\ \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat}
 \end{multline}
+$$
 
 --
 
+$$
 \begin{multline}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Santé} = n_1}) \\
-= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm\_treat} - (\color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}) = \color{#d90502}{\beta_1}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm\_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Santé} = n_1}) \\
+= \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat} - (\color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}) = \color{#d90502}{\beta_1}
 \end{multline}
+$$
 
 --
 
-$\rightarrow$ $\color{#d90502}{\beta_1}$ correspond au changement espéré de l'absentéisme en moyenne lié, en moyenne, avec une hausse de 1 du score de santé, en controllant pour le fait que l'élève se soit fait vermifuger  (= gardant ce traitement constnat)
-
+$\rightarrow$ $\color{#d90502}{\beta_1}$ correspond au changement espéré de l'absentéisme en moyenne lié, en moyenne, avec une hausse de 1 du score de santé, en controllant pour le fait que l'élève se soit fait.e vermifuger 
 ---
 
 # Variables numérique et binaire : formellement 
@@ -571,13 +576,13 @@ Nous avons les égalités suivantes :
 --
 
 \begin{multline}
-\mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} = 1} \text{ & } \text{Santé} \in \mathbb{N}) - \\ \mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} =0} \text{ & } \text{Santé} \in \mathbb{N}) \\
+\mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} = 1} \text{ & } \text{Santé} \in \mathbb{N}) -  \mathbb{E}(\text{Absentéisme} | \color{#027D83}{\text{worm_treat} =0} \text{ & } \text{Santé}) \\
 = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé} + \color{#027D83}{\beta_2}- (\color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times \text{Santé}) = \color{#027D83}{\beta_2}
 \end{multline}
 
 --
 
-$\rightarrow$ $\color{#027D83}{\beta_2}$ correspond à la différence espérée moyenne d'absentéisme entre un élève vermifugé et non vermifugé, en gardant le score de santé constant.
+$\rightarrow$ $\color{#027D83}{\beta_2}$ correspond à la différence espérée moyenne d'absentéisme entre un élève vermifugé.e et non vermifugé.e, en gardant le score de santé constant.
 
 ---
 
@@ -785,9 +790,8 @@ class: inverse
 
 `r countdown(minutes = 10, top = 0)`
 
-Exécutons une régression où il existe une dépendance linéaire parfaite entre les régresseurs.
 
-1. Chargez les données *STAR* depuis [ici](https://www.dropbox.com/s/bf1fog8yasw3wjj/star_data.csv?dl=1), en utilisant `read.csv`, et assignez-les à un objet appelé `star_df`. Ne conservez que les observations sans `NA` avec le code suivant : `star_df <- star_df[complete.cases(star_df),]` 
+1. Chargez les données *STAR* depuis [ici](https://www.dropbox.com/scl/fi/psuo484767k0vufyhmkhr/star_data.csv?rlkey=ffx4gvqi27gyi7ssyfbbayfua&dl=1), en utilisant `read.csv`, et assignez-les à un objet appelé `star_df`. Ne conservez que les observations sans `NA` avec le code suivant : `star_df <- star_df[complete.cases(star_df),]` 
 
 1. Créez trois variables muettes (dummy) : (i) `small` égale à `TRUE` si les élèves sont dans une petite classe et `FALSE` sinon ; (ii) `regular` égale à `TRUE` si les élèves sont dans une classe régulière et `FALSE` sinon ; (iii) `regular_plus` égale à `TRUE` si les élèves sont dans une classe régulière+assistant et `FALSE` sinon. (*Indice : pour créer une variable muette, écrivez* `dummy = (variable=="value")`, *à l'intérieur du verbe dplyr approprié*) Créez une dernière variable, `sum`, égale à la somme de `small`, `regular` et `regular_plus`. À quoi `sum` est-elle égale ? Que signifie ce résultat ?
 
@@ -819,7 +823,7 @@ Mais pour des raisons diverses, comme une limite de données, il se peut que l'o
 
 --
 
-2. ***Variable omise sur le régresseur*** : $\tilde{y} = \tilde{\beta_0} + \color{#d96502}{\tilde{\beta_1}}x + u$
+1. ***Variable omise sur le régresseur*** : $\tilde{y} = \tilde{\beta_0} + \color{#d96502}{\tilde{\beta_1}}x + u$
 
 --
 On sait que $\tilde{\beta_1} =  \widehat{\beta_1} + \widehat{\beta_2}\tilde{\delta_1}$ avec $\tilde{\delta_1}$ qui est la pente de la régression de $x$ sur $z$
@@ -852,10 +856,9 @@ De cette formule, on peut obtenir :
 
 --
 
-***Question:***
+***Questions:***
 1. Dans quels cas $\tilde{\beta_1}$ n'est il pas biaisé ?
-
-1. Imaginez que vous voulez découvrir la relation entre le revenu et le nombre d'années d'éducation. Pourquoi une régression simple du revenu sur le nombre d'années d'éducation pourrait-elle ne pas donner des estimations fiables ? Quelle pourrait être une variable omise ? Quel est le signe attendu du biais de variable omise (OVB) ?
+1. Imaginez que vous voulez découvrir la relation entre le revenu et le nombre d'années d'éducation. Pourquoi une régression simple du revenu sur le nombre d'années d'éducation pourrait-elle ne pas donner des estimations fiables ? Ex de variable omise ? Sig,e attendu du biais de variable omise  ?
 
 ---
 
@@ -901,7 +904,7 @@ reg2$coefficients
 
 --
 
-***Omitted variable on regressor***:  $\text{worm_treat} = \delta_0 + \color{#d96502}{\delta_1}\text{Score} + u$
+***Variable omise sur régresseur***:  $\text{worm_treat} = \delta_0 + \color{#d96502}{\delta_1}\text{Score} + u$
 
 ```{r, echo = FALSE}
 reg3 <- lm(worm_treat ~ score, data)
@@ -913,7 +916,7 @@ reg3$coefficients
 On obtient : $$\tilde{\beta_1} = `r round(reg1$coefficients[2],3)` = \underbrace{`r round(reg2$coefficients[2],3)`}_{\beta_1} + \underbrace{(`r round(reg2$coefficients[3],3)`)}_{\color{#d90502}{\beta_2}} \times \underbrace{(`r round(reg3$coefficients[2],3)`)}_{\color{#d96502}{\delta_1}} = \beta_1 + OVB$$
 
 ---
-# Inclusion de variable irrelevante 
+# Inclusion de variable inutile 
 
 * Nous avons vu quels sont les risques d'omettre une variable importante dans notre modèle. Existe-il un risque similaire lorsque l'on **sur-spécifie** notre modèle ? 
 
@@ -957,7 +960,6 @@ Utilisons les données *STAR* (utilisées dans la tâche précédente) pour revo
 
 1. Quel est le $R^2$ ajusté de la régression multiple précédente ? Comment l'interprétez-vous ? Que pourriez-vous en déduire quant à l'importance des caractéristiques observables individuelles, des enseignants et des écoles dans l'explication des résultats scolaires ?
 
-1. (Optionnel) Régressez `math` sur `gender` et `experience` (l'expérience de l'enseignant). Interprétez les coefficients. À quoi ressembleraient ces résultats de régression visuellement ?
 
 
 ---
@@ -970,11 +972,20 @@ background-position: 9% 19%
 
 # Bonne journée !
 
-
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
 | <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
 | <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
----  
+
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" chapter_mlr.html chapter_mlr.pdf --chrome-arg=--disable-web-security')
+```

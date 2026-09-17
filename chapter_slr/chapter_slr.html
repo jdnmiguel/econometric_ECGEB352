@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-11
+### Université de Namur </br> 2026-09-16
 ]
 
 ---
@@ -61,7 +61,7 @@ layout: true
 
 --
 
-* Nous allons utiliser les données d'un papier économique célèbre écrit par [Michael Kremer et Edward Miguel](2004)](https://emiguel.econ.berkeley.edu/wordpress/wp-content/uploads/2021/03/Paper__Worms.pdf).
+* Nous allons utiliser les données d'un papier économique célèbre écrit par [Michael Kremer et Edward Miguel (2004)](https://emiguel.econ.berkeley.edu/wordpress/wp-content/uploads/2021/03/Paper__Worms.pdf).
 
 * Les données donnent des informations sur des caractéristiques de santé et abstésime d'étudiant.e.s entre 6 et 8 ans dans 75 écoles Kényanes en  1998 et 1999.
 
@@ -73,7 +73,7 @@ class:: inverse
 
 # Exo 1: Connaitre les données
 
-<countdown-timer class="countdown" id="timer_c8b215d1" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_91af8b59" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
  
 1. Télécharger les données depuis [ici](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1) comme `data`. *Indice : Utiliser la fonction `read_dta` de la librairie `haven` pour importer les données, qui est en format .dta.* (FYI: *.dta* est une extension utilisée pour les fichiers utilisés dans [*Stata*](https://www.stata.com/))
 
@@ -184,24 +184,40 @@ Formalisons ce que l'on est entrain de faire. Nous sommes intéressé.e.s dans l
 
 --
 
-* `\(\widehat{y}_i\)` est notre *prédiction* pour `\(y\)` à notre observation `\(i\)` `\((y_i)\)` en utilisant notre modèle (i.e.,  la droite).
+* `\(\widehat{y}_i\)` : *prédiction* pour `\(y\)` à notre observation `\(i\)` `\((y_i)\)` en utilisant notre modèle (la droite).
 
 ---
 
 # Qu'est ce qu'une droite ? 
 
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-6-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+```
+## Error in parse(text = input): &lt;text&gt;:1:2: symbole inattendu
+## 1: \beta_0
+##      ^
+```
 
 ---
 
 # Qu'est ce qu'une droite ? 
 
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-7-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+```
+## Error in parse(text = input): &lt;text&gt;:2:6: '\\' inattendu(e)
+## 1: library('latex2exp')
+## 2: plot_\
+##         ^
+```
 
 ---
 # Qu'est ce qu'une droite ? 
 
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-8-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+```
+## Error in parse(text = input): &lt;text&gt;:1:6: '\\' inattendu(e)
+## 1: plot_\
+##          ^
+```
 
 ---
 
@@ -285,7 +301,9 @@ L'objectif est d'esitmer l'effet __ceteris paribus__ : tous les autres élément
 
 --
 
-Hypothèse centrale sur la distribution des facteurs inobservables : (a) `\(E(u)=0\)`
+Hypothèse centrale sur la distribution des facteurs inobservables : 
+
+(a) `\(E(u)=0\)`
 
 * Sachant que `\(x\)` et `\(u\)` sont deux variables aléatoires, on peut définir la distribution conditionnelle de `\(u\)` pour toute valeur de `\(x\)` 
 
@@ -296,7 +314,7 @@ Hypothèse centrale sur la distribution des facteurs inobservables : (a) `\(E(u)
 
 En combinant (a) et (b), on obtient l'hypothèse de moyenne conditionnelle nulle : `\(E(u|x)=0\)`
 
-On obtient la fonction de regression de la population `\(\Rightarrow\)` $E(y|x) = \beta_0 + \beta_1 x $ 
+On obtient la fonction de regression de la population $ E(y|x) = \beta_0 + \beta_1 x $ 
 
 * Fonction linéaire de `\(x\)`, linéaire car la *variation* d'une unité de `\(x\)` change la valeur espérée de `\(y\)` par `\(\beta_1\)`
 ---
@@ -311,7 +329,7 @@ On sait que :
 - `\(E[u|x]=0\)`, cela signifie donc que `\(\text{cov}(x,u)=0\)`
 - (1) `\(E(u)=0\)`
 
-On a donc : (2) $cov(x,u)= E(xu)=0 $
+On a donc : (2) `\(cov(x,u)= E(xu)=0\)`
 
 
 En utilisant (1) et (2) ainsi que la définition de  `\(y_i\)`, on peut trouver `\(\widehat{\beta_0}\)` et `\(\widehat{\beta_1}\)` qui résoud : 
@@ -331,14 +349,112 @@ En utilisant (1) et (2) ainsi que la définition de  `\(y_i\)`, on peut trouver 
 
 * Note que `\(\beta_1 \geq 0\)` si `\(cov(x,y) \geq 0\)`  et `\(\beta_1 \leq 0\)` si `\(cov(x,y) \leq 0\)` 
 
-* Ces formules peuvent être trouvée en résolvant la minimisation du carré des erreurs. Les maths peuvent être trouvé [ici](https://www.youtube.com/watch?v=Hi5EJnBHFB4)  en détail pour les intéréssé.e.s 
+* Ces formules s'obtiennent en résolvant la minimisation du carré des erreurs. Dérivons-les ensemble, étape par étape.
+
+---
+
+# Dérivation : la fonction à minimiser
+
+* Pour des valeurs candidates `\(\beta_0, \beta_1\)`, le résidu associé à l'observation `\(i\)` est :
+`$$\widehat{u}_i = y_i - \beta_0 - \beta_1 x_i$$`
+
+--
+
+* La **somme des carrés des résidus (SCR)** est donc une fonction de `\(\beta_0\)` et `\(\beta_1\)` :
+`$$SCR(\beta_0,\beta_1) = \sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)^2$$`
+
+--
+
+* On cherche `\((\widehat{\beta}_0,\widehat{\beta}_1)\)` tel que :
+`$$(\widehat{\beta}_0,\widehat{\beta}_1) = \underset{\beta_0,\, \beta_1}{\arg\min} \; SCR(\beta_0,\beta_1)$$`
+
+--
+
+* .Namurgreen[**Condition nécessaire** :] les dérivées partielles de `\(SCR\)` par rapport à `\(\beta_0\)` et `\(\beta_1\)` doivent être nulles en `\((\widehat{\beta}_0,\widehat{\beta}_1)\)`.
+
+---
+
+# Dérivation : condition de premier ordre en `\(\beta_0\)`
+
+* On dérive `\(SCR\)` par rapport à `\(\beta_0\)` et on annule :
+
+`$$\frac{\partial SCR}{\partial \beta_0} = -2\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i) = 0$$`
+
+--
+
+* En divisant par `\(-2\)` puis en distribuant la somme :
+
+`$$\sum_{i=1}^N y_i \; - \; N \beta_0 \; - \; \beta_1 \sum_{i=1}^N x_i = 0$$`
+
+--
+
+* En divisant chaque terme par `\(N\)`, on fait apparaître les moyennes `\(\bar y\)` et `\(\bar x\)` :
+
+`$$\bar y - \beta_0 - \beta_1 \bar x = 0$$`
+
+--
+
+&gt; ### .Namurgreen[On isole directement `\(\beta_0\)` :] `\(\quad \widehat{\beta}_0 = \bar y - \widehat{\beta}_1 \bar x\)`
+
+* La droite OLS passe donc toujours par le point moyen `\((\bar x, \bar y)\)`.
+
+---
+
+# Dérivation : condition de premier ordre en `\(\beta_1\)`
+
+* On dérive `\(SCR\)` par rapport à `\(\beta_1\)` et on annule :
+
+`$$\frac{\partial SCR}{\partial \beta_1} = -2\sum_{i=1}^N x_i(y_i - \beta_0 - \beta_1 x_i) = 0$$`
+
+--
+
+* En divisant par `\(-2\)` et en distribuant :
+
+`$$\sum_{i=1}^N x_i y_i \; - \; \beta_0 \sum_{i=1}^N x_i \; - \; \beta_1 \sum_{i=1}^N x_i^2 = 0$$`
+
+--
+
+* On y substitue `\(\beta_0 = \bar y - \beta_1 \bar x\)` (trouvé à l'étape précédente) :
+
+`$$\sum_{i=1}^N x_i y_i \; - \; (\bar y - \beta_1 \bar x)\sum_{i=1}^N x_i \; - \; \beta_1 \sum_{i=1}^N x_i^2 = 0$$`
+
+---
+
+# Dérivation : condition de premier ordre en `\(\beta_1\)`
+
+* En développant et en regroupant les termes en `\(\beta_1\)` :
+
+`$$\sum_{i=1}^N x_i y_i - \bar y \sum_{i=1}^N x_i = \beta_1 \left( \sum_{i=1}^N x_i^2 - \bar x \sum_{i=1}^N x_i \right)$$`
+
+---
+
+# Dérivation : formule finale de `\(\widehat{\beta}_1\)`
+
+* En isolant `\(\beta_1\)` :
+
+`$$\widehat{\beta}_1 = \frac{\displaystyle\sum_{i=1}^N x_i y_i - N\bar x \bar y}{\displaystyle\sum_{i=1}^N x_i^2 - N\bar x^2}$$`
+
+--
+
+* Cette expression est **algébriquement identique** à :
+
+`$$\widehat{\beta}_1 = \frac{\displaystyle\sum_{i=1}^N (x_i - \bar x)(y_i - \bar y)}{\displaystyle\sum_{i=1}^N (x_i - \bar x)^2}$$`
+
+--
+
+&gt; ### .Namurgreen[Soit, en notation covariance/variance :] `\(\quad \widehat{\beta}_1 = \dfrac{\widehat{cov}(x,y)}{\widehat{var}(x)}\)`
+
+--
+
+* On retrouve exactement les formules énoncées plus haut, obtenues ici par minimisation directe de `\(\sum \widehat{u}_i^2\)` plutôt que par la condition `\(E(u|x)=0\)` — les deux approches donnent le **même résultat**.
+
 
 ---
 # Estimation **O**rdinary **L**east **S**quares (OLS) 
 
 
 * Erreurs de différents signes `\((+/-)\)` s'annulent, donc on considère **le carré des résidus** 
-`$$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$$`
+`$$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - \beta_0 - \beta_1 x_i)^2$$`
 
 * Donc on choisi `\((\beta_0,\beta_1)\)` tel que `\(\sum_{i = 1}^N u_1^2 + \dots + u_N^2\)` est aussi **petite que possible**.
 
@@ -352,7 +468,7 @@ En utilisant (1) et (2) ainsi que la définition de  `\(y_i\)`, on peut trouver 
 
 
 * Erreurs de différents signes `\((+/-)\)` s'annulent, donc on considère **le carré des résidus** 
-`$$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - b_0 - b_1 x_i)^2$$`
+`$$\forall i \in [1,N], u_i^2 = (y_i - \widehat y_i)^2 = (y_i - \beta_0 - \beta_1 x_i)^2$$`
 
 * Donc on choisi `\((\beta_0,\beta_1)\)` tel que `\(\sum_{i = 1}^N u_1^2 + \dots + u_N^2\)` est aussi **petite que possible**.
 
@@ -409,20 +525,20 @@ Pour le moment, faisons l'hypothèse que nos variables dépendante `\((y)\)` et 
 
   
   ``` r
-  lm(formula = dependent variable ~  independent variable, data = data.frame containing the data)
+  lm(formula = y ~  x, data = data.frame avec vos données)
   ```
 
 --
 
-## Class size and student performance
+## Santé des élèves et absentéisme 
 
-Let's estimate the following model by OLS: `\(\textrm{average math score}_i = b_0 + b_1 \textrm{class size}_i + e_i\)`
+Estimons le modèle suivant par OLS : `\(\textrm{absentéisme}_i = \beta_0 + \beta_1 \textrm{score santé}_i + u_i\)`
 
 .pull-left[
 
 ``` r
-# OLS regression of class size on average maths score
-lm( ~ classize, grades_avg_cs) 
+# Régression OLS du score de santé sur l'absentéisme
+lm(avg_abs ~ score_bin, data = g_abs)
 ```
 ]
 
@@ -483,24 +599,17 @@ class: inverse
 
 # Tâche 2 : Régression OLS
 
-<countdown-timer class="countdown" id="timer_ba0d36f4" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
-
-Exécutez le code suivant pour agréger les données au niveau de la taille de classe :
+<countdown-timer class="countdown" id="timer_ecd5d6ce" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 
-``` r
-grades_avg_cs &lt;- grades %&gt;%
-  group_by(classize) %&gt;%
-  summarise(avgmath_cs = mean(avgmath),
-            avgverb_cs = mean(avgverb))
-```
-1. Régressez le score verbal moyen (variable dépendante) sur la taille de classe (variable indépendante). Interprétez les coefficients.
+1. Régressez l'absentéisme  (variable dépendante) sur le score de santé (variable indépendante). Interprétez les coefficients.
 
-1. Calculez les coefficients OLS `\(b_0\)` et `\(b_1\)` de la régression précédente en utilisant les formules de la diapositive 25. (*Indice :* vous devez utiliser les fonctions `cov`, `var`, et `mean`.)
+1. Calculez les coefficients OLS `\(\beta_0\)` et `\(\beta_1\)` de la régression précédente en utilisant les formules de la diapositive 27. (*Indice :* vous devez utiliser les fonctions `cov`, `var`, et `mean`.)
 
-1. Quel est le score verbal moyen prédit lorsque la taille de classe est égale à 0 ? (Est-ce que cela a même du sens ?!)
+1. Quel est l'absentéisme moyen prédit lorsque le score de santé est égale à 0 ? 
 
-1. Quel est le score verbal moyen prédit lorsque la taille de classe est égale à 30 élèves ?
+1. Quel est l'absentéisme moyen prédit lorsque le score de santé est égale à 4 ? 
+
 ---
 
 # Propriété des OLS: Pedictions et Residus
@@ -546,7 +655,7 @@ Valeurs prédites correspondent à tout valeur de `\(\widehat{y}_i\)` qui se tro
 
 .left-wide[
 
-&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-23-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+&lt;img src="chapter_slr_files/figure-html/unnamed-chunk-22-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -619,14 +728,17 @@ Valeurs prédites correspondent à tout valeur de `\(\widehat{y}_i\)` qui se tro
 
 # Analyse de la variance
 
-* Rappel : `\(y_i = \widehat{y}_i + u_i\)`.
-
-* En décomposant, on obtient :
+* Rappel : `\(y_i = \widehat{y}_i + u_i\)`. En décomposant, on obtient :
     `$$\begin{align} Var(y) &amp;= Var(\widehat{y} +u)\\&amp;= Var(\widehat{y}) + Var(u) + 2 Cov(\widehat{y},u)\\&amp;= Var(\widehat{y}) + Var(u)\end{align}$$`
     
 * Car:
   * `\(Var(x+y) = Var(x) + Var(y) + 2Cov(x,y)\)`
   * `\(Cov(\hat{y},u)=0\)`
+
+
+---
+
+# Analyse de la variance
 
 * __Somme totale des carrés (SST) = Somme des carrés (SSE) + Somme des carrés résiduelles  (SSR)__
 
@@ -655,7 +767,7 @@ $$
 
 --
 
-* *Interpretation:* un `\(R^2\)` de 0.3, par exemple, signifie que la variation dans les `\(x\)` "explique" 50% de la variatoin totale dans  `\(y\)`.
+* *Interpretation:* un `\(R^2\)` de 0.3, par exemple, signifie que la variation dans les `\(x\)` "explique" 30% de la variatoin totale dans  `\(y\)`.
 
 --
     
@@ -671,18 +783,16 @@ class: inverse
 
 # Tâche 3 : `\(R^2\)` et qualité de l'ajustement
 
-<countdown-timer class="countdown" id="timer_75d978a2" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_f70fc2bb" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-1. Régressez `avgmath_cs` sur `classize`. Assignez le résultat à un objet `math_reg`.
+1. Régressez `score` sur `avg_abs`. Assignez le résultat à un objet `abs_reg`.
 
-1. Passez `math_reg` dans la fonction `summary()`. Quel est le `\(R^2\)` (multiple) pour cette régression ? Comment pouvez-vous
+1. Passez `abs_reg` dans la fonction `summary()`. Quel est le `\(R^2\)` (multiple) pour cette régression ? Comment pouvez-vous
 l'interpréter ?
 
-1. Calculez la corrélation au carré entre `classize` et `avgmath_cs`. Que vous apprend cela sur la relation entre le `\(R^2\)` et la corrélation dans une régression à un seul régresseur ?
+1. Calculez la corrélation au carré entre ces deux variables. Que vous apprend cela sur la relation entre le `\(R^2\)` et la corrélation dans une régression à un seul régresseur ?
 
-1. Répétez les étapes 1 et 2 pour `avgverb_cs`. Pour quel examen la variance de la taille de classe explique-t-elle davantage la variance des scores des élèves ?
 
-1. (Optionnel) Installez et chargez le package `broom`. Passez `math_reg` dans la fonction `augment()` et assignez le résultat à un nouvel objet. Utilisez la variance de `avgmath_cs` (SST) et la variance de `.fitted` (valeurs prédites ; SSE) pour trouver le `\(R^2\)` à l'aide de la formule de la diapositive précédente.
 ---
 
 
@@ -693,14 +803,15 @@ background-position: 9% 19%
 
 # Bonne journée !
 
-
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
 | &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
-| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen &lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt; | Discord |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;] | Discord |
 | &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
 
----  
+  
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

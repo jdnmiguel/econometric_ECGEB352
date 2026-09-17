@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-08-20
+### Université de Namur </br> 2026-09-16
 ]
 
 ---
@@ -41,7 +41,7 @@ layout: true
 
 
 
-# Today - Sampling&lt;sup&gt;1&lt;/sup&gt;
+# Aujourd'hui - Sampling&lt;sup&gt;1&lt;/sup&gt;
 
 .footnote[
 [1]: Ce chapitre est basé en partie sur le [chapitre d'échantillonnage](https://moderndive.com/7-sampling.html) de [ModernDive](https://moderndive.com/)]
@@ -64,7 +64,7 @@ layout: true
 
 --
 
-On pourrait tout compter, mais cela serait long et fastidieux ! 😩 Quelles alternatives avons-nous ?
+On pourrait tout compter, mais cela serait long et fastidieux !  Quelles alternatives avons-nous ?
 
 ---
 
@@ -77,11 +77,11 @@ On pourrait tout compter, mais cela serait long et fastidieux ! 😩 Quelles alt
 
 * Voici ce que l'on trouve .
 
-Color | Count | Proportion
+Couleurr | Nombre | Proportion
 :------:|:------:|:--------:
-Green   |  14        |  0.70
-Red   |  5     |   0.25
-Yellow   |  1    |     0.05
+Vert   |  14        |  0.70
+Rouge   |  5     |   0.25
+Jaune   |  1    |     0.05
 
 * 0.70 peut être pensé comme notre estimation de la proportion de pâtes vertes dans le bol. 
 ]
@@ -97,13 +97,16 @@ Yellow   |  1    |     0.05
 
 * Que se passerait-il si nous prenions un *nouvel* échantillon (en remettant les 20 pâtes précédentes dans le bol) ? Obtiendrions-nous aussi 14 *vertes* comme avant ?
 
---
-
-* Que se passerait-il si nous répétions cette activité plusieurs fois ?
 
 --
 
 * Probablement pas. Les échantillons varieront d'un tirage à l'autre.
+
+
+--
+
+* Que se passerait-il si nous répétions cette activité plusieurs fois ?
+
 
 --
 
@@ -131,7 +134,7 @@ Yellow   |  1    |     0.05
 * Pour chaque échantillon, nous pouvons caculer la proportion de pâtes vertes. 
 
 .pull-left[
-Sample # | Count | Proportion
+Echantillon # | Nombre | Proportion
 :------:|:------:|:--------:
 1 | 14 | 0.70
 2 | 14 | 0.70
@@ -162,9 +165,9 @@ Sample # | Count | Proportion
 
 class: inverse
 
-# Task 1
+# Tâche 1
 
-<countdown-timer class="countdown" id="timer_f9fcf6bd" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_b2369c6c" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Créez un data.frame contenant les proportions de pâtes vertes de la diapositive précédente. Nommez-le `pasta` et nommez la variable contenant les proportions `prop_green`. (Indice : pour créer un data.frame, vous devez utiliser la fonction `data.frame()`.) Les proportions sont les suivantes : `(0.7,0.7,0.5,0.5,0.3,0.5,0.4,0.45,0.55,0.4,0.35,0.45,0.45,0.7,0.55,0.5,0.35,0.65)`
 
@@ -198,9 +201,9 @@ class: inverse
 
 * *Objectif* : connaître la proportion de pâtes vertes
 
---
 
-* *Méthodes* :
+
+*Méthodes* :
   1. **Recensement** : prend beaucoup de temps (et dans de nombreux cas très coûteux) ;
   
 --
@@ -217,7 +220,7 @@ class: inverse
 # Prenons des échantillons virtuels 
 
 .pull-left[
-* Nous avons compté le nombre exact de pâtes vertes, rouges, et jaunes dans le bol 🧐 
+* Nous avons compté le nombre exact de pâtes vertes, rouges, et jaunes dans le bol  
 
 * Toutes les pâtes sont sauvegardés dans ce fichier csv  [here](https://www.dropbox.com/s/qpjsk0rfgc0gx80/pasta.csv?dl=1).
 
@@ -342,11 +345,11 @@ sample_1
 ]
 
 .pull-right[
-1. Calcule :
+1. Calculons :
   * somme des pâtes vertes dans l'échantillon,
   * nombre d'obs dans l'échantillon (i.e., 50 ici)
 
-1. Calcule la % de pâtes vertes
+1. Calculons la % de pâtes vertes
 
 👉 0.46 sont vertes ! C'est une ***estimation*** de la proportion de pâtes vertes dans le bol. Que se passe-t-il si on essaie encore ?
 
@@ -359,7 +362,7 @@ Et si on essaie encore de nombreuses fois, comme 50 ?
 
 .pull-left[
 
-50 échantillon (*répliques*) de taille 50.
+50 échantillons  de taille 50.
 
 
 ``` r
@@ -457,28 +460,29 @@ ggplot(virtual_prop_green, aes(x = prop_green)) +
 ]
 
 ---
-
 class: inverse
 
-# Task 2
+# Tâche 2
 
-<countdown-timer class="countdown" id="timer_a66bce06" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_998e2aa8" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-Au lieu de 33 échantillons, prenons en ***1000*** !
+Au lieu de 18 échantillons, prenons en ***1000*** !
 
-1. Pourquoi ne pas prendre les 1000 "à la mainby hand"?
+1. Pourquoi ne pas prendre les 1000 à la main ?
 
 1. Télécharger les [données](https://www.dropbox.com/s/qpjsk0rfgc0gx80/pasta.csv?dl=1) dans un objet `pasta`.
 
-1. Obtenez 1000 échantillons de taille 50 en utilisant la fonction `rep_sample_n()`du package `moderndive.
+1. Obtenez 1000 échantillons de taille 50 en utilisant la fonction `rep_sample_n()` du package `moderndive`.
 
 1. Calculez la proportion de pâtes vertes dans chaque échantillon.
 
 1. Faîtes un histogramme de la proportion de pâtes vertes dans chaque échantillon.
 
-1. Qu'observez vous ? Quelles proportions est la plus fréquente ? Comment la forme de l'histogramme est par rapport à celle avec 33 échantillons ?
+1. Qu'observez vous ? Quelles proportions est la plus fréquente ? Comment la forme de l'histogramme est par rapport à celle avec 18 échantillons ?
 
 1. Quelle est la probabilité d'échantillonner 50 pâtes dont moins de 20 % sont vertes ?
+
+
 
 ---
 
@@ -491,12 +495,14 @@ Au lieu de 33 échantillons, prenons en ***1000*** !
 Ressemble remarquablement à une ***distribution normale*** `\(\rightarrow\)` plus nous prenons d'échantillons, plus leur ***distribution d'échantillonnage*** ressemblera à une ***distribution normale***.
 
 ---
+
 # Rôle de la taille de l'échantillon
 Imaginez que vous puissiez changer la taille de vos échantillons et que vous ayez le choix entre les tailles suivantes : 25, 50 et 100.
 
 Si votre objectif est toujours d'estimer la proportion de pâtes vertes dans le bol, quelle pelle choisiriez-vous ?
 
 ---
+
 # Rôle de la taille de l'échantillon
 
 * Répétons ce que nous avons fait précédemment mais pour différentes tailles d'échantillon.
@@ -572,7 +578,7 @@ virtual_prop_green_25 &lt;- virtual_samples_25 %&gt;%
 
 
 
-Sample Size | Standard Deviation
+Taille échantillon | Erreur standard
 :---------:|:--------------:
 25          | 0.10
 50          | 0.07
@@ -584,7 +590,7 @@ Sample Size | Standard Deviation
 
 --
 
-* Donc à mesure que la taille de l'échantillon augmente, nos ***estimations*** de la proporiton **réelle* de pâtes vertes dans le bol devient *précise*.
+* Donc à mesure que la taille de l'échantillon augmente, nos ***estimations*** de la proporiton *réelle* de pâtes vertes dans le bol devient *précise*.
 
 ---
 
@@ -604,6 +610,7 @@ Sample Size | Standard Deviation
   1. L'effet de la taille de l'échantillon sur la ***variation d'échantillonnage*** : plus la taille de notre échantillon est grande, plus notre estimation devrait être proche de la valeur réelle.
   
 ---
+
 # Sampling Glossary 📖
 
 .pull-left[
@@ -646,9 +653,8 @@ Sample Size | Standard Deviation
 --
 
 * Reproduisons le tableau récapitulatif avec les libellés appropriés :
-Taille d'échantillon `\((n)\)` | Erreur type de `\(\hat{p}\)`
 
-Sample Size `\((n)\)` | Standard Error of `\(\hat{p}\)`
+Taille échantillon `\((n)\)` | Erreur type `\(\hat{p}\)`
 :---------:|:--------------:
 25          | 0.10
 50          | 0.07
@@ -708,7 +714,6 @@ Scénario | Paramètre de population | Notation | Estimation ponctuelle | Symbol
 6 | Ordonnée à l'origine de régression de population | `\(\beta_0\)` | Ordonnée à l'origine de régression ajustée | `\(b_0\)` ou `\(\widehat{\beta}_0\)`
 ---
 
-# The Central Limit Theorem (CLT)
 
 # Le théorème central limite (TCL)
 * Le fait que nos statistiques d'échantillon ***convergent*** vers une *limite centrale* est bien connu en statistique.
@@ -720,7 +725,8 @@ Scénario | Paramètre de population | Notation | Estimation ponctuelle | Symbol
 
 --
 
-&gt; ### *Théorème central limite :* quelle que soit l'allure de la distribution de population sous-jacente, **lorsque les *moyennes* d'échantillon sont basées sur des tailles d'échantillon de plus en plus grandes, la distribution d'échantillonnage de ces *moyennes* d'échantillon devient à la fois de plus en plus normale et de plus en plus étroite**.
+&gt; ### **Théorème central limite :** quelle que soit l'allure de la distribution de population sous-jacente, lorsque les *moyennes* d'échantillon sont basées sur des tailles d'échantillon de plus en plus grandes, la distribution d'échantillonnage de ces *moyennes* d'échantillon devient à la fois de plus en plus normale et de plus en plus étroite.
+
 --
 
 * En d'autres termes, leur distribution d'échantillonnage suit de plus en plus une ***distribution normale*** et la *variation de ces distributions d'échantillonnage diminue*, telle que quantifiée par leurs ***erreurs types***.
@@ -730,24 +736,8 @@ Scénario | Paramètre de population | Notation | Estimation ponctuelle | Symbol
 # Théorème centrale limite - La statistique expliquée à mon chat
 
 .center[
-&lt;iframe width="684" height="464" src="https://www.youtube.com/watch?v=vWTKVMf5HQI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+[![Miniature vidéo](https://img.youtube.com/vi/vWTKVMf5HQI/hqdefault.jpg)](https://www.youtube.com/watch?v=vWTKVMf5HQI)
 ]
-
----
-
-# On the way to causality [chapter sampling]
-
-✅ How to manage data? Read it, tidy it, visualise it!
-
-✅  How to summarise relationships between variables? Simple and multiple linear regression, non-linear regressions, interactions...
-
-✅ What is causality?
-
-✅ **What if we don't observe an entire population?** Sampling!
-
-❌  Are our findings just due to randomness?
-
-❌ How to find exogeneity in practice?
 
 
 
@@ -761,14 +751,13 @@ background-position: 9% 19%
 # BONNE JOURNÉE !
 
 
+
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
-| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.ScPored &lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt; | Discord |
-| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
-| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                       |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;] | Discord |
+| &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
 
----                    |
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

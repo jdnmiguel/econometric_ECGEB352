@@ -136,7 +136,7 @@ En pratique, vous n'avez ***pas besoin*** de calculer vos intervalles de confian
 
 # Retour aux pâtes
 
-* Comme dans la vraie vie, imaginons que nous n'ayons accès qu'à *un seul échantillon aléatoire* de notre bol de pâtes.
+* Imaginons que nous n'ayons accès qu'à *un seul échantillon aléatoire* de notre bol.
 
 --
 
@@ -222,7 +222,7 @@ Cette procédure est appelée ***rééchantillonnage avec remise*** :
 
 .pull-left[
 
-Here is one bootstrap sample: 
+Voici un échantillon bootstrap 
 
 ```{r}
 one_bootstrap = my_sample %>%
@@ -312,8 +312,8 @@ Jettons un oeil graphiquement
 boot_distrib_plot = bootstrap_distrib %>%
   ggplot(aes(x = stat)) +
   geom_histogram(boundary = 0.39, binwidth = 0.02, col = "white", fill = "darkgreen") +
-  labs(x = "Proportion of green pasta",
-       y = "Frequency") +
+  labs(x = "% de pâtes vertes",
+       y = "Effectif") +
   theme_bw(base_size = 14)
 boot_distrib_plot
 ```
@@ -346,18 +346,18 @@ boot_distrib_plot +
   annotate("text", x = 0.375, y = 127, label = "Distribution bootstrap avec la moyenne", size = 4)
 ```
 
-En partant de la ***distribution bootstrap*** nous pouvons construire nos intervalles de confiance !
+En partant de la ***distribution bootstrap*** nous pouvons construire nos intervalles de confiance
 
 ---
 
 # Comprendre les Intervalles de Confiance
 
 * Analogie avec la pêche :
-  * *estimation ponctuelle* : pêcher au harpon.
+  * **estimation ponctuelle** : pêcher au harpon.
  
 --
   
-  * *intervalle de confiance* : pêcher au filet.
+  * **intervalle de confiance** : pêcher au filet.
 
 --
 
@@ -365,7 +365,7 @@ En partant de la ***distribution bootstrap*** nous pouvons construire nos interv
 
 --
 
-* L'*estimation ponctuelle* serait la proportion de pâtes vertes obtenue à partir d'un échantillon aléatoire $(\hat{p})$.
+* L'**estimation ponctuelle** serait la proportion de pâtes vertes obtenue à partir d'un échantillon aléatoire $(\hat{p})$.
 
 --
 
@@ -383,7 +383,7 @@ En partant de la ***distribution bootstrap*** nous pouvons construire nos interv
 
 # Méthode des percentiles : Intervalle de Confiance à 95% 
 
-* Construire un IC qui comprend le milieu de 95% des valeurs de la distribution bootstrapConstruct a confidence interval as the middle 95% of values of the bootstrap distribution.
+* Construire un IC qui comprend le milieu de 95% des valeurs de la distribution bootstrap
 
 --
 
@@ -436,7 +436,7 @@ p = mean(bowl$color == "green")
 
 boot_distrib_plot_ci +
   geom_vline(xintercept = p, col = "black", size = 1.25) +
-  annotate("text", x = 0.56, y = 125, label = "proportion de la population", size = 4)
+  annotate("text", x = 1, y = 125, label = "% de la population", size = 4)
 ```
 
 --
@@ -548,7 +548,6 @@ En d'autres termes, 95 % du temps, l'IC à 95 % contiendra le véritable paramè
 --
 
 ***Impact de la taille de l'échantillon :*** plus la taille de l'échantillon est grande, plus les IC sont étroits.
-
   * *Intuition* : une taille d'échantillon plus grande entraîne moins de variation d'échantillonnage et donc une distribution bootstrap plus étroite, ce qui conduit à son tour à des IC plus fins.
   
 ---
@@ -636,9 +635,9 @@ Il y a une différence de  ***29.2 points de pourcentage*** dans les promotions 
 ```{r,echo= FALSE, fig.height=6}
 ggplot(promotions, aes(x = gender, fill = decision)) +
   geom_bar(width = 0.75) +
-  labs(x = "Gender of name on resume",
-       y = "Frequency") +
-  labs(title = "Promotion decision") +
+  labs(x = "Genre du nom sur le CV ",
+       y = "Effectif") +
+  labs(title = "Décision de promotion") +
   theme_bw(base_size = 20) +
   theme(legend.position = "top")
 ```
@@ -1278,8 +1277,18 @@ background-position: 9% 19%
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
 | <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
 | <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
----  
----          
+
+
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" chapter_ci_hyptest.html chapter_ci_test.pdf --chrome-arg=--disable-web-security')
+```         

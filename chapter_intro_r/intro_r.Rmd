@@ -295,19 +295,19 @@ layout: true
 Pour de plus gros projets, comme votre mémoire/thèse :
 
 * votre répertoire de projet
-  * data/
-    * 1_raw/
-    * 2_clean/
-  * code/
-    * 1_clean.R
-    * 2_analyze.R
-    * requirements.R
-    * main.R
+    * data/
+        * 1_raw/
+        * 2_clean/
+    * code/
+        * 1_clean.R
+        * 2_analyze.R
+        * requirements.R
+        * main.R
   * docs/
-    * sources.md
+        * sources.md
   * results/
-    * figures/
-    * tables/
+        * figures/
+        * tables/
   * README.md
 
 ---
@@ -337,7 +337,10 @@ Pour de plus gros projets, comme votre mémoire/thèse :
 * Le fichier README résume le fonctionnement de votre projet
   * [Template](https://social-science-data-editors.github.io/template_README/) pour les packages de réplication en sciences sociales
 
---
+---
+
+# Quelques conseils
+
 
 * Vous pouvez créer des sections dans votre code avec $\#$ et au moins 4 $-$ ou `=` (comme les sections $**\#$ dans Stata)
 
@@ -405,20 +408,20 @@ knitr::include_graphics("chapter_intro_r_files/figure-html/Rproj.png")
 
 Pour de plus gros projets, comme votre mémoire de master :
 
-* **nom_du_projet**
-  * data/
-    * 1_raw/
-    * 2_clean/
-  * code/
-    * 1_clean.R
-    * 2_analyze.R
-    * requirements.R
-    * main.R
+* votre répertoire de projet
+    * data/
+        * 1_raw/
+        * 2_clean/
+    * code/
+        * 1_clean.R
+        * 2_analyze.R
+        * requirements.R
+        * main.R
   * docs/
-    * sources.md
+        * sources.md
   * results/
-    * figures/
-    * tables/
+        * figures/
+        * tables/
   * README.md
   * `nom_du_projet.Rproj`
 
@@ -426,7 +429,7 @@ Pour de plus gros projets, comme votre mémoire de master :
 
 class:inverse
 
-# Exercice 0
+# Exercice 1
 
 `r countdown(minutes = 5, top = 0)`
 
@@ -716,7 +719,7 @@ class:inverse
 
 `r countdown(minutes = 10, top = 0)`
 
-Nous allons utiliser les données de population par woreda
+Nous allons utiliser les données de population par district éthiopien
 
 * Importer les données au format Excel dans R
 
@@ -811,7 +814,7 @@ nouveau_df[, "x"]    # valeurs de toutes les lignes, colonne nommée "x"
 
 .pull-left[
 .center[
-```{r, echo = FALSE, out.width = "150px"}
+```{r, echo = FALSE, out.width = "300px"}
 knitr::include_graphics("chapter_intro_r_files/figure-html/logo_dplyr.png")
 ```
 ]
@@ -820,7 +823,7 @@ Objectif : transformer facilement les données
 
 .pull-right[
 .center[
-```{r, echo = FALSE, out.width = "150px"}
+```{r, echo = FALSE, out.width = "300px"}
 knitr::include_graphics("chapter_intro_r_files/figure-html/logo_tidyr.png")
 ```
 ]
@@ -947,4 +950,14 @@ background-position: 9% 19%
 | <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
 | <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
----  
+
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" intro_r.html chapter_intro_r.pdf --chrome-arg=--disable-web-security')
+```

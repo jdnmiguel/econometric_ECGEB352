@@ -82,7 +82,7 @@ knitr::include_graphics("../img/photos/pasta/pasta_bowl.JPG")
 
 --
 
-On pourrait tout compter, mais cela serait long et fastidieux ! `r emo::ji("weary")` Quelles alternatives avons-nous ?
+On pourrait tout compter, mais cela serait long et fastidieux !  Quelles alternatives avons-nous ?
 
 ---
 
@@ -95,11 +95,11 @@ On pourrait tout compter, mais cela serait long et fastidieux ! `r emo::ji("wear
 
 * Voici ce que l'on trouve .
 
-Color | Count | Proportion
+Couleurr | Nombre | Proportion
 :------:|:------:|:--------:
-Green   |  14        |  `r format(signif(14/20,2), nsmall = 2)`
-Red   |  5     |   `r format(round(5/20,2), nsmall = 2)`
-Yellow   |  1    |     `r format(round(1/20,2), nsmall = 2)`
+Vert   |  14        |  `r format(signif(14/20,2), nsmall = 2)`
+Rouge   |  5     |   `r format(round(5/20,2), nsmall = 2)`
+Jaune   |  1    |     `r format(round(1/20,2), nsmall = 2)`
 
 * `r format(signif(14/20,2), nsmall = 2)` peut être pensé comme notre estimation de la proportion de pâtes vertes dans le bol. 
 ]
@@ -115,13 +115,16 @@ Yellow   |  1    |     `r format(round(1/20,2), nsmall = 2)`
 
 * Que se passerait-il si nous prenions un *nouvel* échantillon (en remettant les 20 pâtes précédentes dans le bol) ? Obtiendrions-nous aussi 14 *vertes* comme avant ?
 
---
-
-* Que se passerait-il si nous répétions cette activité plusieurs fois ?
 
 --
 
 * Probablement pas. Les échantillons varieront d'un tirage à l'autre.
+
+
+--
+
+* Que se passerait-il si nous répétions cette activité plusieurs fois ?
+
 
 --
 
@@ -149,7 +152,7 @@ Yellow   |  1    |     `r format(round(1/20,2), nsmall = 2)`
 * Pour chaque échantillon, nous pouvons caculer la proportion de pâtes vertes. 
 
 .pull-left[
-Sample # | Count | Proportion
+Echantillon # | Nombre | Proportion
 :------:|:------:|:--------:
 1 | 14 | `r format(round(14/20,2), nsmall = 2)`
 2 | 14 | `r format(round(14/20,2), nsmall = 2)`
@@ -259,9 +262,9 @@ pasta_samples %>%
 
 * *Objectif* : connaître la proportion de pâtes vertes
 
---
 
-* *Méthodes* :
+
+*Méthodes* :
   1. **Recensement** : prend beaucoup de temps (et dans de nombreux cas très coûteux) ;
   
 --
@@ -278,7 +281,7 @@ pasta_samples %>%
 # Prenons des échantillons virtuels 
 
 .pull-left[
-* Nous avons compté le nombre exact de pâtes vertes, rouges, et jaunes dans le bol `r emo::ji("monocle")` 
+* Nous avons compté le nombre exact de pâtes vertes, rouges, et jaunes dans le bol  
 
 * Toutes les pâtes sont sauvegardés dans ce fichier csv  [here](https://www.dropbox.com/s/qpjsk0rfgc0gx80/pasta.csv?dl=1).
 
@@ -359,11 +362,11 @@ sample_1
 ]
 
 .pull-right[
-1. Calcule :
+1. Calculons :
   * somme des pâtes vertes dans l'échantillon,
   * nombre d'obs dans l'échantillon (i.e., 50 ici)
 
-1. Calcule la % de pâtes vertes
+1. Calculons la % de pâtes vertes
 
 `r emo::ji("point_right")` `r sample_1$prop_green` sont vertes ! C'est une ***estimation*** de la proportion de pâtes vertes dans le bol. Que se passe-t-il si on essaie encore ?
 
@@ -376,7 +379,7 @@ Et si on essaie encore de nombreuses fois, comme 50 ?
 
 .pull-left[
 
-50 échantillon (*répliques*) de taille 50.
+50 échantillons  de taille 50.
 
 ```{r}
 virtual_samples <- bowl %>%
@@ -447,28 +450,29 @@ ggplot(virtual_prop_green, aes(x = prop_green)) +
 ]
 
 ---
-
 class: inverse
 
 # Tâche 2
 
 `r countdown(minutes = 10, top = 0)`
 
-Au lieu de 33 échantillons, prenons en ***1000*** !
+Au lieu de 18 échantillons, prenons en ***1000*** !
 
-1. Pourquoi ne pas prendre les 1000 "à la mainby hand"?
+1. Pourquoi ne pas prendre les 1000 à la main ?
 
 1. Télécharger les [données](https://www.dropbox.com/s/qpjsk0rfgc0gx80/pasta.csv?dl=1) dans un objet `pasta`.
 
-1. Obtenez 1000 échantillons de taille 50 en utilisant la fonction `rep_sample_n()`du package `moderndive.
+1. Obtenez 1000 échantillons de taille 50 en utilisant la fonction `rep_sample_n()` du package `moderndive`.
 
 1. Calculez la proportion de pâtes vertes dans chaque échantillon.
 
 1. Faîtes un histogramme de la proportion de pâtes vertes dans chaque échantillon.
 
-1. Qu'observez vous ? Quelles proportions est la plus fréquente ? Comment la forme de l'histogramme est par rapport à celle avec 33 échantillons ?
+1. Qu'observez vous ? Quelles proportions est la plus fréquente ? Comment la forme de l'histogramme est par rapport à celle avec 18 échantillons ?
 
 1. Quelle est la probabilité d'échantillonner 50 pâtes dont moins de 20 % sont vertes ?
+
+
 
 ---
 
@@ -503,12 +507,14 @@ virtual_prop_green %>% ggplot(
 Ressemble remarquablement à une ***distribution normale*** $\rightarrow$ plus nous prenons d'échantillons, plus leur ***distribution d'échantillonnage*** ressemblera à une ***distribution normale***.
 
 ---
+
 # Rôle de la taille de l'échantillon
 Imaginez que vous puissiez changer la taille de vos échantillons et que vous ayez le choix entre les tailles suivantes : 25, 50 et 100.
 
 Si votre objectif est toujours d'estimer la proportion de pâtes vertes dans le bol, quelle pelle choisiriez-vous ?
 
 ---
+
 # Rôle de la taille de l'échantillon
 
 * Répétons ce que nous avons fait précédemment mais pour différentes tailles d'échantillon.
@@ -630,7 +636,7 @@ sd100 = virtual_prop_green_100 %>%
   summarize(sd = sd(prop_green))
 ```
 
-Sample Size | Standard Deviation
+Taille échantillon | Erreur standard
 :---------:|:--------------:
 25          | `r format(round(sd25$sd,2), nsmall = 2)`
 50          | `r format(round(sd50$sd,2), nsmall = 2)`
@@ -642,7 +648,7 @@ Sample Size | Standard Deviation
 
 --
 
-* Donc à mesure que la taille de l'échantillon augmente, nos ***estimations*** de la proporiton **réelle* de pâtes vertes dans le bol devient *précise*.
+* Donc à mesure que la taille de l'échantillon augmente, nos ***estimations*** de la proporiton *réelle* de pâtes vertes dans le bol devient *précise*.
 
 ---
 
@@ -662,6 +668,7 @@ Sample Size | Standard Deviation
   1. L'effet de la taille de l'échantillon sur la ***variation d'échantillonnage*** : plus la taille de notre échantillon est grande, plus notre estimation devrait être proche de la valeur réelle.
   
 ---
+
 # Sampling Glossary `r emo::ji("book")`
 
 .pull-left[
@@ -704,9 +711,8 @@ $N = 713$ pâtes.
 --
 
 * Reproduisons le tableau récapitulatif avec les libellés appropriés :
-Taille d'échantillon $(n)$ | Erreur type de $\hat{p}$
 
-Sample Size $(n)$ | Standard Error of $\hat{p}$
+Taille échantillon $(n)$ | Erreur type $\hat{p}$
 :---------:|:--------------:
 25          | `r format(round(sd25$sd,2), nsmall = 2)`
 50          | `r format(round(sd50$sd,2), nsmall = 2)`
@@ -791,7 +797,6 @@ Scénario | Paramètre de population | Notation | Estimation ponctuelle | Symbol
 6 | Ordonnée à l'origine de régression de population | $\beta_0$ | Ordonnée à l'origine de régression ajustée | $b_0$ ou $\widehat{\beta}_0$
 ---
 
-# The Central Limit Theorem (CLT)
 
 # Le théorème central limite (TCL)
 * Le fait que nos statistiques d'échantillon ***convergent*** vers une *limite centrale* est bien connu en statistique.
@@ -803,7 +808,8 @@ Scénario | Paramètre de population | Notation | Estimation ponctuelle | Symbol
 
 --
 
-> ### *Théorème central limite :* quelle que soit l'allure de la distribution de population sous-jacente, **lorsque les *moyennes* d'échantillon sont basées sur des tailles d'échantillon de plus en plus grandes, la distribution d'échantillonnage de ces *moyennes* d'échantillon devient à la fois de plus en plus normale et de plus en plus étroite**.
+> ### **Théorème central limite :** quelle que soit l'allure de la distribution de population sous-jacente, lorsque les *moyennes* d'échantillon sont basées sur des tailles d'échantillon de plus en plus grandes, la distribution d'échantillonnage de ces *moyennes* d'échantillon devient à la fois de plus en plus normale et de plus en plus étroite.
+
 --
 
 * En d'autres termes, leur distribution d'échantillonnage suit de plus en plus une ***distribution normale*** et la *variation de ces distributions d'échantillonnage diminue*, telle que quantifiée par leurs ***erreurs types***.
@@ -813,7 +819,7 @@ Scénario | Paramètre de population | Notation | Estimation ponctuelle | Symbol
 # Théorème centrale limite - La statistique expliquée à mon chat
 
 .center[
-<iframe width="684" height="464" src="https://www.youtube.com/watch?v=vWTKVMf5HQI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Miniature vidéo](https://img.youtube.com/vi/vWTKVMf5HQI/hqdefault.jpg)](https://www.youtube.com/watch?v=vWTKVMf5HQI)
 ]
 
 
@@ -828,10 +834,20 @@ background-position: 9% 19%
 # BONNE JOURNÉE !
 
 
+
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
 | <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
 | <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
----  
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" chapter_sampling.html chapter_sampling.pdf --chrome-arg=--disable-web-security')
+```

@@ -117,17 +117,13 @@ La seconde hypothèse statut sur l'origine des données. Les données utilisées
 
 --
 
-$$
-\text{n obs} : \{(x_{i,1},...,x_{i,k}; y_i)\}: i=\{1,...,n\}
-$$
+$$\text{n obs} : \{(x_{i,1},...,x_{i,k}; y_i)\}: i=\{1,...,n\}$$
 
 * Si c'est le cas, nous pouvons alors estimer le modèle associé à H1 et le réécrire pour un individu donné.
 
-$$
-y_i = \beta_0 + \beta_1 x_{i,1} + ... + \beta_k x_{i,k} + u_i
-$$
+$$y_i = \beta_0 + \beta_1 x_{i,1} + ... + \beta_k x_{i,k} + u_i$$
 
----
+
 
 ---
 # H3: L'absence de collinéarité parfaite
@@ -242,6 +238,57 @@ $$
 
 ---
 
+# Homoscédasticité visuellement 
+
+```{r fig.width=10, fig.height=4.5, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(gridExtra)
+
+set.seed(123)
+
+n <- 150
+x <- runif(n, 0, 10)
+
+# Homoscédasticité
+y1 <- 2 + 1.5*x + rnorm(n, 0, 1)
+
+# Hétéroscédasticité
+y2 <- 2 + 1.5*x + rnorm(n, 0, 0.35*x)
+
+# Données
+homo <- data.frame(x, y = y1)
+hetero <- data.frame(x, y = y2)
+
+# Graphique Homoscédasticité
+g1 <- ggplot(homo, aes(x, y)) +
+  geom_point(color = "#2C7FB8", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE,
+              color = "red", linewidth = 1) +
+  labs(title = "Homoscédasticité",
+       subtitle = "Variance constante des erreurs",
+       x = "Variable explicative (X)",
+       y = "Variable dépendante (Y)") +
+  theme_minimal(base_size = 15)
+
+# Graphique Hétéroscédasticité
+g2 <- ggplot(hetero, aes(x, y)) +
+  geom_point(color = "#D95F02", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE,
+              color = "red", linewidth = 1) +
+  labs(title = "Hétéroscédasticité",
+       subtitle = "Variance croissante des erreurs",
+       x = "Variable explicative (X)",
+       y = "Variable dépendante (Y)") +
+  theme_minimal(base_size = 15)
+
+grid.arrange(g1, g2, ncol = 2)
+```
+
+
+
+
+
+---
 
 # La variance de $\widehat{\beta_j}$
 
@@ -281,9 +328,7 @@ $$
 
 # Terme 2 : $SST_j$ — La variation totale de $x_j$
 
-$$
-SST_j = \sum_{i=1}^n (x_{ij} - \bar{x}_j)^2
-$$
+$$SST_j = \sum_{i=1}^n (x_{ij} - \bar{x}_j)^2$$
 
 --
 
@@ -352,15 +397,15 @@ Notre estimation est **plus précise** (variance plus faible) lorsque :
 
 --
 
-* $\sigma^2$ est **petit** — peu de bruit dans le modèle
+* $\sigma^2$ est **petit** : peu de bruit dans le modèle
 
 --
 
-* $SST_j$ est **grand** — $x_j$ varie beaucoup dans l'échantillon
+* $SST_j$ est **grand** : $x_j$ varie beaucoup dans l'échantillon
 
 --
 
-* $R_j^2$ est **petit** — $x_j$ n'est pas colinéaire avec les autres variables
+* $R_j^2$ est **petit** : $x_j$ n'est pas colinéaire avec les autres variables
 
 
 ---
@@ -405,11 +450,11 @@ $$
 
 --
 
-* $sd(\widehat{\beta_j})$ : l'**écart-type théorique** de l'estimateur — il dépend de $\sigma$, qui est **inconnu** en pratique.
+* $sd(\widehat{\beta_j})$ : l'**écart-type théorique** de l'estimateur qui  dépend de $\sigma$, qui est **inconnu** en pratique.
 
 --
 
-* $se(\widehat{\beta_j})$ : l'**erreur standard estimée** — on remplace $\sigma$ par son estimation $\hat\sigma$, calculable à partir des données.
+* $se(\widehat{\beta_j})$ : l'**erreur standard estimée** où  on remplace $\sigma$ par son estimation $\hat\sigma$, calculable à partir des données.
 
 --
 
@@ -483,7 +528,7 @@ Il existe une infinité d'estimateurs linéaires et sans biais possibles pour $\
 
 --
 
-.footnote[OLS est donc **optimal dans sa classe** — celle des estimateurs linéaires et sans biais — pas dans l'absolu.]
+.footnote[OLS est donc **optimal dans sa classe**,  celle des estimateurs linéaires et sans biais, pas dans l'absolu.]
 
 ---
 
@@ -501,8 +546,17 @@ background-position: 9% 19%
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
 | <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen <i class="fab fa-link fa-fw"></i></a> | Discord |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
 | <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
 
----
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" chapter_gm.html chapter_gm.pdf --chrome-arg=--disable-web-security')
+```

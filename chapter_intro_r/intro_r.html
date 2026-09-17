@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Mathilde Col &amp; Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-03
+### Université de Namur </br> 2026-09-16
 ]
 
 ---
@@ -268,19 +268,19 @@ layout: true
 Pour de plus gros projets, comme votre mémoire/thèse :
 
 * votre répertoire de projet
-  * data/
-    * 1_raw/
-    * 2_clean/
-  * code/
-    * 1_clean.R
-    * 2_analyze.R
-    * requirements.R
-    * main.R
+    * data/
+        * 1_raw/
+        * 2_clean/
+    * code/
+        * 1_clean.R
+        * 2_analyze.R
+        * requirements.R
+        * main.R
   * docs/
-    * sources.md
+        * sources.md
   * results/
-    * figures/
-    * tables/
+        * figures/
+        * tables/
   * README.md
 
 ---
@@ -310,7 +310,10 @@ Pour de plus gros projets, comme votre mémoire/thèse :
 * Le fichier README résume le fonctionnement de votre projet
   * [Template](https://social-science-data-editors.github.io/template_README/) pour les packages de réplication en sciences sociales
 
---
+---
+
+# Quelques conseils
+
 
 * Vous pouvez créer des sections dans votre code avec `\(\#\)` et au moins 4 `\(-\)` ou `=` (comme les sections `\(**\#\)` dans Stata)
 
@@ -379,20 +382,20 @@ setwd("chemin_vers_le_dossier")
 
 Pour de plus gros projets, comme votre mémoire de master :
 
-* **nom_du_projet**
-  * data/
-    * 1_raw/
-    * 2_clean/
-  * code/
-    * 1_clean.R
-    * 2_analyze.R
-    * requirements.R
-    * main.R
+* votre répertoire de projet
+    * data/
+        * 1_raw/
+        * 2_clean/
+    * code/
+        * 1_clean.R
+        * 2_analyze.R
+        * requirements.R
+        * main.R
   * docs/
-    * sources.md
+        * sources.md
   * results/
-    * figures/
-    * tables/
+        * figures/
+        * tables/
   * README.md
   * `nom_du_projet.Rproj`
 
@@ -400,9 +403,9 @@ Pour de plus gros projets, comme votre mémoire de master :
 
 class:inverse
 
-# Exercice 0
+# Exercice 1
 
-<countdown-timer class="countdown" id="timer_c687665d" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_6c042b5e" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Créez un répertoire pour stocker tous vos fichiers relatifs à ce cours
 
@@ -692,9 +695,9 @@ class:inverse
 
 # Exercice 1
 
-<countdown-timer class="countdown" id="timer_7a4e4bce" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_a787f9ec" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-Nous allons utiliser les données de population par woreda
+Nous allons utiliser les données de population par district éthiopien
 
 * Importer les données au format Excel dans R
 
@@ -791,14 +794,14 @@ nouveau_df[, "x"]    # valeurs de toutes les lignes, colonne nommée "x"
 
 .pull-left[
 .center[
-&lt;img src="chapter_intro_r_files/figure-html/logo_dplyr.png" alt="" width="150px" style="display: block; margin: auto;" /&gt;
+&lt;img src="chapter_intro_r_files/figure-html/logo_dplyr.png" alt="" width="300px" style="display: block; margin: auto;" /&gt;
 ]
 Objectif : transformer facilement les données
 ]
 
 .pull-right[
 .center[
-&lt;img src="chapter_intro_r_files/figure-html/logo_tidyr.png" alt="" width="150px" style="display: block; margin: auto;" /&gt;
+&lt;img src="chapter_intro_r_files/figure-html/logo_tidyr.png" alt="" width="300px" style="display: block; margin: auto;" /&gt;
 ]
 Objectif : créer des données "tidy"
 ]
@@ -896,7 +899,7 @@ class:inverse
 
 # Exercice 2
 
-<countdown-timer class="countdown" id="timer_ebd4d7d2" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_fd5631e0" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Dans **ethio_pop**, nous voulons comparer la population moyenne dans les woredas pastoraux et Afar, avec la moyenne dans les woredas agricoles et Amhara. Les données incluent les variables indicatrices (0 ou 1) **pastoralist**, **agricultural**, **afar** et **amhara**.
 
@@ -928,7 +931,8 @@ background-position: 9% 19%
 | &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen &lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt; | Discord |
 | &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
 
----  
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
