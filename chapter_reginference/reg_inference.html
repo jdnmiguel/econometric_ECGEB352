@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-03
+### Université de Namur </br> 2026-10-08
 ]
 
 ---
@@ -225,7 +225,7 @@ class:inverse
 
 # Tâche 1
 
-<countdown-timer class="countdown" id="timer_f0b4c61f" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_7d7fff0e" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Comme nous l'avons fait pour la distribution d'échantillonnage de la proportion de *pâtes vertes*, nous voulons générer la distribution bootstrap de `\(\hat{\beta}_\textrm{small}\)`. 
 
@@ -913,7 +913,7 @@ class:inverse
 
 # Tâche 2
 
-<countdown-timer class="countdown" id="timer_eb2f059c" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_cfc5e616" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. En uilisant la distribution bottstrap générée au 1er exercise, calculer les IC à 95% en utilisant la *méthode des percentiles*.
 
@@ -984,98 +984,7 @@ etable(reg_simple_math, reg_gender_math, reg_simple_read,reg_gender_read,
 
 
 ---
-# Mise en forme d'un tableau de régression (HTML)
 
-&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; Math score &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; Math score &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; Reading score &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; Reading score &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt; Intercept &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 484.4*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 488.9*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 435.8*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 439.6*** &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.2) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.4) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (0.75) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (0.93) &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt; Small class &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 8.9*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 8.9*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 5.4*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 5.4*** &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt; Male gender &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; -8.6*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; -7.5*** &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.7) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; (1.1) &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt; ____________ &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; ________ &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt; S.E. type &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt; Observations &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 3,359 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:center;"&gt; R2 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 0.00830 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 0.01599 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 0.00712 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 0.02099 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
----
 
 # Reading a regression table
 
@@ -1172,13 +1081,13 @@ etable(reg_simple_math, reg_gender_math, reg_simple_read,reg_gender_read,
 &lt;/table&gt;
 ]
 
-* Each column corresponds to a regression. For the first regression we have: 
-    * the **name of the outcome variable** in &lt;span style="color: #2F528F;"&gt;blue&lt;/span&gt;
-    * the **estimated coefficient associated to being in a small class** `\(\hat{\beta_\textrm{small}}\)` in &lt;span style="color: #70AD47;"&gt;green&lt;/span&gt;
-    * its **estimated standard error** in &lt;span style="color: #FFC000;"&gt;yellow&lt;/span&gt;
-    * the **number of observations** in &lt;span style="color: #7030A0;"&gt;purple&lt;/span&gt;
-    * the **R-squared** in &lt;span style="color: #C00000;"&gt;red&lt;/span&gt;
-    * interpretation of the stars at the bottom
+* Chaque colonne correspond à une régression. Pour la 1ère on a : 
+    * le **nom de l'outcome** dans &lt;span style="color: #2F528F;"&gt;blue&lt;/span&gt;
+    * la **valeur estimée** `\(\hat{\beta_\textrm{small}}\)` dans &lt;span style="color: #70AD47;"&gt;green&lt;/span&gt;
+    * l'**estimation de l'écart type** dans &lt;span style="color: #FFC000;"&gt;yellow&lt;/span&gt;
+    * le **nombre d'observations** dans &lt;span style="color: #7030A0;"&gt;purple&lt;/span&gt;
+    * le **R²** dans &lt;span style="color: #C00000;"&gt;red&lt;/span&gt;
+    * l'interprétation des étoiles en bas
 
 
 ---
@@ -1227,14 +1136,14 @@ class: title-slide-section-red, middle
 
 # Indépendance en moyenne de l'erreur : E[u | small] = ?
 
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-26-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-25-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
 # Indépendance en moyenne de l'erreur : E[u | small] = ?
 
-&lt;img src="reg_inference_files/figure-html/unnamed-chunk-27-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+&lt;img src="reg_inference_files/figure-html/unnamed-chunk-26-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1333,7 +1242,7 @@ class:inverse
 
 # Exercice 3.1
 
-<countdown-timer class="countdown" id="timer_1c913023" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_11ca2131" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Revenons à notre question des retours à l'éducation et du genre 
 
@@ -1359,7 +1268,7 @@ class:inverse
 
 # Exercice 3.2
 
-<countdown-timer class="countdown" id="timer_61e1e0e1" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_714c49e4" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Faites un nuage de points de la relatio nentre `log wage` et `education`
 

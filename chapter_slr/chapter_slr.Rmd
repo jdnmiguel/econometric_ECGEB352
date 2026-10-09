@@ -970,7 +970,7 @@ background-position: 9% 19%
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
 | <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
-| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
+| <a href="https://discord.gg/YAJVgCbuE">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
 | <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
 
   

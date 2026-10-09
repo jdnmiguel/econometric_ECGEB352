@@ -3,7 +3,7 @@
   <head>
     <title>Econométrie</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Mathilde Col &amp; Jérémy Do Nascimento Miguel" />
+    <meta name="author" content="Jérémy Do Nascimento Miguel" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/countdown/countdown.css" rel="stylesheet" />
@@ -23,10 +23,10 @@ class: center, middle, inverse, title-slide
 ## Nettoyage des données dans R
 ]
 .author[
-### Mathilde Col &amp; Jérémy Do Nascimento Miguel
+### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-16
+### Université de Namur </br> 2026-10-08
 ]
 
 ---
@@ -175,8 +175,8 @@ Avec `dplyr`, il faut combiner `mutate()` avec la fonction `case_when()`
 mydatas4 &lt;- mydatas3 %&gt;%
     mutate(
         any_death = case_when(
-        num_deaths == 0 ~  "Aucun décès",
-        num_deaths &gt;  0 ~ "Des décès",
+        num_deaths == 0 ~  "aucun",
+        num_deaths &gt;  0 ~ "morts",
         .default = NA
     )
 )
@@ -190,7 +190,7 @@ Vous pouvez aussi combiner `mutate()` avec la fonction `ifelse()` (de base R) s'
 ``` r
 mydatas4 &lt;- mydatas3 %&gt;%
     mutate(
-        any_death = ifelse(num_deaths &gt; 0, "Des décès", "Aucun décès")
+        any_death = ifelse(num_deaths &gt; 0, "aucun", "morts")
     )
 ```
 
@@ -474,9 +474,9 @@ class: inverse
 
 # Tâche 1
 
-<countdown-timer class="countdown" id="timer_fb454b0b" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_7e417ef1" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
-* Ouvrez le jeu de données "hh_characteristics.xlsx" et stockez-le sous le nom de votre choix
+* Ouvrez le jeu de données "hh_characteristic.xlsx" et stockez-le sous le nom de votre choix. Il contient des informations sur 
 
 * Nettoyez la variable "sex" pour qu'elle prenne la valeur 0 pour les hommes et 1 pour les femmes
 
@@ -489,7 +489,7 @@ class: inverse
   * 4 = Secondaire complété
   * 5 = Tertiaire
 
-* Nettoyez le nom du woreda (admin3name_en)
+* Nettoyez le nom du woreda (admin3name_en) : enlever les under-score et les "at" dans les noms
 
 ---
 
@@ -873,7 +873,7 @@ class: inverse
 
 # Tâche 2
 
-<countdown-timer class="countdown" id="timer_fd304163" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_51b115f4" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Utilisez le jeu de données de l'exercice 1 :
 
@@ -991,7 +991,7 @@ class: inverse
 
 # Tâche 3
 
-<countdown-timer class="countdown" id="timer_0bd3715c" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_b66d57a2" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Utilisez le jeu de données produit à l'exercice 2 :
 
@@ -1015,8 +1015,9 @@ background-position: 9% 19%
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
 | &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
-| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen &lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt; | Discord |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;] | Discord |
 | &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+
 
 
     </textarea>

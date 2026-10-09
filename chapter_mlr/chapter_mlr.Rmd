@@ -181,7 +181,7 @@ lm(absdays_98 ~ score, data)
 # Santé et abstentéisme des étudiant.e.s : cofounders
 
 .pull-left[
-Lien entre **l'absentéismee** et **le nombre de toilettes par élève** in the class.
+Lien entre **l'absentéisme** et **le nombre de toilettes par élève** dans l'école.
 
 ```{r, echo = FALSE, fig.height=4.75, fig.width = 8}
 data %>%
@@ -526,7 +526,7 @@ Nous avons les égalités suivantes :
 
 $$
 \begin{equation}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Score} = n_1}) = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Score} = n_1}) = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}
 \end{equation}
 $$
 
@@ -534,7 +534,7 @@ $$
 
 $$
 \begin{multline}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Santé} = n_1+1}) = \\ \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Santé} = n_1+1}) = \\ \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat}
 \end{multline}
 $$
 
@@ -542,7 +542,7 @@ $$
 
 $$
 \begin{multline}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm\_treat} \in \{0,1\} \text{ \& } \color{#d90502}{\text{Santé} = n_1}) \\
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm\_treat} \in \{0,1\} \text{ & } \color{#d90502}{\text{Santé} = n_1}) \\
 = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat} - (\color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}) = \color{#d90502}{\beta_1}
 \end{multline}
 $$
@@ -700,7 +700,7 @@ Il y a une condition à respecter pour ajouter des variables dans notre modèle 
 
 --
 
-En d'autres termes, les régresseurs **ne peuvent pas être parfaitement collinéaire**, i.e., une combination linéaire d'autres variables not linear combinations of one another:
+En d'autres termes, les régresseurs **ne peuvent pas être parfaitement collinéaire**, i.e., une combination linéaire d'autres variables:
 
   $$ x_2 \neq ax_1 + b $$ 
 
@@ -819,13 +819,14 @@ Notons $y$ notre variable dépendante, $x$ notre régresseur et $z$ notre variab
 
 --
 
-Mais pour des raisons diverses, comme une limite de données, il se peut que l'on doit omettre $\beta_2$
+Mais pour des raisons diverses, comme une limite de données, il se peut que l'on doive omettre $\beta_2$
 
 --
 
-1. ***Variable omise sur le régresseur*** : $\tilde{y} = \tilde{\beta_0} + \color{#d96502}{\tilde{\beta_1}}x + u$
+**2\.** ***Variable omise sur le régresseur*** : $\tilde{y} = \tilde{\beta_0} + \color{#d96502}{\tilde{\beta_1}}x + u$
 
 --
+
 On sait que $\tilde{\beta_1} =  \widehat{\beta_1} + \widehat{\beta_2}\tilde{\delta_1}$ avec $\tilde{\delta_1}$ qui est la pente de la régression de $x$ sur $z$
 
 ---
@@ -858,7 +859,7 @@ De cette formule, on peut obtenir :
 
 ***Questions:***
 1. Dans quels cas $\tilde{\beta_1}$ n'est il pas biaisé ?
-1. Imaginez que vous voulez découvrir la relation entre le revenu et le nombre d'années d'éducation. Pourquoi une régression simple du revenu sur le nombre d'années d'éducation pourrait-elle ne pas donner des estimations fiables ? Ex de variable omise ? Sig,e attendu du biais de variable omise  ?
+1. Imaginez que vous voulez découvrir la relation entre le revenu et le nombre d'années d'éducation. Pourquoi une régression simple du revenu sur le nombre d'années d'éducation pourrait-elle ne pas donner des estimations fiables ? Ex de variable omise ? Signe attendu du biais de variable omise  ?
 
 ---
 
@@ -943,7 +944,73 @@ On obtient : $$\tilde{\beta_1} = `r round(reg1$coefficients[2],3)` = \underbrace
 
 * Le $R^2$ *ajusté* impose une pénalité pour l'ajout de régresseurs au modèle. Les détails ne sont pas essentiels, car dans la grande majorité des cas, le $R^2$ et le $R^2$ ajusté sont assez similaires.
 
+
+
+
 ---
+
+# $R^2$ vs $R^2$ ajusté : ajouter des variables aide-t-il vraiment ?
+
+.pull-left[
+$R^2$ : part de la variance de $y$ expliquée par le modèle
+
+$$R^2 = 1 - \frac{SCR}{SCT}$$
+
+$\Rightarrow$ ne peut **jamais diminuer** quand on ajoute un régresseur, même inutile
+
+
+$R^2$ ajusté : pénalise le nombre de régresseurs $k$
+
+$$\bar{R}^2 = 1 - \frac{SCR/(n-k-1)}{SCT/(n-1)}$$
+
+$\Rightarrow$ **baisse** si k+1 n'apporte presque rien
+]
+
+.pull-right[
+
+```{r r2-vs-r2adj, echo = F, fig.width = 6, fig.height = 5, out.width = "100%"}
+library(ggplot2)
+
+set.seed(42)
+n <- 40
+K <- 20                      # nombre max de régresseurs
+x <- rnorm(n)
+y <- 2 + 1.5 * x + rnorm(n, sd = 2)   # seul x explique y
+bruit <- matrix(rnorm(n * K), nrow = n)
+colnames(bruit) <- paste0("z", 1:K)
+d <- data.frame(y, x, bruit)
+
+res <- do.call(rbind, lapply(1:K, function(k) {
+  # k = 1 : y ~ x ; k > 1 : on ajoute k-1 variables de bruit
+  regs <- if (k == 1) "x" else c("x", paste0("z", 1:(k - 1)))
+  s <- summary(lm(reformulate(regs, response = "y"), data = d))
+  data.frame(k = k, r2 = s$r.squared, r2_adj = s$adj.r.squared)
+}))
+
+ggplot(res, aes(x = k)) +
+  geom_line(aes(y = r2, color = "R²"), linewidth = 1.2) +
+  geom_point(aes(y = r2, color = "R²"), size = 2) +
+  geom_line(aes(y = r2_adj, color = "R² ajusté"), linewidth = 1.2) +
+  geom_point(aes(y = r2_adj, color = "R² ajusté"), size = 2) +
+  scale_color_manual(values = c("R²" = "#d90502", "R² ajusté" = "forestgreen"),
+                     name = NULL) +
+  scale_x_continuous(breaks = seq(1, K, 2)) +
+  labs(x = " Nbr k (dont k - 1 variables sans rapport avec y)",
+       y = NULL) +
+  theme_bw(base_size = 16) +
+  theme(legend.position = "top")
+```
+]
+
+--
+
+.center[**Conclusion :** pour comparer des modèles avec un nombre de régresseurs différent, on utilise le $R^2$ ajusté.]
+
+
+
+
+---
+
 class: inverse
 
 # Tâche 3 : Récapitulatif

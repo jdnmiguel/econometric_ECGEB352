@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-16
+### Université de Namur </br> 2026-10-02
 ]
 
 ---
@@ -129,7 +129,7 @@ lm(absdays_98 ~ score, data)
 # Santé et abstentéisme des étudiant.e.s : cofounders
 
 .pull-left[
-Lien entre **l'absentéismee** et **le nombre de toilettes par élève** in the class.
+Lien entre **l'absentéisme** et **le nombre de toilettes par élève** dans l'école.
 
 &lt;img src="chapter_mlr_files/figure-html/unnamed-chunk-5-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
@@ -411,7 +411,7 @@ Il est ***essentiel*** de faire attention si l'on parle de changements en ***poi
 class:inverse
 
 # Tâche 1
-<countdown-timer class="countdown" id="timer_8b016fae" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_02df97ed" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Analysons les résultats de régression en utilisant l'absentéisme comme variable dépendante.
 
@@ -496,7 +496,7 @@ Nous avons les égalités suivantes :
 
 $$
 `\begin{equation}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \&amp; } \color{#d90502}{\text{Score} = n_1}) = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Score} = n_1}) = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}
 \end{equation}`
 $$
 
@@ -504,7 +504,7 @@ $$
 
 $$
 `\begin{multline}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \&amp; } \color{#d90502}{\text{Santé} = n_1+1}) = \\ \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat}
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1+1}) = \\ \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat}
 \end{multline}`
 $$
 
@@ -512,7 +512,7 @@ $$
 
 $$
 `\begin{multline}
-\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ \&amp; } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm\_treat} \in \{0,1\} \text{ \&amp; } \color{#d90502}{\text{Santé} = n_1}) \\
+\mathbb{E}(\text{Absentéisme} | \text{worm_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1+1}) - \\ \mathbb{E}(\text{Absentéisme} | \text{worm\_treat} \in \{0,1\} \text{ &amp; } \color{#d90502}{\text{Santé} = n_1}) \\
 = \color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times (n_1+1) + \color{#027D83}{\beta_2} \times \text{worm_treat} - (\color{#d96502}{\beta_0} + \color{#d90502}{\beta_1} \times n_1 + \color{#027D83}{\beta_2} \times \text{worm_treat}) = \color{#d90502}{\beta_1}
 \end{multline}`
 $$
@@ -627,7 +627,7 @@ Il y a une condition à respecter pour ajouter des variables dans notre modèle 
 
 --
 
-En d'autres termes, les régresseurs **ne peuvent pas être parfaitement collinéaire**, i.e., une combination linéaire d'autres variables not linear combinations of one another:
+En d'autres termes, les régresseurs **ne peuvent pas être parfaitement collinéaire**, i.e., une combination linéaire d'autres variables:
 
   $$ x_2 \neq ax_1 + b $$ 
 
@@ -739,7 +739,7 @@ class: inverse
 
 # Tâche 2: Piège variables binaires
 
-<countdown-timer class="countdown" id="timer_574ad85e" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_76c2d899" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 
 1. Chargez les données *STAR* depuis [ici](https://www.dropbox.com/scl/fi/psuo484767k0vufyhmkhr/star_data.csv?rlkey=ffx4gvqi27gyi7ssyfbbayfua&amp;dl=1), en utilisant `read.csv`, et assignez-les à un objet appelé `star_df`. Ne conservez que les observations sans `NA` avec le code suivant : `star_df &lt;- star_df[complete.cases(star_df),]` 
@@ -770,13 +770,14 @@ Notons `\(y\)` notre variable dépendante, `\(x\)` notre régresseur et `\(z\)` 
 
 --
 
-Mais pour des raisons diverses, comme une limite de données, il se peut que l'on doit omettre `\(\beta_2\)`
+Mais pour des raisons diverses, comme une limite de données, il se peut que l'on doive omettre `\(\beta_2\)`
 
 --
 
-1. ***Variable omise sur le régresseur*** : `\(\tilde{y} = \tilde{\beta_0} + \color{#d96502}{\tilde{\beta_1}}x + u\)`
+**2\.** ***Variable omise sur le régresseur*** : `\(\tilde{y} = \tilde{\beta_0} + \color{#d96502}{\tilde{\beta_1}}x + u\)`
 
 --
+
 On sait que `\(\tilde{\beta_1} =  \widehat{\beta_1} + \widehat{\beta_2}\tilde{\delta_1}\)` avec `\(\tilde{\delta_1}\)` qui est la pente de la régression de `\(x\)` sur `\(z\)`
 
 ---
@@ -809,7 +810,7 @@ De cette formule, on peut obtenir :
 
 ***Questions:***
 1. Dans quels cas `\(\tilde{\beta_1}\)` n'est il pas biaisé ?
-1. Imaginez que vous voulez découvrir la relation entre le revenu et le nombre d'années d'éducation. Pourquoi une régression simple du revenu sur le nombre d'années d'éducation pourrait-elle ne pas donner des estimations fiables ? Ex de variable omise ? Sig,e attendu du biais de variable omise  ?
+1. Imaginez que vous voulez découvrir la relation entre le revenu et le nombre d'années d'éducation. Pourquoi une régression simple du revenu sur le nombre d'années d'éducation pourrait-elle ne pas donner des estimations fiables ? Ex de variable omise ? Signe attendu du biais de variable omise  ?
 
 ---
 
@@ -897,12 +898,47 @@ On obtient : `$$\tilde{\beta_1} = 0.331 = \underbrace{0.335}_{\beta_1} + \underb
 
 * Le `\(R^2\)` *ajusté* impose une pénalité pour l'ajout de régresseurs au modèle. Les détails ne sont pas essentiels, car dans la grande majorité des cas, le `\(R^2\)` et le `\(R^2\)` ajusté sont assez similaires.
 
+
+
+
 ---
+
+# `\(R^2\)` vs `\(R^2\)` ajusté : ajouter des variables aide-t-il vraiment ?
+
+.pull-left[
+`\(R^2\)` : part de la variance de `\(y\)` expliquée par le modèle
+
+`$$R^2 = 1 - \frac{SCR}{SCT}$$`
+
+`\(\Rightarrow\)` ne peut **jamais diminuer** quand on ajoute un régresseur, même inutile
+
+
+`\(R^2\)` ajusté : pénalise le nombre de régresseurs `\(k\)`
+
+`$$\bar{R}^2 = 1 - \frac{SCR/(n-k-1)}{SCT/(n-1)}$$`
+
+`\(\Rightarrow\)` **baisse** si k+1 n'apporte presque rien
+]
+
+.pull-right[
+
+&lt;img src="chapter_mlr_files/figure-html/r2-vs-r2adj-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.center[**Conclusion :** pour comparer des modèles avec un nombre de régresseurs différent, on utilise le `\(R^2\)` ajusté.]
+
+
+
+
+---
+
 class: inverse
 
 # Tâche 3 : Récapitulatif
 
-<countdown-timer class="countdown" id="timer_8380fcda" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_9059cdf0" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Utilisons les données *STAR* (utilisées dans la tâche précédente) pour revoir les principaux concepts abordés.
 

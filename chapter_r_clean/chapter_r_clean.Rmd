@@ -1,7 +1,7 @@
 ---
 title: "Econométrie"
 subtitle: "Nettoyage des données dans R"
-author: "Mathilde Col & Jérémy Do Nascimento Miguel"
+author: " Jérémy Do Nascimento Miguel"
 date: "Université de Namur </br> `r Sys.Date()`"
 output:
   xaringan::moon_reader:
@@ -182,8 +182,8 @@ Avec `dplyr`, il faut combiner `mutate()` avec la fonction `case_when()`
 mydatas4 <- mydatas3 %>%
     mutate(
         any_death = case_when(
-        num_deaths == 0 ~  "Aucun décès",
-        num_deaths >  0 ~ "Des décès",
+        num_deaths == 0 ~  "aucun",
+        num_deaths >  0 ~ "morts",
         .default = NA
     )
 )
@@ -196,7 +196,7 @@ Vous pouvez aussi combiner `mutate()` avec la fonction `ifelse()` (de base R) s'
 ```{r, eval = FALSE, echo = TRUE}
 mydatas4 <- mydatas3 %>%
     mutate(
-        any_death = ifelse(num_deaths > 0, "Des décès", "Aucun décès")
+        any_death = ifelse(num_deaths > 0, "aucun", "morts")
     )
 ```
 
@@ -467,7 +467,7 @@ class: inverse
 
 `r countdown(minutes = 5, top = 0)`
 
-* Ouvrez le jeu de données "hh_characteristics.xlsx" et stockez-le sous le nom de votre choix
+* Ouvrez le jeu de données "hh_characteristic.xlsx" et stockez-le sous le nom de votre choix. Il contient des informations sur 
 
 * Nettoyez la variable "sex" pour qu'elle prenne la valeur 0 pour les hommes et 1 pour les femmes
 
@@ -480,7 +480,7 @@ class: inverse
   * 4 = Secondaire complété
   * 5 = Tertiaire
 
-* Nettoyez le nom du woreda (admin3name_en)
+* Nettoyez le nom du woreda (admin3name_en) : enlever les under-score et les "at" dans les noms
 
 ---
 

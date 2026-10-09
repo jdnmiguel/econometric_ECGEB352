@@ -68,7 +68,7 @@ overwrite = FALSE
 
 * Dans la vie réelle, on obtient uniquement ***1*** échantillon de la population (pas ***1000*** !).
 
-* De plus, on ne connait pas la valeur réelle du paramètre de la population qui nou intéresse, c'est notre intérêt principal. 
+* De plus, on ne connait pas la valeur réelle du paramètre de la population qui nous intéresse, c'est notre intérêt principal. 
 
 * Quel était l'intérêt de nos précédents cours ?
 
@@ -218,7 +218,7 @@ Cette procédure est appelée ***rééchantillonnage avec remise*** :
   
 ---
 
-# Réechantillonage de notre échantillon de pâtes
+# Rééchantillonage de notre échantillon de pâtes
 
 .pull-left[
 
@@ -436,7 +436,7 @@ p = mean(bowl$color == "green")
 
 boot_distrib_plot_ci +
   geom_vline(xintercept = p, col = "black", size = 1.25) +
-  annotate("text", x = 1, y = 125, label = "% de la population", size = 4)
+  annotate("text", x = .5, y = 125, label = "% de la population", size = 4)
 ```
 
 --
@@ -501,7 +501,7 @@ ggplot(percentile_cis) +
     labs(x = expression("Proportion de pâtes vertes"), y = "Nombre d'Intervalles de Confiance", 
          alpha = "Contains Truth") +
     geom_vline(xintercept = p, color = "#d90502", size = 1, linetype = "dashed") +
-  annotate("text", x = 0.47, y = 5, label = "proportion de la population", col = "#d90502") +
+  annotate("text", x = 0.47, y = 15, label = "proportion de la population", col = "#d90502") +
     geom_point(aes(y = replicate, x = sample_prop ,alpha = factor(captured, levels = c("TRUE", "FALSE")))) +
     coord_cartesian(xlim = c(0.2, 0.8)) + 
   coord_flip() +
@@ -552,6 +552,232 @@ En d'autres termes, 95 % du temps, l'IC à 95 % contiendra le véritable paramè
   
 ---
 
+# Interpréter un IC à 95 % : simulation
+
+```{r ic_widget, echo=FALSE, results='asis'}
+ic_html <- r"---(
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg:#ffffff; --panel:#f4f7f4; --ink:#1c2a21; --muted:#5b6b61; --line:#d5ddd7;
+          --green:#1f7a3d; --miss:#c62828; --curve:#c2410c; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--ink);
+    font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    display: flex; flex-direction: column; gap: 8px; padding: 0 10px; }
+  .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 18px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 12px; margin-top: 8px; }
+  .ctl { display: flex; flex-direction: column; font-size: 13px; color: var(--muted); }
+  .ctl b { color: var(--ink); font-size: 14px; }
+  .ctl input { width: 100%; accent-color: var(--green); }
+  .ctl small { font-size: 11px; color: var(--muted); }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+  button.primary { background: var(--green); color: #fff; border-color: var(--green); font-weight: 600; }
+  label.chk { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .charts { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.6fr 1fr; gap: 10px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+          padding: 6px 8px; display: flex; flex-direction: column; min-height: 0; }
+  .card h2 { font-size: 14px; margin: 2px 2px 3px; font-weight: 600; }
+  .wrap { position: relative; flex: 1; min-height: 120px; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .legend { display: flex; gap: 12px; font-size: 12px; color: var(--muted); margin: 0 2px; flex-wrap: wrap; }
+  .sw { display: inline-block; width: 12px; height: 4px; border-radius: 2px; margin-right: 5px; vertical-align: 2px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 14px; padding-bottom: 6px; }
+  .note { font-size: 11.5px; color: var(--muted); padding-bottom: 6px; }
+  @media (max-width: 720px) { .controls { grid-template-columns: 1fr; } .charts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="controls">
+  <div class="ctl"><span>Niveau de confiance : <b id="vlev">95 %</b></span>
+    <input type="range" id="lev" min="0" max="4" step="1" value="3"><small>50 % · 80 % · 90 % · 95 % · 99 %</small></div>
+  <div class="ctl"><span>Taille d'échantillon : n = <b id="vn">50</b></span>
+    <input type="range" id="n" min="20" max="500" step="10" value="50"><small>↑ n : IC plus étroits</small></div>
+  <div class="ctl"><span>Vraie proportion de pâtes vertes : p = <b id="vp">0,40</b></span>
+    <input type="range" id="p" min="0.2" max="0.8" step="0.05" value="0.4"><small>Inconnue en pratique, fixée ici pour la démo</small></div>
+</div>
+<div class="btns">
+  <button class="primary" id="one">+ 1 échantillon</button>
+  <button id="hundred">+ 100</button>
+  <button id="auto">▶ Lecture</button>
+  <button id="reset">Réinitialiser</button>
+  <label class="chk"><input type="checkbox" id="zoom"> Zoomer (axe automatique)</label>
+</div>
+<div class="charts">
+  <div class="card">
+    <h2>Les 100 derniers intervalles de confiance <span id="shown" style="color:var(--muted);font-weight:400"></span></h2>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--green)"></span>IC qui contient p</span>
+      <span><span class="sw" style="background:var(--miss);height:6px"></span>IC qui rate p</span>
+      <span style="color:var(--ink)">│ ligne verticale = vraie valeur p</span>
+    </div>
+    <div class="wrap"><canvas id="cCI"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Part cumulée d'IC qui contiennent p</h2>
+    <div class="wrap"><canvas id="cCov"></canvas></div>
+  </div>
+</div>
+<div class="stats" id="stats"></div>
+<div class="note">IC = p̂ ± z × √(p̂(1 − p̂) / n). Avec cette approximation normale, la couverture peut être un peu inférieure au niveau annoncé quand n est petit.</div>
+
+<script>
+(function () {
+  var LEVELS = [ { c: 0.50, z: 0.6745 }, { c: 0.80, z: 1.2816 }, { c: 0.90, z: 1.6449 },
+                 { c: 0.95, z: 1.96 },   { c: 0.99, z: 2.5758 } ];
+  var MAXROWS = 100, MAXHIST = 5000;
+  var $ = function (id) { return document.getElementById(id); };
+  function fmt(v, d) { d = (d === undefined ? 2 : d);
+    return (Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).toString().replace(".", ","); }
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function params() { var L = LEVELS[+$("lev").value];
+    return { c: L.c, z: L.z, n: +$("n").value, p: +$("p").value }; }
+
+  var st = { rows: [], total: 0, hits: 0, hist: [], sumW: 0, timer: null };
+
+  function addCI() {
+    var P = params(), i, s = 0;
+    for (i = 0; i < P.n; i++) if (Math.random() < P.p) s++;
+    var ph = s / P.n, se = Math.sqrt(ph * (1 - ph) / P.n);
+    var lo = ph - P.z * se, hi = ph + P.z * se, ok = (lo <= P.p && P.p <= hi);
+    st.rows.push({ ph: ph, lo: lo, hi: hi, ok: ok });
+    if (st.rows.length > MAXROWS) st.rows.shift();
+    st.total++; if (ok) st.hits++; st.sumW += hi - lo;
+    if (st.hist.length < MAXHIST) st.hist.push(st.hits / st.total * 100);
+  }
+  function reset() { st.rows = []; st.total = 0; st.hits = 0; st.hist = []; st.sumW = 0; }
+  function stop() { if (st.timer) { clearInterval(st.timer); st.timer = null; $("auto").textContent = "▶ Lecture"; } }
+
+  function niceTicks(lo, hi, count) {
+    var step = (hi - lo) / count, mag = Math.pow(10, Math.floor(Math.log10(step)));
+    var f = step / mag; step = (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * mag;
+    var t = [], v = Math.ceil(lo / step - 1e-9) * step;
+    for (; v <= hi + 1e-9; v += step) t.push(v);
+    return t;
+  }
+  function setup(canvas) {
+    var r = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.max(1, Math.round(r.width * dpr));
+    canvas.height = Math.max(1, Math.round(r.height * dpr));
+    var ctx = canvas.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: r.width, h: r.height };
+  }
+  function frame(s, xlo, xhi, ylo, yhi, xfmt, yfmt, yticks) {
+    var ctx = s.ctx, m = { l: yfmt ? 40 : 10, r: 12, t: 8, b: 26 };
+    var pw = s.w - m.l - m.r, ph = s.h - m.t - m.b;
+    var X = function (x) { return m.l + (x - xlo) / (xhi - xlo) * pw; };
+    var Y = function (y) { return m.t + ph - (y - ylo) / (yhi - ylo) * ph; };
+    ctx.clearRect(0, 0, s.w, s.h);
+    ctx.font = "12px system-ui, sans-serif"; ctx.fillStyle = css("--muted");
+    ctx.strokeStyle = css("--line"); ctx.lineWidth = 1;
+    if (yfmt) {
+      ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      (yticks || niceTicks(ylo, yhi, 4)).forEach(function (v) {
+        var y = Math.round(Y(v)) + 0.5;
+        ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(s.w - m.r, y); ctx.stroke();
+        ctx.fillText(yfmt(v), m.l - 6, y);
+      });
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    niceTicks(xlo, xhi, 6).forEach(function (v) {
+      var x = Math.round(X(v)) + 0.5;
+      if (!yfmt) { ctx.beginPath(); ctx.moveTo(x, m.t); ctx.lineTo(x, m.t + ph); ctx.stroke(); }
+      ctx.fillText(xfmt(v), X(v), s.h - m.b + 6);
+    });
+    ctx.strokeStyle = css("--muted");
+    ctx.beginPath(); ctx.moveTo(m.l, m.t + ph + 0.5); ctx.lineTo(s.w - m.r, m.t + ph + 0.5); ctx.stroke();
+    return { X: X, Y: Y, m: m, pw: pw, ph: ph };
+  }
+
+  function drawCI(P) {
+    var s = setup($("cCI")), ctx = s.ctx, i;
+    var se = Math.sqrt(P.p * (1 - P.p) / P.n), lo, hi;
+    if ($("zoom").checked) { lo = P.p - 4 * se; hi = P.p + 4 * se; } else { lo = 0; hi = 1; }
+    var f = frame(s, lo, hi, 0, MAXROWS, function (v) { return fmt(v, 2); }, null);
+    var rowH = f.ph / MAXROWS, lw = Math.min(3, Math.max(1.5, rowH * 0.55));
+    ctx.save(); ctx.beginPath(); ctx.rect(f.m.l, f.m.t, f.pw, f.ph); ctx.clip();
+    st.rows.forEach(function (r, k) {
+      var y = f.m.t + (k + 0.5) * rowH, col = css(r.ok ? "--green" : "--miss");
+      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = r.ok ? lw : lw + 1;
+      ctx.beginPath(); ctx.moveTo(f.X(r.lo), y); ctx.lineTo(f.X(r.hi), y); ctx.stroke();
+      ctx.beginPath(); ctx.arc(f.X(r.ph), y, Math.max(1.4, lw * 0.9), 0, 6.2832); ctx.fill();
+    });
+    ctx.restore();
+    ctx.strokeStyle = css("--ink"); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(f.X(P.p), f.m.t); ctx.lineTo(f.X(P.p), f.m.t + f.ph); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = css("--ink"); ctx.font = "bold 12px system-ui, sans-serif"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+    ctx.fillText("p = " + fmt(P.p), Math.min(f.X(P.p) + 5, s.w - 60), f.m.t + 2);
+  }
+
+  function drawCov(P) {
+    var s = setup($("cCov")), ctx = s.ctx, N = st.hist.length;
+    var xhi = Math.max(N, 20);
+    var f = frame(s, 0, xhi, 0, 100, function (v) { return Math.round(v); }, function (v) { return Math.round(v) + " %"; }, [0, 25, 50, 75, 100]);
+    ctx.strokeStyle = css("--curve"); ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(f.m.l, f.Y(P.c * 100)); ctx.lineTo(f.m.l + f.pw, f.Y(P.c * 100)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = css("--curve"); ctx.font = "12px system-ui, sans-serif"; ctx.textAlign = "right"; ctx.textBaseline = "bottom";
+    ctx.fillText("niveau annoncé " + Math.round(P.c * 100) + " %", f.m.l + f.pw - 2, f.Y(P.c * 100) - 3);
+    if (N > 0) {
+      ctx.strokeStyle = css("--green"); ctx.lineWidth = 2.5; ctx.beginPath();
+      for (var i = 0; i < N; i++) {
+        var x = f.X(i + 1), y = f.Y(st.hist[i]);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+
+  function render() {
+    var P = params();
+    $("vlev").textContent = Math.round(P.c * 100) + " %"; $("vn").textContent = P.n; $("vp").textContent = fmt(P.p);
+    drawCI(P); drawCov(P);
+    var N = st.total, pct = N ? st.hits / N * 100 : NaN;
+    var wTheo = 2 * P.z * Math.sqrt(P.p * (1 - P.p) / P.n);
+    var shownHits = st.rows.filter(function (r) { return r.ok; }).length;
+    $("shown").textContent = st.rows.length ? "— " + shownHits + " sur " + st.rows.length + " contiennent p" : "";
+    $("stats").innerHTML =
+      "<span>Niveau " + Math.round(P.c * 100) + " % → z = <b>" + fmt(P.z, 3) + "</b></span>" +
+      "<span>IC contenant p, au total : <b>" + st.hits + " / " + N + (N ? " = " + fmt(pct, 1) + " %" : "") + "</b></span>" +
+      "<span>Largeur moyenne observée : <b>" + (N ? fmt(st.sumW / N, 3) : "–") + "</b></span>" +
+      "<span>Largeur attendue 2·z·√(p(1−p)/n) : <b>" + fmt(wTheo, 3) + "</b></span>";
+  }
+
+  function fresh() { stop(); reset(); for (var i = 0; i < 100; i++) addCI(); render(); }
+  $("lev").oninput = fresh; $("n").oninput = fresh; $("p").oninput = fresh;
+  $("one").onclick = function () { addCI(); render(); };
+  $("hundred").onclick = function () { for (var i = 0; i < 100; i++) addCI(); render(); };
+  $("reset").onclick = function () { stop(); reset(); render(); };
+  $("auto").onclick = function () {
+    if (st.timer) { stop(); return; }
+    $("auto").textContent = "❚❚ Pause";
+    st.timer = setInterval(function () { addCI(); render(); if (st.total >= 3000) stop(); }, 120);
+  };
+  $("zoom").onchange = render;
+  window.addEventListener("resize", render);
+  fresh();
+})();
+</script>
+</body>
+</html>
+)---"
+
+b64 <- jsonlite::base64_enc(charToRaw(ic_html))
+cat(sprintf(
+  '<iframe src="data:text/html;base64,%s" width="100%%" height="520" style="border:none;"></iframe>',
+  gsub("\n", "", b64)
+))
+```
+
+
+
+---
 # Des intervalles de confiance aux tests d'hypothèses
 
 * Les *intervalles de confiance* peuvent être considérés comme une extension de l'*estimation ponctuelle*.
@@ -649,7 +875,7 @@ ggplot(promotions, aes(x = gender, fill = decision)) +
 
 ---
 
-# Imaginos un monde Hypothétique : pas de discimination 
+# Imaginons un monde Hypothétique : pas de discimination 
 
 * Immaginons que nous vivons dans un monde sans discrimination de genre : les décisions de promotion devraient être totalement  ***indépendente*** du genre.
 
@@ -705,7 +931,7 @@ A quoi ressemble  le taux de promotion dans ce nouvel échantillon permuté ?
 
 .pull-right[
 
-```{r,echo=FALSE,fig.height = 5.5}
+```{r,echo=FALSE,fig.height = 5}
 p1 = ggplot(promotions, aes(x = gender, fill = decision)) +
   geom_bar(width = 0.75) +
   theme_bw(base_size = 15) +
@@ -1167,7 +1393,7 @@ Travailler avec des probabilités impliquent que l'on peut faire des **erreurs**
 
 --
 
-* Une différence de 29p% est *improbable* sous $H_0$, mais cela **ne signifie pas que c'est *impossible* **.
+* Une différence de 29pp est *improbable* sous $H_0$, mais cela **ne signifie pas que c'est *impossible* **.
 
   * Une telle différence (ou plus grande) ne peut arriver (environ) que dans 0.007% des cas.
   

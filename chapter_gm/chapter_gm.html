@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-09-16
+### Université de Namur </br> 2026-10-02
 ]
 
 ---
@@ -37,35 +37,32 @@ layout: true
 
 &lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
 
+
+
 ---
-
-
-
-
 
 # Aujourd'hui - Propriétés du modèle de régression linéaire
 
-Jusqu à présent nous avons vu comment utiliser les modèles linéaires et leurs interpération 
+Jusqu'à présent, nous avons vu comment utiliser les modèles linéaires et les interpréter.
 
 --
 
-Dans cette session, nous allons nous concentrer sur les propriétés de ces estimateurs :
-  
-  1. Pourquoi les utilisons-nous : hypothèses de  **Gauss-Markov**
-  
-  1. Etude de la **variance** de ces estimateurs
+Dans cette session, nous allons nous concentrer sur les propriétés des estimateurs OLS :
 
+  1. **Absence de biais** : hypothèses H1 à H4
 
---
+  1. **Variance** des estimateurs : hypothèse H5
 
-Nous allons voir en détails pourquoi ces estimateurs sont ceux que l on préfère utiliser : **sans biais**
+  1. **Gauss-Markov** : pourquoi utiliser les OLS ?
+
+  1. **En pratique** : comment vérifier les hypothèses ? Le test de Breusch-Pagan
 
 ---
 
 layout: false
 class: title-slide-section-red, middle
 
-# Valeurs Espérées des Estimateurs OLS
+# Valeurs espérées des estimateurs OLS
 
 ---
 
@@ -75,7 +72,7 @@ layout: true
 
 ---
 
-# H1: Linéarité en paramètres
+# H1 : Linéarité en paramètres
 
 La première hypothèse repose sur la linéarité en paramètres du modèle :
 
@@ -84,44 +81,44 @@ La première hypothèse repose sur la linéarité en paramètres du modèle :
 $$
 y = \beta_0 + \beta_1 x_1 + ... + \beta_k x_k + u 
 $$
-* La linéarité en paramètres signifie juste que la relation estimée par les paramètres du modèle (`\(\beta_k\)`) est **linéaire**.
 
-* Les variables indépendantes (`\(x\)`) peuvent être linéaires ou non
+* La linéarité en paramètres signifie que le modèle est **linéaire dans les `\(\beta_j\)`**.
+
+* Les variables explicatives, elles, peuvent être des fonctions non linéaires des variables d'origine (ex : `\(x^2\)`, `\(\ln(x)\)`).
 
 ---
 
+# H2 : Échantillon aléatoire
 
-# H2: Echantillon aléatoire
-
-La seconde hypothèse statut sur l'origine des données. Les données utilisées pour estimer notre modèle sont **tirées** aléatoirement d'une population :
+La deuxième hypothèse porte sur l'origine des données. Les données utilisées pour estimer notre modèle sont **tirées** aléatoirement d'une population :
 
 --
 
 `$$\text{n obs} : \{(x_{i,1},...,x_{i,k}; y_i)\}: i=\{1,...,n\}$$`
 
-* Si c'est le cas, nous pouvons alors estimer le modèle associé à H1 et le réécrire pour un individu donné.
+* Si c'est le cas, nous pouvons alors estimer le modèle associé à H1 et le réécrire pour un individu donné :
 
 `$$y_i = \beta_0 + \beta_1 x_{i,1} + ... + \beta_k x_{i,k} + u_i$$`
 
-
-
 ---
-# H3: L'absence de collinéarité parfaite
 
-* Dans un échantillon donné, aucune variable dépendante (`\(x\)`) ne doit être constante et aucune ne doit être la **combinaison linéaire** exacte de variables dépendantes.
+# H3 : Absence de colinéarité parfaite
+
+* Dans un échantillon donné, aucune variable explicative ( `\(x\)` ) ne doit être constante et aucune ne doit être une **combinaison linéaire** exacte des autres variables explicatives.
 
 --
 
-* La solution ? **Supprimer** une des variables qui donne une **information redondante**. Par exemple, nous n'avons pas besoin d'ajouter les variables `homme` et `femme` dans un modèle.
+* La solution ? **Supprimer** une des variables qui donne une **information redondante**. Par exemple, nous n'avons pas besoin d'ajouter les variables `homme` et `femme` dans un même modèle.
 
 --
 
-* Cette hypothèse peut également ne pas tenir lorsque le **nombre d'observations est trop petit** par rapport au nombre de paramètres à estimer (`\(\widehat{\beta_k}\)`). On a besoin d'au moins `\(k+1\)` observations pour pouvoir estimer un modèle avec `\(k+1\)` paramètres.
+* Cette hypothèse peut également ne pas tenir lorsque le **nombre d'observations est trop petit** par rapport au nombre de paramètres à estimer ( `\(\widehat{\beta_k}\)` ). On a besoin d'au moins `\(k+1\)` observations pour pouvoir estimer un modèle avec `\(k+1\)` paramètres.
 
 ---
-# H4: Moyenne conditionnelle nulle
 
-* La moyenne conditionnelle des erreurs doit être nulle : 
+# H4 : Moyenne conditionnelle nulle
+
+* La moyenne conditionnelle des erreurs doit être nulle :
 
 --
 
@@ -130,20 +127,20 @@ E(u|x_1,x_2,...,x_k) = 0
 $$
 
 --
-Cas où cette hypothèse n'est pas vérifiée : 
+
+Cas où cette hypothèse n'est pas vérifiée :
 
 --
 
-* La forme fonctionnelle du modèle est mal spécifiée : par exemple il y a une relation non linéaire entre une de nos variables dépendantes et notre variable indépendante.
+* La forme fonctionnelle du modèle est mal spécifiée : par exemple, il existe une relation non linéaire entre la variable dépendante et une de nos variables explicatives, que le modèle ne capture pas.
 
 --
 
-* Omission d'une variable importante, `\(COV(u,x) \neq 0\)`
+* Omission d'une variable importante, corrélée avec une variable explicative : `\(COV(u,x) \neq 0\)`.
 
 --
 
-Si H4 est vérifiée, on dit alors que l'ensemble de nos variables sont exogènes, sinon qu'il y a un problème d'endogénéité. Nous verrons comment résoudre ce problème plus tard dans le semestre.
-
+Si H4 est vérifiée, on dit que l'ensemble de nos variables sont **exogènes** ; sinon, il y a un problème d'**endogénéité**. Nous verrons comment résoudre ce problème plus tard dans le semestre.
 
 ---
 
@@ -164,7 +161,6 @@ $$
 E(\widehat{\beta_j}) = \beta_j \quad \text{pour } j = 0,1,...,k
 $$
 
-
 &lt;/div&gt;
 &lt;/div&gt;
 ]
@@ -179,7 +175,7 @@ Ce résultat repose entièrement sur la validité conjointe des quatre première
 
 --
 
-* **H2** : Echantillonnage aléatoire
+* **H2** : Échantillonnage aléatoire
 
 --
 
@@ -194,13 +190,27 @@ Ce résultat repose entièrement sur la validité conjointe des quatre première
 .footnote[Si une seule de ces hypothèses n'est pas vérifiée, l'estimateur OLS peut devenir biaisé.]
 
 ---
-# H5: Homoscédasticité
+
+layout: false
+class: title-slide-section-red, middle
+
+# Variance des estimateurs OLS
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# H5 : Homoscédasticité
 
 Pour étudier la **variance** de nos estimateurs, nous avons besoin d'une cinquième hypothèse.
 
 --
 
-La variance de l'erreur, conditionnellement aux variables indépendantes, doit être **constante** :
+La variance de l'erreur, conditionnellement aux variables explicatives, doit être **constante** :
 
 --
 
@@ -220,17 +230,13 @@ $$
 
 # Homoscédasticité visuellement 
 
-&lt;img src="chapter_gm_files/figure-html/unnamed-chunk-1-1.svg" alt="" style="display: block; margin: auto;" /&gt;
-
-
-
-
+&lt;img src="chapter_gm_files/figure-html/homo_hetero_plot-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # La variance de `\(\widehat{\beta_j}\)`
 
-Sous les hypothèses H1 à H5, la variance de notre estimateur OLS peut s'écrire :
+Sous les hypothèses H1 à H5, la variance de notre estimateur OLS (conditionnellement aux `\(x\)`) peut s'écrire :
 
 --
 
@@ -289,12 +295,12 @@ $$
 # Terme 3 : `\(R_j^2\)` — La colinéarité avec les autres `\(x\)`
 
 $$
-R_j^2 = R^2 \; \text{de la régression de} \; x_j \; \text{sur toutes les autres variables} \; x_k
+R_j^2 = R^2 \; \text{de la régression de} \; x_j \; \text{sur toutes les autres variables explicatives}
 $$
 
 --
 
-* Il mesure à quel point `\(x_j\)` peut être **expliquée** (prédite) par les autres variables indépendantes du modèle.
+* Il mesure à quel point `\(x_j\)` peut être **expliquée** (prédite) par les autres variables explicatives du modèle.
 
 --
 
@@ -345,7 +351,6 @@ Notre estimation est **plus précise** (variance plus faible) lorsque :
 
 * `\(R_j^2\)` est **petit** : `\(x_j\)` n'est pas colinéaire avec les autres variables
 
-
 ---
 
 # Un problème : `\(\sigma^2\)` est inconnu
@@ -368,7 +373,7 @@ $$
 
 --
 
-* `\(n - k - 1\)` est le nombre de **degrés de liberté** : `\(n\)` observations moins `\((k+1)\)` paramètres estimés (`\(\beta_0, \beta_1,...,\beta_k\)`).
+* `\(n - k - 1\)` est le nombre de **degrés de liberté** : `\(n\)` observations moins `\((k+1)\)` paramètres estimés ( `\(\beta_0, \beta_1,...,\beta_k\)` ). Avec ce dénominateur, `\(\hat\sigma^2\)` est un estimateur **sans biais** de `\(\sigma^2\)` sous H1 à H5.
 
 --
 
@@ -388,23 +393,46 @@ $$
 
 --
 
-* `\(sd(\widehat{\beta_j})\)` : l'**écart-type théorique** de l'estimateur qui  dépend de `\(\sigma\)`, qui est **inconnu** en pratique.
+* `\(sd(\widehat{\beta_j})\)` : l'**écart-type théorique** de l'estimateur, qui dépend de `\(\sigma\)`, **inconnu** en pratique.
 
 --
 
-* `\(se(\widehat{\beta_j})\)` : l'**erreur standard estimée** où  on remplace `\(\sigma\)` par son estimation `\(\hat\sigma\)`, calculable à partir des données.
+* `\(se(\widehat{\beta_j})\)` : l'**erreur standard estimée**, où l'on remplace `\(\sigma\)` par son estimation `\(\hat\sigma\)`, calculable à partir des données.
 
 --
 
 Pourquoi c'est important ?
 
   * Le `\(se(\widehat{\beta_j})\)` mesure la **précision** de notre estimation : plus il est petit, plus `\(\widehat{\beta_j}\)` est fiable.
-  
+
   * Il est indispensable pour construire des **tests d'hypothèses** et des **intervalles de confiance** sur `\(\beta_j\)`.
 
 
 ---
 
+# Précision de `\(\widehat{\beta_1}\)` : à vous de jouer
+
+&lt;iframe src="data:text/html;base64,CjwhRE9DVFlQRSBodG1sPgo8aHRtbCBsYW5nPSJmciI+CjxoZWFkPgo8bWV0YSBjaGFyc2V0PSJ1dGYtOCI+CjxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MSI+CjxzdHlsZT4KICA6cm9vdCB7IC0tYmc6I2ZmZmZmZjsgLS1wYW5lbDojZjRmN2Y0OyAtLWluazojMWMyYTIxOyAtLW11dGVkOiM1YjZiNjE7IC0tbGluZTojZDVkZGQ3OwogICAgICAgICAgLS1ncmVlbjojMWY3YTNkOyAtLWN1cnZlOiNjMjQxMGM7IC0tcG9wOiMyQzdGQjg7IH0KICAqIHsgYm94LXNpemluZzogYm9yZGVyLWJveDsgfQogIGh0bWwsIGJvZHkgeyBoZWlnaHQ6IDEwMCU7IG1hcmdpbjogMDsgfQogIGJvZHkgeyBiYWNrZ3JvdW5kOiB2YXIoLS1iZyk7IGNvbG9yOiB2YXIoLS1pbmspOwogICAgZm9udC1mYW1pbHk6ICJTZWdvZSBVSSIsIHN5c3RlbS11aSwgLWFwcGxlLXN5c3RlbSwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZjsKICAgIGRpc3BsYXk6IGZsZXg7IGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47IGdhcDogOHB4OyBwYWRkaW5nOiAwIDEwcHg7IH0KICAuY29udHJvbHMgeyBkaXNwbGF5OiBncmlkOyBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IHJlcGVhdCg0LCAxZnIpOyBnYXA6IDZweCAxNnB4OwogICAgYmFja2dyb3VuZDogdmFyKC0tcGFuZWwpOyBib3JkZXI6IDFweCBzb2xpZCB2YXIoLS1saW5lKTsgYm9yZGVyLXJhZGl1czogMTBweDsKICAgIHBhZGRpbmc6IDhweCAxMnB4OyBtYXJnaW4tdG9wOiA4cHg7IH0KICAuY3RsIHsgZGlzcGxheTogZmxleDsgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsgZm9udC1zaXplOiAxM3B4OyBjb2xvcjogdmFyKC0tbXV0ZWQpOyB9CiAgLmN0bCBiIHsgY29sb3I6IHZhcigtLWluayk7IGZvbnQtc2l6ZTogMTRweDsgfQogIC5jdGwgaW5wdXQgeyB3aWR0aDogMTAwJTsgYWNjZW50LWNvbG9yOiB2YXIoLS1ncmVlbik7IH0KICAuY3RsIHNtYWxsIHsgZm9udC1zaXplOiAxMXB4OyBjb2xvcjogdmFyKC0tbXV0ZWQpOyB9CiAgLmJ0bnMgeyBkaXNwbGF5OiBmbGV4OyBnYXA6IDhweDsgZmxleC13cmFwOiB3cmFwOyBhbGlnbi1pdGVtczogY2VudGVyOyB9CiAgYnV0dG9uIHsgZm9udDogaW5oZXJpdDsgZm9udC1zaXplOiAxM3B4OyBjb2xvcjogdmFyKC0taW5rKTsgYmFja2dyb3VuZDogdmFyKC0tYmcpOwogICAgYm9yZGVyOiAxcHggc29saWQgdmFyKC0tbGluZSk7IGJvcmRlci1yYWRpdXM6IDhweDsgcGFkZGluZzogNXB4IDEwcHg7IGN1cnNvcjogcG9pbnRlcjsgfQogIGJ1dHRvbi5wcmltYXJ5IHsgYmFja2dyb3VuZDogdmFyKC0tZ3JlZW4pOyBjb2xvcjogI2ZmZjsgYm9yZGVyLWNvbG9yOiB2YXIoLS1ncmVlbik7IGZvbnQtd2VpZ2h0OiA2MDA7IH0KICBsYWJlbC5jaGsgeyBmb250LXNpemU6IDEzcHg7IGNvbG9yOiB2YXIoLS1tdXRlZCk7IGRpc3BsYXk6IGZsZXg7IGFsaWduLWl0ZW1zOiBjZW50ZXI7IGdhcDogNnB4OyB9CiAgLmNoYXJ0cyB7IGZsZXg6IDE7IG1pbi1oZWlnaHQ6IDA7IGRpc3BsYXk6IGdyaWQ7IGdyaWQtdGVtcGxhdGUtY29sdW1uczogMWZyIDFmcjsgZ2FwOiAxMHB4OyB9CiAgLmNhcmQgeyBiYWNrZ3JvdW5kOiB2YXIoLS1wYW5lbCk7IGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWxpbmUpOyBib3JkZXItcmFkaXVzOiAxMHB4OwogICAgICAgICAgcGFkZGluZzogNnB4IDhweDsgZGlzcGxheTogZmxleDsgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsgbWluLWhlaWdodDogMDsgfQogIC5jYXJkIGgyIHsgZm9udC1zaXplOiAxNHB4OyBtYXJnaW46IDJweCAycHggM3B4OyBmb250LXdlaWdodDogNjAwOyB9CiAgLndyYXAgeyBwb3NpdGlvbjogcmVsYXRpdmU7IGZsZXg6IDE7IG1pbi1oZWlnaHQ6IDEyMHB4OyB9CiAgY2FudmFzIHsgcG9zaXRpb246IGFic29sdXRlOyBpbnNldDogMDsgd2lkdGg6IDEwMCU7IGhlaWdodDogMTAwJTsgfQogIC5sZWdlbmQgeyBkaXNwbGF5OiBmbGV4OyBnYXA6IDEycHg7IGZvbnQtc2l6ZTogMTJweDsgY29sb3I6IHZhcigtLW11dGVkKTsgbWFyZ2luOiAwIDJweDsgZmxleC13cmFwOiB3cmFwOyB9CiAgLnN3IHsgZGlzcGxheTogaW5saW5lLWJsb2NrOyB3aWR0aDogMTFweDsgaGVpZ2h0OiAxMXB4OyBib3JkZXItcmFkaXVzOiAzcHg7IG1hcmdpbi1yaWdodDogNXB4OyB2ZXJ0aWNhbC1hbGlnbjogLTFweDsgfQogIC5mb3JtdWxhIHsgZm9udC1zaXplOiAxNXB4OyBwYWRkaW5nOiAycHggNHB4OyB9CiAgLnN0YXRzIHsgZGlzcGxheTogZmxleDsgZmxleC13cmFwOiB3cmFwOyBnYXA6IDRweCAyMnB4OyBmb250LXNpemU6IDE0cHg7IHBhZGRpbmctYm90dG9tOiA4cHg7IH0KICBAbWVkaWEgKG1heC13aWR0aDogNzIwcHgpIHsgLmNvbnRyb2xzIHsgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiAxZnIgMWZyOyB9IC5jaGFydHMgeyBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IDFmcjsgfSB9Cjwvc3R5bGU+CjwvaGVhZD4KPGJvZHk+CjxkaXYgY2xhc3M9ImNvbnRyb2xzIj4KICA8ZGl2IGNsYXNzPSJjdGwiPjxzcGFuPkJydWl0IDogz4MgPSA8YiBpZD0idnNpZ21hIj4yPC9iPjwvc3Bhbj4KICAgIDxpbnB1dCB0eXBlPSJyYW5nZSIgaWQ9InNpZ21hIiBtaW49IjAuNSIgbWF4PSI1IiBzdGVwPSIwLjUiIHZhbHVlPSIyIj48c21hbGw+4oaRIM+DwrIgOiBtb2lucyBwcsOpY2lzPC9zbWFsbD48L2Rpdj4KICA8ZGl2IGNsYXNzPSJjdGwiPjxzcGFuPlRhaWxsZSBkJ8OpY2hhbnRpbGxvbiA6IG4gPSA8YiBpZD0idm4iPjUwPC9iPjwvc3Bhbj4KICAgIDxpbnB1dCB0eXBlPSJyYW5nZSIgaWQ9Im4iIG1pbj0iMjAiIG1heD0iNTAwIiBzdGVwPSIxMCIgdmFsdWU9IjUwIj48c21hbGw+4oaRIG4gOiBwbHVzIGRlIFNTVDwvc21hbGw+PC9kaXY+CiAgPGRpdiBjbGFzcz0iY3RsIj48c3Bhbj5EaXNwZXJzaW9uIGRlIHjigoEgOiBzZCh44oKBKSA9IDxiIGlkPSJ2c2R4Ij4xLDU8L2I+PC9zcGFuPgogICAgPGlucHV0IHR5cGU9InJhbmdlIiBpZD0ic2R4IiBtaW49IjAuNSIgbWF4PSIzIiBzdGVwPSIwLjI1IiB2YWx1ZT0iMS41Ij48c21hbGw+4oaRIHNkKHjigoEpIDogcGx1cyBkZSBTU1Q8L3NtYWxsPjwvZGl2PgogIDxkaXYgY2xhc3M9ImN0bCI+PHNwYW4+Q29ycsOpbGF0aW9uIHjigoEgLyB44oKCIDogz4EgPSA8YiBpZD0idnJobyI+MDwvYj48L3NwYW4+CiAgICA8aW5wdXQgdHlwZT0icmFuZ2UiIGlkPSJyaG8iIG1pbj0iMCIgbWF4PSIwLjk1IiBzdGVwPSIwLjA1IiB2YWx1ZT0iMCI+PHNtYWxsPuKGkSDPgSA6IFLCsiDDqWxldsOpLCBtb2lucyBwcsOpY2lzPC9zbWFsbD48L2Rpdj4KPC9kaXY+CjxkaXYgY2xhc3M9ImJ0bnMiPgogIDxidXR0b24gY2xhc3M9InByaW1hcnkiIGlkPSJvbmUiPk5vdXZlbCDDqWNoYW50aWxsb248L2J1dHRvbj4KICA8YnV0dG9uIGlkPSJtYW55Ij4rIDIwMCDDqWNoYW50aWxsb25zPC9idXR0b24+CiAgPGJ1dHRvbiBpZD0icmVzZXQiPlLDqWluaXRpYWxpc2VyPC9idXR0b24+CiAgPGxhYmVsIGNsYXNzPSJjaGsiPjxpbnB1dCB0eXBlPSJjaGVja2JveCIgaWQ9Inpvb20iPiBab29tZXIgc3VyIGxhIGRpc3RyaWJ1dGlvbiBkZSDOssyC4oKBPC9sYWJlbD4KPC9kaXY+CjxkaXYgY2xhc3M9ImNoYXJ0cyI+CiAgPGRpdiBjbGFzcz0iY2FyZCI+CiAgICA8aDI+VW4gw6ljaGFudGlsbG9uIDogcmVsYXRpb24gZW50cmUgeSBldCB44oKBICh44oKCIGNvbnRyw7Rsw6llKTwvaDI+CiAgICA8ZGl2IGNsYXNzPSJsZWdlbmQiPgogICAgICA8c3Bhbj48c3BhbiBjbGFzcz0ic3ciIHN0eWxlPSJiYWNrZ3JvdW5kOnZhcigtLXBvcCkiPjwvc3Bhbj5PYnNlcnZhdGlvbnM8L3NwYW4+CiAgICAgIDxzcGFuPjxzcGFuIGNsYXNzPSJzdyIgc3R5bGU9ImJhY2tncm91bmQ6dmFyKC0tZ3JlZW4pIj48L3NwYW4+RHJvaXRlIGVzdGltw6llIChwZW50ZSDOssyC4oKBKTwvc3Bhbj4KICAgICAgPHNwYW4+PHNwYW4gY2xhc3M9InN3IiBzdHlsZT0iYmFja2dyb3VuZDp2YXIoLS1jdXJ2ZSkiPjwvc3Bhbj5WcmFpZSBkcm9pdGUgKM6y4oKBID0gMik8L3NwYW4+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9IndyYXAiPjxjYW52YXMgaWQ9ImNTY2F0dGVyIj48L2NhbnZhcz48L2Rpdj4KICA8L2Rpdj4KICA8ZGl2IGNsYXNzPSJjYXJkIj4KICAgIDxoMj5EaXN0cmlidXRpb24gZGVzIM6yzILigoEgPHNwYW4gaWQ9ImNvdW50IiBzdHlsZT0iY29sb3I6dmFyKC0tbXV0ZWQpO2ZvbnQtd2VpZ2h0OjQwMCI+PC9zcGFuPjwvaDI+CiAgICA8ZGl2IGNsYXNzPSJsZWdlbmQiPgogICAgICA8c3Bhbj48c3BhbiBjbGFzcz0ic3ciIHN0eWxlPSJiYWNrZ3JvdW5kOnZhcigtLWdyZWVuKSI+PC9zcGFuPkVzdGltYXRpb25zIM6yzILigoE8L3NwYW4+CiAgICAgIDxzcGFuPjxzcGFuIGNsYXNzPSJzdyIgc3R5bGU9ImJhY2tncm91bmQ6dmFyKC0tY3VydmUpIj48L3NwYW4+TijOsuKCgSwgc2QgdGjDqW9yaXF1ZSk8L3NwYW4+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9IndyYXAiPjxjYW52YXMgaWQ9ImNIaXN0Ij48L2NhbnZhcz48L2Rpdj4KICA8L2Rpdj4KPC9kaXY+CjxkaXYgY2xhc3M9ImZvcm11bGEiIGlkPSJmb3JtdWxhIj48L2Rpdj4KPGRpdiBjbGFzcz0ic3RhdHMiIGlkPSJzdGF0cyI+PC9kaXY+Cgo8c2NyaXB0PgooZnVuY3Rpb24gKCkgewogIHZhciBCMCA9IDEsIEIxID0gMiwgQjIgPSAxLjU7CiAgdmFyICQgPSBmdW5jdGlvbiAoaWQpIHsgcmV0dXJuIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKGlkKTsgfTsKICBmdW5jdGlvbiByYW5kbigpIHsgdmFyIHUgPSAxIC0gTWF0aC5yYW5kb20oKSwgdiA9IE1hdGgucmFuZG9tKCk7CiAgICByZXR1cm4gTWF0aC5zcXJ0KC0yICogTWF0aC5sb2codSkpICogTWF0aC5jb3MoMiAqIE1hdGguUEkgKiB2KTsgfQogIGZ1bmN0aW9uIGZtdCh2LCBkKSB7IGQgPSAoZCA9PT0gdW5kZWZpbmVkID8gMiA6IGQpOwogICAgcmV0dXJuIChNYXRoLnJvdW5kKHYgKiBNYXRoLnBvdygxMCwgZCkpIC8gTWF0aC5wb3coMTAsIGQpKS50b1N0cmluZygpLnJlcGxhY2UoIi4iLCAiLCIpOyB9CiAgZnVuY3Rpb24gY3NzKG5hbWUpIHsgcmV0dXJuIGdldENvbXB1dGVkU3R5bGUoZG9jdW1lbnQuZG9jdW1lbnRFbGVtZW50KS5nZXRQcm9wZXJ0eVZhbHVlKG5hbWUpLnRyaW0oKTsgfQogIGZ1bmN0aW9uIHBhcmFtcygpIHsgcmV0dXJuIHsgc2lnbWE6ICskKCJzaWdtYSIpLnZhbHVlLCBuOiArJCgibiIpLnZhbHVlLCBzZHg6ICskKCJzZHgiKS52YWx1ZSwgcmhvOiArJCgicmhvIikudmFsdWUgfTsgfQoKICB2YXIgc3QgPSB7IGJldGFzOiBbXSwgbGFzdDogbnVsbCB9OwoKICAvLyBTaW11bGUgdW4gw6ljaGFudGlsbG9uIGV0IGVzdGltZSB5ID0gYjAgKyBiMSB4MSArIGIyIHgyIHBhciBNQ08gKMOpcXVhdGlvbnMgbm9ybWFsZXMgY2VudHLDqWVzKQogIGZ1bmN0aW9uIHNpbXVsYXRlKHAsIGZ1bGwpIHsKICAgIHZhciBuID0gcC5uLCBpLCB4MSA9IG5ldyBBcnJheShuKSwgeDIgPSBuZXcgQXJyYXkobiksIHkgPSBuZXcgQXJyYXkobik7CiAgICB2YXIgayA9IE1hdGguc3FydCgxIC0gcC5yaG8gKiBwLnJobyksIG0xID0gMCwgbTIgPSAwLCBteSA9IDA7CiAgICBmb3IgKGkgPSAwOyBpIDwgbjsgaSsrKSB7CiAgICAgIHZhciB6MSA9IHJhbmRuKCksIHoyID0gcmFuZG4oKTsKICAgICAgeDFbaV0gPSBwLnNkeCAqIHoxOyB4MltpXSA9IHAuc2R4ICogKHAucmhvICogejEgKyBrICogejIpOwogICAgICB5W2ldID0gQjAgKyBCMSAqIHgxW2ldICsgQjIgKiB4MltpXSArIHAuc2lnbWEgKiByYW5kbigpOwogICAgICBtMSArPSB4MVtpXTsgbTIgKz0geDJbaV07IG15ICs9IHlbaV07CiAgICB9CiAgICBtMSAvPSBuOyBtMiAvPSBuOyBteSAvPSBuOwogICAgdmFyIFNhYSA9IDAsIFNiYiA9IDAsIFNhYiA9IDAsIFNhYyA9IDAsIFNiYyA9IDAsIGEsIGIsIGM7CiAgICBmb3IgKGkgPSAwOyBpIDwgbjsgaSsrKSB7CiAgICAgIGEgPSB4MVtpXSAtIG0xOyBiID0geDJbaV0gLSBtMjsgYyA9IHlbaV0gLSBteTsKICAgICAgU2FhICs9IGEgKiBhOyBTYmIgKz0gYiAqIGI7IFNhYiArPSBhICogYjsgU2FjICs9IGEgKiBjOyBTYmMgKz0gYiAqIGM7CiAgICB9CiAgICB2YXIgZGV0ID0gU2FhICogU2JiIC0gU2FiICogU2FiOwogICAgdmFyIGIxID0gKFNhYyAqIFNiYiAtIFNiYyAqIFNhYikgLyBkZXQsIGIyID0gKFNiYyAqIFNhYSAtIFNhYyAqIFNhYikgLyBkZXQ7CiAgICB2YXIgb3V0ID0geyBiMTogYjEgfTsKICAgIGlmIChmdWxsKSB7CiAgICAgIHZhciBzc3IgPSAwLCBwdHMgPSBuZXcgQXJyYXkobiksIGU7CiAgICAgIGZvciAoaSA9IDA7IGkgPCBuOyBpKyspIHsKICAgICAgICBhID0geDFbaV0gLSBtMTsgYiA9IHgyW2ldIC0gbTI7IGMgPSB5W2ldIC0gbXk7CiAgICAgICAgZSA9IGMgLSBiMSAqIGEgLSBiMiAqIGI7IHNzciArPSBlICogZTsKICAgICAgICBwdHNbaV0gPSBbYSAtIChTYWIgLyBTYmIpICogYiwgYyAtIChTYmMgLyBTYmIpICogYl07ICAgLy8geDEgZXQgeSBwdXJnw6lzIGRlIHgyIChGcmlzY2gtV2F1Z2gpCiAgICAgIH0KICAgICAgb3V0LnNlID0gTWF0aC5zcXJ0KHNzciAvIChuIC0gMykgKiBTYmIgLyBkZXQpOwogICAgICBvdXQuc3N0ID0gU2FhOyBvdXQucjIgPSBTYWIgKiBTYWIgLyAoU2FhICogU2JiKTsgb3V0LnB0cyA9IHB0czsKICAgIH0KICAgIHJldHVybiBvdXQ7CiAgfQoKICBmdW5jdGlvbiBuaWNlVGlja3MobG8sIGhpLCBjb3VudCkgewogICAgdmFyIHN0ZXAgPSAoaGkgLSBsbykgLyBjb3VudCwgbWFnID0gTWF0aC5wb3coMTAsIE1hdGguZmxvb3IoTWF0aC5sb2cxMChzdGVwKSkpOwogICAgdmFyIGYgPSBzdGVwIC8gbWFnOyBzdGVwID0gKGYgPCAxLjUgPyAxIDogZiA8IDMuNSA/IDIgOiBmIDwgNy41ID8gNSA6IDEwKSAqIG1hZzsKICAgIHZhciB0ID0gW10sIHYgPSBNYXRoLmNlaWwobG8gLyBzdGVwKSAqIHN0ZXA7CiAgICBmb3IgKDsgdiA8PSBoaSArIDFlLTk7IHYgKz0gc3RlcCkgdC5wdXNoKHYpOwogICAgcmV0dXJuIHQ7CiAgfQogIGZ1bmN0aW9uIHNldHVwKGNhbnZhcykgewogICAgdmFyIHIgPSBjYW52YXMuZ2V0Qm91bmRpbmdDbGllbnRSZWN0KCksIGRwciA9IHdpbmRvdy5kZXZpY2VQaXhlbFJhdGlvIHx8IDE7CiAgICBjYW52YXMud2lkdGggPSBNYXRoLm1heCgxLCBNYXRoLnJvdW5kKHIud2lkdGggKiBkcHIpKTsKICAgIGNhbnZhcy5oZWlnaHQgPSBNYXRoLm1heCgxLCBNYXRoLnJvdW5kKHIuaGVpZ2h0ICogZHByKSk7CiAgICB2YXIgY3R4ID0gY2FudmFzLmdldENvbnRleHQoIjJkIik7IGN0eC5zZXRUcmFuc2Zvcm0oZHByLCAwLCAwLCBkcHIsIDAsIDApOwogICAgcmV0dXJuIHsgY3R4OiBjdHgsIHc6IHIud2lkdGgsIGg6IHIuaGVpZ2h0IH07CiAgfQogIGZ1bmN0aW9uIGZyYW1lKHMsIHhsbywgeGhpLCB5bG8sIHloaSkgewogICAgdmFyIGN0eCA9IHMuY3R4LCBtID0geyBsOiA0MiwgcjogMTAsIHQ6IDgsIGI6IDI2IH07CiAgICB2YXIgcHcgPSBzLncgLSBtLmwgLSBtLnIsIHBoID0gcy5oIC0gbS50IC0gbS5iOwogICAgdmFyIFggPSBmdW5jdGlvbiAoeCkgeyByZXR1cm4gbS5sICsgKHggLSB4bG8pIC8gKHhoaSAtIHhsbykgKiBwdzsgfTsKICAgIHZhciBZID0gZnVuY3Rpb24gKHkpIHsgcmV0dXJuIG0udCArIHBoIC0gKHkgLSB5bG8pIC8gKHloaSAtIHlsbykgKiBwaDsgfTsKICAgIGN0eC5jbGVhclJlY3QoMCwgMCwgcy53LCBzLmgpOwogICAgY3R4LmZvbnQgPSAiMTJweCBzeXN0ZW0tdWksIHNhbnMtc2VyaWYiOyBjdHguZmlsbFN0eWxlID0gY3NzKCItLW11dGVkIik7CiAgICBjdHguc3Ryb2tlU3R5bGUgPSBjc3MoIi0tbGluZSIpOyBjdHgubGluZVdpZHRoID0gMTsKICAgIGN0eC50ZXh0QWxpZ24gPSAicmlnaHQiOyBjdHgudGV4dEJhc2VsaW5lID0gIm1pZGRsZSI7CiAgICBuaWNlVGlja3MoeWxvLCB5aGksIDQpLmZvckVhY2goZnVuY3Rpb24gKHYpIHsKICAgICAgdmFyIHkgPSBNYXRoLnJvdW5kKFkodikpICsgMC41OwogICAgICBjdHguYmVnaW5QYXRoKCk7IGN0eC5tb3ZlVG8obS5sLCB5KTsgY3R4LmxpbmVUbyhzLncgLSBtLnIsIHkpOyBjdHguc3Ryb2tlKCk7CiAgICAgIGN0eC5maWxsVGV4dChmbXQodiwgMSksIG0ubCAtIDYsIHkpOwogICAgfSk7CiAgICBjdHgudGV4dEFsaWduID0gImNlbnRlciI7IGN0eC50ZXh0QmFzZWxpbmUgPSAidG9wIjsKICAgIG5pY2VUaWNrcyh4bG8sIHhoaSwgNikuZm9yRWFjaChmdW5jdGlvbiAodikgeyBjdHguZmlsbFRleHQoZm10KHYsIDEpLCBYKHYpLCBzLmggLSBtLmIgKyA2KTsgfSk7CiAgICBjdHguc2F2ZSgpOyBjdHguYmVnaW5QYXRoKCk7IGN0eC5yZWN0KG0ubCwgbS50LCBwdywgcGgpOyBjdHguY2xpcCgpOyBjdHgucmVzdG9yZSgpOwogICAgcmV0dXJuIHsgWDogWCwgWTogWSwgbTogbSwgcHc6IHB3LCBwaDogcGggfTsKICB9CgogIGZ1bmN0aW9uIGRyYXdTY2F0dGVyKHApIHsKICAgIHZhciBzID0gc2V0dXAoJCgiY1NjYXR0ZXIiKSksIGN0eCA9IHMuY3R4LCBMID0gc3QubGFzdDsKICAgIHZhciB4bCA9IDMuMiAqIHAuc2R4ICogTWF0aC5zcXJ0KDEgLSBwLnJobyAqIHAucmhvKSArIDAuMjsKICAgIHZhciB5bCA9IEIxICogeGwgKyAzICogcC5zaWdtYTsKICAgIHZhciBmID0gZnJhbWUocywgLXhsLCB4bCwgLXlsLCB5bCk7CiAgICBjdHguc2F2ZSgpOyBjdHguYmVnaW5QYXRoKCk7IGN0eC5yZWN0KGYubS5sLCBmLm0udCwgZi5wdywgZi5waCk7IGN0eC5jbGlwKCk7CiAgICBpZiAoTCkgewogICAgICBjdHguZmlsbFN0eWxlID0gY3NzKCItLXBvcCIpOyBjdHguZ2xvYmFsQWxwaGEgPSAwLjU1OwogICAgICBMLnB0cy5mb3JFYWNoKGZ1bmN0aW9uIChxKSB7IGN0eC5iZWdpblBhdGgoKTsgY3R4LmFyYyhmLlgocVswXSksIGYuWShxWzFdKSwgMi44LCAwLCA2LjI4MzIpOyBjdHguZmlsbCgpOyB9KTsKICAgICAgY3R4Lmdsb2JhbEFscGhhID0gMTsKICAgICAgY3R4LnN0cm9rZVN0eWxlID0gY3NzKCItLWN1cnZlIik7IGN0eC5zZXRMaW5lRGFzaChbNiwgNF0pOyBjdHgubGluZVdpZHRoID0gMi41OwogICAgICBjdHguYmVnaW5QYXRoKCk7IGN0eC5tb3ZlVG8oZi5YKC14bCksIGYuWSgtQjEgKiB4bCkpOyBjdHgubGluZVRvKGYuWCh4bCksIGYuWShCMSAqIHhsKSk7IGN0eC5zdHJva2UoKTsKICAgICAgY3R4LnNldExpbmVEYXNoKFtdKTsgY3R4LnN0cm9rZVN0eWxlID0gY3NzKCItLWdyZWVuIik7IGN0eC5saW5lV2lkdGggPSAyLjU7CiAgICAgIGN0eC5iZWdpblBhdGgoKTsgY3R4Lm1vdmVUbyhmLlgoLXhsKSwgZi5ZKC1MLmIxICogeGwpKTsgY3R4LmxpbmVUbyhmLlgoeGwpLCBmLlkoTC5iMSAqIHhsKSk7IGN0eC5zdHJva2UoKTsKICAgIH0KICAgIGN0eC5yZXN0b3JlKCk7CiAgICBjdHguc3Ryb2tlU3R5bGUgPSBjc3MoIi0tbXV0ZWQiKTsgY3R4LmxpbmVXaWR0aCA9IDE7CiAgICBjdHguYmVnaW5QYXRoKCk7IGN0eC5tb3ZlVG8oZi5tLmwsIGYubS50ICsgZi5waCArIDAuNSk7IGN0eC5saW5lVG8ocy53IC0gZi5tLnIsIGYubS50ICsgZi5waCArIDAuNSk7IGN0eC5zdHJva2UoKTsKICB9CgogIGZ1bmN0aW9uIGRyYXdIaXN0KHAsIHNkVGhlbykgewogICAgdmFyIHMgPSBzZXR1cCgkKCJjSGlzdCIpKSwgY3R4ID0gcy5jdHgsIGsgPSBzdC5iZXRhcy5sZW5ndGgsIGk7CiAgICB2YXIgbG8sIGhpOwogICAgaWYgKCQoInpvb20iKS5jaGVja2VkKSB7IGxvID0gQjEgLSA0ICogc2RUaGVvOyBoaSA9IEIxICsgNCAqIHNkVGhlbzsgfSBlbHNlIHsgbG8gPSAtMTsgaGkgPSA1OyB9CiAgICB2YXIgTkIgPSA2MCwgYmlucyA9IG5ldyBBcnJheShOQikuZmlsbCgwKSwgYncgPSAoaGkgLSBsbykgLyBOQiwgb3V0c2lkZSA9IDA7CiAgICBmb3IgKGkgPSAwOyBpIDwgazsgaSsrKSB7CiAgICAgIHZhciBiID0gTWF0aC5mbG9vcigoc3QuYmV0YXNbaV0gLSBsbykgLyBidyk7CiAgICAgIGlmIChiID49IDAgJiYgYiA8IE5CKSBiaW5zW2JdKys7IGVsc2Ugb3V0c2lkZSsrOwogICAgfQogICAgdmFyIGN1cnZlID0gZnVuY3Rpb24gKHgpIHsgdmFyIHogPSAoeCAtIEIxKSAvIHNkVGhlbzsKICAgICAgcmV0dXJuIE1hdGgubWF4KGssIDEpICogYncgKiBNYXRoLmV4cCgtMC41ICogeiAqIHopIC8gKHNkVGhlbyAqIE1hdGguc3FydCgyICogTWF0aC5QSSkpOyB9OwogICAgdmFyIG1heEggPSBNYXRoLm1heC5hcHBseShudWxsLCBiaW5zKTsKICAgIGZvciAoaSA9IDA7IGkgPD0gMjAwOyBpKyspIG1heEggPSBNYXRoLm1heChtYXhILCBjdXJ2ZShsbyArIChoaSAtIGxvKSAqIGkgLyAyMDApKTsKICAgIG1heEggPSAobWF4SCA+IDAgPyBtYXhIIDogMSkgKiAxLjE7CiAgICB2YXIgZiA9IGZyYW1lKHMsIGxvLCBoaSwgMCwgbWF4SCk7CiAgICBjdHguZmlsbFN0eWxlID0gY3NzKCItLWdyZWVuIik7CiAgICB2YXIgYmFyVyA9IGYucHcgLyBOQjsKICAgIGZvciAoaSA9IDA7IGkgPCBOQjsgaSsrKSB7CiAgICAgIHZhciBiaCA9IGJpbnNbaV0gLyBtYXhIICogZi5waDsKICAgICAgaWYgKGJoID4gMCkgY3R4LmZpbGxSZWN0KGYubS5sICsgaSAqIGJhclcgKyAwLjUsIGYubS50ICsgZi5waCAtIGJoLCBNYXRoLm1heCgxLCBiYXJXIC0gMSksIGJoKTsKICAgIH0KICAgIGN0eC5zdHJva2VTdHlsZSA9IGNzcygiLS1pbmsiKTsgY3R4LnNldExpbmVEYXNoKFs1LCA0XSk7IGN0eC5saW5lV2lkdGggPSAxLjU7CiAgICBjdHguYmVnaW5QYXRoKCk7IGN0eC5tb3ZlVG8oZi5YKEIxKSwgZi5tLnQpOyBjdHgubGluZVRvKGYuWChCMSksIGYubS50ICsgZi5waCk7IGN0eC5zdHJva2UoKTsgY3R4LnNldExpbmVEYXNoKFtdKTsKICAgIGN0eC5zdHJva2VTdHlsZSA9IGNzcygiLS1jdXJ2ZSIpOyBjdHgubGluZVdpZHRoID0gMi41OyBjdHguYmVnaW5QYXRoKCk7CiAgICBmb3IgKGkgPSAwOyBpIDw9IDMwMDsgaSsrKSB7CiAgICAgIHZhciB4ID0gbG8gKyAoaGkgLSBsbykgKiBpIC8gMzAwLCB5ID0gZi5ZKGN1cnZlKHgpKTsKICAgICAgaWYgKGkgPT09IDApIGN0eC5tb3ZlVG8oZi5YKHgpLCB5KTsgZWxzZSBjdHgubGluZVRvKGYuWCh4KSwgeSk7CiAgICB9CiAgICBjdHguc3Ryb2tlKCk7CiAgICBpZiAoc3QubGFzdCAmJiBzdC5sYXN0LmIxID49IGxvICYmIHN0Lmxhc3QuYjEgPD0gaGkpIHsgICAvLyBkZXJuacOocmUgZXN0aW1hdGlvbgogICAgICBjdHguZmlsbFN0eWxlID0gY3NzKCItLWN1cnZlIik7IHZhciB4eCA9IGYuWChzdC5sYXN0LmIxKSwgeXkgPSBmLm0udCArIGYucGg7CiAgICAgIGN0eC5iZWdpblBhdGgoKTsgY3R4Lm1vdmVUbyh4eCwgeXkgLSAyKTsgY3R4LmxpbmVUbyh4eCAtIDYsIHl5IC0gMTQpOyBjdHgubGluZVRvKHh4ICsgNiwgeXkgLSAxNCk7IGN0eC5jbG9zZVBhdGgoKTsgY3R4LmZpbGwoKTsKICAgIH0KICAgIGN0eC5zdHJva2VTdHlsZSA9IGNzcygiLS1tdXRlZCIpOyBjdHgubGluZVdpZHRoID0gMTsKICAgIGN0eC5iZWdpblBhdGgoKTsgY3R4Lm1vdmVUbyhmLm0ubCwgZi5tLnQgKyBmLnBoICsgMC41KTsgY3R4LmxpbmVUbyhzLncgLSBmLm0uciwgZi5tLnQgKyBmLnBoICsgMC41KTsgY3R4LnN0cm9rZSgpOwogICAgcmV0dXJuIG91dHNpZGU7CiAgfQoKICBmdW5jdGlvbiByZW5kZXIoKSB7CiAgICB2YXIgcCA9IHBhcmFtcygpLCBrID0gc3QuYmV0YXMubGVuZ3RoLCBpOwogICAgJCgidnNpZ21hIikudGV4dENvbnRlbnQgPSBmbXQocC5zaWdtYSwgMSk7ICQoInZuIikudGV4dENvbnRlbnQgPSBwLm47CiAgICAkKCJ2c2R4IikudGV4dENvbnRlbnQgPSBmbXQocC5zZHgpOyAkKCJ2cmhvIikudGV4dENvbnRlbnQgPSBmbXQocC5yaG8pOwogICAgdmFyIHNzdCA9IHAubiAqIHAuc2R4ICogcC5zZHgsIG9uZU1pbnVzID0gMSAtIHAucmhvICogcC5yaG87CiAgICB2YXIgc2RUaGVvID0gcC5zaWdtYSAvIE1hdGguc3FydChzc3QgKiBvbmVNaW51cyk7CiAgICBkcmF3U2NhdHRlcihwKTsKICAgIHZhciBvdXRzaWRlID0gZHJhd0hpc3QocCwgc2RUaGVvKTsKICAgIHZhciBtID0gMCwgc2QgPSBOYU47CiAgICBpZiAoayA+IDApIHsgZm9yIChpID0gMDsgaSA8IGs7IGkrKykgbSArPSBzdC5iZXRhc1tpXTsgbSAvPSBrOyB9CiAgICBpZiAoayA+IDEpIHsgdmFyIHYgPSAwOyBmb3IgKGkgPSAwOyBpIDwgazsgaSsrKSB2ICs9IE1hdGgucG93KHN0LmJldGFzW2ldIC0gbSwgMik7IHNkID0gTWF0aC5zcXJ0KHYgLyAoayAtIDEpKTsgfQogICAgJCgiY291bnQiKS50ZXh0Q29udGVudCA9ICLigJQgIiArIGsgKyAiIMOpY2hhbnRpbGxvbiIgKyAoayA+IDEgPyAicyIgOiAiIikgKyAob3V0c2lkZSA+IDAgPyAiICgiICsgb3V0c2lkZSArICIgaG9ycyBkZSBsJ2F4ZSkiIDogIiIpOwogICAgJCgiZm9ybXVsYSIpLmlubmVySFRNTCA9ICJzZCjOssyC4oKBKSA9IM+DIC8g4oiaKFNTVOKCgSDDlyAoMSDiiJIgUuKCgcKyKSkgPSAiICsgZm10KHAuc2lnbWEpICsgIiAvIOKImigiICsgZm10KHNzdCwgMSkgKyAiIMOXICIgKyBmbXQob25lTWludXMpICsKICAgICAgIikgPSA8YiBzdHlsZT0nY29sb3I6dmFyKC0tY3VydmUpJz4iICsgZm10KHNkVGhlbywgMykgKyAiPC9iPiI7CiAgICB2YXIgTCA9IHN0Lmxhc3Q7CiAgICAkKCJzdGF0cyIpLmlubmVySFRNTCA9CiAgICAgICI8c3Bhbj5WcmFpZSB2YWxldXIgzrLigoEgPSA8Yj4yPC9iPjwvc3Bhbj4iICsKICAgICAgIjxzcGFuPk1veWVubmUgZGVzIM6yzILigoEgPSA8Yj4iICsgKGsgPyBmbXQobSwgMykgOiAi4oCTIikgKyAiPC9iPjwvc3Bhbj4iICsKICAgICAgIjxzcGFuPsOJY2FydC10eXBlIG9ic2VydsOpIGRlcyDOssyC4oKBID0gPGI+IiArIChrID4gMSA/IGZtdChzZCwgMykgOiAi4oCTIikgKyAiPC9iPjwvc3Bhbj4iICsKICAgICAgKEwgPyAiPHNwYW4+RGVybmllciDDqWNoYW50aWxsb24gOiDOssyC4oKBID0gPGI+IiArIGZtdChMLmIxLCAzKSArICI8L2I+LCBzZSBlc3RpbcOpZSA9IDxiPiIgKyBmbXQoTC5zZSwgMykgKyAiPC9iPjwvc3Bhbj4iIDogIiIpOwogIH0KCiAgZnVuY3Rpb24gYWRkTWFueShrKSB7CiAgICB2YXIgcCA9IHBhcmFtcygpLCBpOwogICAgZm9yIChpID0gMDsgaSA8IGs7IGkrKykgc3QuYmV0YXMucHVzaChzaW11bGF0ZShwLCBmYWxzZSkuYjEpOwogIH0KICBmdW5jdGlvbiBhZGRPbmUoKSB7CiAgICB2YXIgcCA9IHBhcmFtcygpLCByID0gc2ltdWxhdGUocCwgdHJ1ZSk7CiAgICBzdC5sYXN0ID0gcjsgc3QuYmV0YXMucHVzaChyLmIxKTsKICB9CiAgZnVuY3Rpb24gZnJlc2goKSB7IHN0LmJldGFzID0gW107IHN0Lmxhc3QgPSBudWxsOyBhZGRPbmUoKTsgYWRkTWFueSgxOTkpOyByZW5kZXIoKTsgfQoKICBbInNpZ21hIiwgIm4iLCAic2R4IiwgInJobyJdLmZvckVhY2goZnVuY3Rpb24gKGlkKSB7ICQoaWQpLm9uaW5wdXQgPSBmcmVzaDsgfSk7CiAgJCgib25lIikub25jbGljayA9IGZ1bmN0aW9uICgpIHsgYWRkT25lKCk7IHJlbmRlcigpOyB9OwogICQoIm1hbnkiKS5vbmNsaWNrID0gZnVuY3Rpb24gKCkgeyBhZGRNYW55KDIwMCk7IHJlbmRlcigpOyB9OwogICQoInJlc2V0Iikub25jbGljayA9IGZ1bmN0aW9uICgpIHsgc3QuYmV0YXMgPSBbXTsgc3QubGFzdCA9IG51bGw7IGFkZE9uZSgpOyByZW5kZXIoKTsgfTsKICAkKCJ6b29tIikub25jaGFuZ2UgPSByZW5kZXI7CiAgd2luZG93LmFkZEV2ZW50TGlzdGVuZXIoInJlc2l6ZSIsIHJlbmRlcik7CiAgZnJlc2goKTsKfSkoKTsKPC9zY3JpcHQ+CjwvYm9keT4KPC9odG1sPgo=" width="100%" height="500" style="border:none;"&gt;&lt;/iframe&gt;
+
+
+
+---
+
+
+
+
+layout: false
+class: title-slide-section-red, middle
+
+# Le théorème de Gauss-Markov
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
 
 # Pourquoi utiliser les OLS ? Le théorème de Gauss-Markov
 
@@ -422,7 +450,7 @@ BLUE — Best Linear Unbiased Estimator
 &lt;div style="padding: 15px 30px;"&gt;
 
 $$
-\widehat{\beta_j}^{OLS} \; \text{est BLUE} \iff Var(\widehat{\beta_j}^{OLS}) \leq Var(\widetilde{\beta_j}) \quad \forall \; \widetilde{\beta_j} \; \text{linéaire et sans biais}
+Var(\widehat{\beta_j}^{OLS}) \leq Var(\widetilde{\beta_j}) \quad \text{pour tout estimateur } \widetilde{\beta_j} \text{ linéaire et sans biais}
 $$
 
 &lt;/div&gt;
@@ -430,6 +458,7 @@ $$
 ]
 
 ---
+
 # Décomposons l'acronyme BLUE
 
 * **B**est (Meilleur) : parmi tous les estimateurs linéaires sans biais, l'estimateur OLS est celui qui a la **plus petite variance**.
@@ -466,12 +495,389 @@ Il existe une infinité d'estimateurs linéaires et sans biais possibles pour `\
 
 --
 
-.footnote[OLS est donc **optimal dans sa classe**,  celle des estimateurs linéaires et sans biais, pas dans l'absolu.]
+.footnote[OLS est donc **optimal dans sa classe**, celle des estimateurs linéaires et sans biais, pas dans l'absolu.]
 
 ---
 
+layout: false
+class: title-slide-section-red, middle
+
+# Vérifier les hypothèses en pratique
+
+---
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;img src="../img/logo/namur-shield.png" style="height: 60px;"/&gt;&lt;/div&gt; 
+
+---
+
+# Peut-on tester les hypothèses ?
+
+Hypothèse | Testable ? | Diagnostic empirique | Outil R
+:-- | :-- | :-- | :--
+**H1** Linéarité | Partiellement | Résidus vs valeurs ajustées, test RESET | `resettest()`
+**H2** Échantillon aléatoire | Non (dépend de la collecte) | Documentation, représentativité | -
+**H3** Pas de colinéarité parfaite | Oui | Coefficients `NA`, VIF | `alias()`, `vif()`
+**H4** Moyenne conditionnelle nulle | **Non** directement | RESET, stabilité des coefficients, tests d'exogénéité | `resettest()`
+**H5** Homoscédasticité | Oui | Graphique des résidus, Breusch-Pagan, White | `bptest()`
+
+--
+
+.footnote[Certaines hypothèses se vérifient avec les **données**, d'autres seulement avec des **arguments** sur la manière dont elles ont été collectées.]
+
+---
+
+# H1 : Linéarité en paramètres
+
+* La linéarité **en paramètres** est un choix de modélisation, pas un test. Le vrai risque est une **forme fonctionnelle mal spécifiée**.
+
+--
+
+* **Diagnostic graphique** : les résidus vs valeurs ajustées ne doivent montrer aucune structure (pas de courbe en U).
+
+--
+
+* **Test RESET de Ramsey** : on ajoute `\(\hat y^2, \hat y^3\)` au modèle et on teste leur significativité.
+  * `\(H_0\)` : la forme fonctionnelle est correcte.
+  * `\(p &lt; 0{,}05\)` : on rejette `\(H_0\)`, le modèle est mal spécifié.
 
 
+``` r
+resettest(lm(mpg ~ hp, data = mtcars), power = 2:3, type = "fitted")
+```
+
+```
+## 
+## 	RESET test
+## 
+## data:  lm(mpg ~ hp, data = mtcars)
+## RESET = 9.2467, df1 = 2, df2 = 28, p-value = 0.0008255
+```
+
+---
+
+# H1 : exemple visuel
+
+&lt;img src="chapter_gm_files/figure-html/h1_plot-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+--
+
+Une structure en U dans les résidus (à gauche) signale une **non-linéarité omise** : ajouter `\(hp^2\)` règle le problème.
+
+---
+
+# H2 : Échantillon aléatoire
+
+* Aucun test ne peut le confirmer à partir des données seules : tout dépend de **comment les données ont été collectées**.
+
+--
+
+* Questions à se poser :
+  * Chaque individu avait-il la **même chance** d'être sélectionné ?
+  * Y a-t-il de la **non-réponse** ou une **sélection** (ex : seulement les personnes employées) ?
+  * Les observations sont-elles **indépendantes** (pas de séries temporelles ni de grappes, ex : élèves d'une même classe) ?
+
+--
+
+* **Diagnostics partiels** :
+  * comparer les moyennes de l'échantillon à des statistiques de la **population** connue (recensement) ;
+  * en séries temporelles, tester l'autocorrélation des erreurs : `bgtest()` (Breusch-Godfrey).
+
+---
+
+# H3 : Absence de colinéarité parfaite
+
+R détecte la colinéarité parfaite **automatiquement** : un coefficient apparaît comme `NA`.
+
+
+``` r
+set.seed(1)
+d &lt;- data.frame(y = rnorm(20), homme = rep(c(1, 0), 10))
+d$femme &lt;- 1 - d$homme        # femme = 1 - homme : piège des variables muettes
+coef(lm(y ~ homme + femme, data = d))
+```
+
+```
+## (Intercept)       homme       femme 
+##   0.1059339   0.1691799          NA
+```
+
+--
+
+Pour la colinéarité **forte mais imparfaite**, on utilise le **facteur d'inflation de la variance** :
+
+`$$VIF_j = \frac{1}{1-R_j^2}$$`
+
+--
+
+
+``` r
+vif(lm(mpg ~ wt + hp + disp, data = mtcars))
+```
+
+```
+##       wt       hp     disp 
+## 4.844618 2.736633 7.324517
+```
+
+* Règle pratique : `\(VIF &gt; 10\)` (ou `\(&gt; 5\)`) pose problème. C'est exactement le terme `\(\frac{1}{1-R_j^2}\)` de la variance de `\(\widehat{\beta_j}\)`.
+
+---
+
+# H4 : Moyenne conditionnelle nulle
+
+.red[**Attention**] : on ne peut pas tester `\(E(u|x)=0\)` avec les résidus. Par construction, les résidus OLS sont **toujours non corrélés** aux `\(x\)`.
+
+--
+
+Simulons un modèle avec une variable omise ( `\(x_2\)` corrélée à `\(x_1\)` ), où `\(y = 1 + 2x_1 + 3x_2 + u\)` :
+
+
+``` r
+set.seed(42)
+n  &lt;- 500
+x1 &lt;- rnorm(n)
+x2 &lt;- 0.7 * x1 + rnorm(n)
+y  &lt;- 1 + 2 * x1 + 3 * x2 + rnorm(n)
+
+court &lt;- lm(y ~ x1)         # x2 omise
+long  &lt;- lm(y ~ x1 + x2)
+```
+
+--
+
+.pull-left[
+* `\(\widehat{\beta_1}\)` (modèle court) : **4.11**
+* `\(\widehat{\beta_1}\)` (modèle complet) : **2.04**
+* Vraie valeur : **2**
+]
+
+.pull-right[
+* `\(|cor(\hat u, x_1)|\)` dans le modèle court : **0**
+
+Le biais existe, mais les résidus ne le montrent pas.
+]
+
+---
+
+# H4 : que faire alors ?
+
+* **Argumenter** économiquement : quelles variables importantes ai-je oubliées ? Dans quel sens biaisent-elles ?
+
+--
+
+* **Test de stabilité** : les coefficients changent-ils fortement quand on ajoute des contrôles ? (cf. exemple précédent : 4.11 vs 2.04).
+
+--
+
+* **Test RESET** : détecte certaines formes de mauvaise spécification.
+
+--
+
+* **Méthodes d'exogénéité** (variables instrumentales, test de Hausman) : nous les verrons plus tard dans le semestre.
+
+---
+
+# H5 : Homoscédasticité
+
+* **Diagnostic graphique** : un « entonnoir » dans le nuage des résidus vs valeurs ajustées signale de l'hétéroscédasticité.
+
+&lt;img src="chapter_gm_files/figure-html/h5_resid-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+--
+
+* **Tests formels** : **Breusch-Pagan** (diapositives suivantes) et **White** (version plus générale, avec carrés et interactions).
+
+--
+
+* **Que faire ?** Utiliser des **erreurs standards robustes** : les `\(\widehat{\beta_j}\)` restent sans biais, mais leur variance habituelle ne l'est plus.
+
+---
+
+# Le test de Breusch-Pagan : l'idée
+
+* Si H5 est vraie, la variance des erreurs **ne dépend pas** des `\(x\)`. Le carré des résidus `\(\hat u_i^2\)` ne devrait donc **pas être expliqué** par les `\(x\)`.
+
+--
+
+* **Principe** : on régresse `\(\hat u^2\)` sur les variables explicatives et on regarde si elles ont un pouvoir explicatif.
+
+--
+
+.center[
+&lt;div style="border: 3px solid #cc0000; border-radius: 10px; display: inline-block; margin-top: 10px; background-color: #fff5f5; text-align: left; max-width: 90%;"&gt;
+
+&lt;div style="background-color: #cc0000; color: white; padding: 8px 20px; border-radius: 7px 7px 0 0; font-weight: bold; text-align: center;"&gt;
+Test de Breusch-Pagan
+&lt;/div&gt;
+
+&lt;div style="padding: 10px 30px;"&gt;
+
+`\(H_0 : Var(u|x_1,...,x_k) = \sigma^2\)` (\text{homoscédasticité})
+
+`\(H_1 : Var(u|x_1,...,x_k)\)` dépend des `\(x\)` (\text{hétéroscédasticité})
+
+&lt;/div&gt;
+&lt;/div&gt;
+]
+
+---
+
+# Breusch-Pagan : la procédure
+
+1. Estimer le modèle par OLS et récupérer les résidus `\(\hat u_i\)`.
+
+--
+
+2. Régression auxiliaire :
+`$$\hat u_i^2 = \delta_0 + \delta_1 x_{i,1} + ... + \delta_k x_{i,k} + v_i$$`
+
+--
+
+3. Tester `\(H_0 : \delta_1 = ... = \delta_k = 0\)` avec la statistique du **multiplicateur de Lagrange** :
+`$$LM = n \times R^2_{\hat u^2} \;\sim\; \chi^2_k \quad \text{sous } H_0$$`
+
+--
+
+4. **Décision** : si la `\(p\)`-value `\(&lt; 0{,}05\)`, on **rejette** `\(H_0\)` et on conclut à l'hétéroscédasticité.
+
+--
+
+* Intuition : un `\(R^2\)` élevé dans la régression auxiliaire signifie que les `\(x\)` prédisent la taille des erreurs.
+
+---
+
+# Breusch-Pagan dans R
+
+On reprend les modèles estimés sur les données simulées de la diapositive sur l'homoscédasticité :
+
+
+``` r
+mod_homo   &lt;- lm(y ~ x, data = homo)     # erreurs de variance constante
+mod_hetero &lt;- lm(y ~ x, data = hetero)   # erreurs de variance croissante avec x
+```
+
+--
+
+
+``` r
+bptest(mod_homo)
+```
+
+```
+## 
+## 	studentized Breusch-Pagan test
+## 
+## data:  mod_homo
+## BP = 1.4233, df = 1, p-value = 0.2329
+```
+
+``` r
+bptest(mod_hetero)
+```
+
+```
+## 
+## 	studentized Breusch-Pagan test
+## 
+## data:  mod_hetero
+## BP = 33.249, df = 1, p-value = 8.107e-09
+```
+
+---
+
+# Breusch-Pagan : interprétation
+
+
+
+Modèle | LM | `\(p\)`-value | Décision
+:-- | :--: | :--: | :--
+Homoscédastique | 1.42 | 0.23 | On ne rejette pas `\(H_0\)`
+Hétéroscédastique | 33.25 | 8.1e-09 | **On rejette `\(H_0\)`**
+
+--
+
+Vérification « à la main » : `\(LM = n \times R^2\)` de la régression auxiliaire
+
+
+``` r
+aux &lt;- lm(resid(mod_hetero)^2 ~ x, data = hetero)
+LM  &lt;- nrow(hetero) * summary(aux)$r.squared
+c(LM = LM, p_value = pchisq(LM, df = 1, lower.tail = FALSE))
+```
+
+```
+##           LM      p_value 
+## 3.324918e+01 8.107396e-09
+```
+
+.footnote[`bptest()` calcule par défaut la version « studentisée » (Koenker), identique à `\(n \times R^2\)` et plus robuste à la non-normalité.]
+
+---
+
+# Que faire si on rejette H0 ?
+
+* Les `\(\widehat{\beta_j}\)` restent **sans biais** (H1 à H4 suffisent), mais les `\(se(\widehat{\beta_j})\)` habituels sont **faux** : les tests `\(t\)` et les intervalles de confiance sont donc invalides.
+
+--
+
+* Solution : des **erreurs standards robustes à l'hétéroscédasticité** (White / HC).
+
+
+``` r
+coeftest(mod_hetero)                                            # erreurs standards classiques
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept) 1.977958   0.336512  5.8778  2.65e-08 ***
+## x           1.531618   0.058046 26.3864 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+``` r
+coeftest(mod_hetero, vcov = vcovHC(mod_hetero, type = "HC1"))   # erreurs standards robustes
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept) 1.977958   0.227191  8.7062 5.699e-15 ***
+## x           1.531618   0.066364 23.0792 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+--
+
+* Les coefficients sont **identiques** ; seules les erreurs standards (et donc les `\(t\)` et les `\(p\)`-values) changent.
+
+---
+
+# Limites du test de Breusch-Pagan
+
+* Il détecte uniquement une hétéroscédasticité **linéaire** dans les `\(x\)` : un test non significatif ne prouve pas l'homoscédasticité.
+
+--
+
+* Avec un **grand échantillon**, même une hétéroscédasticité négligeable peut être « significative ».
+
+--
+
+* Il faut toujours **combiner** le test et le **graphique** des résidus.
+
+--
+
+* En pratique, beaucoup d'économistes utilisent directement des erreurs standards robustes, sans passer par le test.
+
+---
 
 class: title-slide-final, middle
 background-image: url(../img/logo/namur-logo.png)
@@ -483,9 +889,9 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
-| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;] | Discord |
-| &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+| .Namurgreen[&lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;]   | jeremy.donascimento@unamur.be     |
+| .Namurgreen[&lt;a href="https://discord.gg/RcdCRFBcc"&gt;&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;]                   | Discord                           |
+| .Namurgreen[&lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;] | Slides                         |
 
 
 

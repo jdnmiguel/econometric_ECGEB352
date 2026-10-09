@@ -958,40 +958,7 @@ etable(reg_simple_math, reg_gender_math, reg_simple_read,reg_gender_read,
 
 
 ---
-# Mise en forme d'un tableau de régression (HTML)
 
-```{r, echo=FALSE, results='asis'}
-library(fixest)
-reg_simple_math <- feols(math ~ small, data = star_df)
-reg_gender_math <- feols(math ~ small + gender, data = star_df)
-reg_simple_read <- feols(read ~ small, data = star_df)
-reg_gender_read <- feols(read ~ small + gender, data = star_df)
-
-
-library(kableExtra)
-
-tab <- etable(
-  reg_simple_math, reg_gender_math, reg_simple_read, reg_gender_read,
-  headers = c("Math score", "Math score", "Reading score", "Reading score"),
-  dict = c(
-    "(Intercept)" = "Intercept",
-    "smallTRUE"   = "Small class",
-    "gendermale"  = "Male gender"
-  ),
-  keep = c("Intercept", "Small class", "Male gender"),
-  fitstat = ~n + r2,
-  digits = 2,
-  fixef_sizes = FALSE,
-  se.below = TRUE,
-  depvar = FALSE
-)
-
-as.data.frame(tab) %>%
-  kbl(align = "c", col.names = NULL) %>%
-  kable_styling(full_width = FALSE, position = "center")
-```
-
----
 
 # Reading a regression table
 
@@ -1056,13 +1023,13 @@ df %>%
 ```
 ]
 
-* Each column corresponds to a regression. For the first regression we have: 
-    * the **name of the outcome variable** in <span style="color: #2F528F;">blue</span>
-    * the **estimated coefficient associated to being in a small class** $\hat{\beta_\textrm{small}}$ in <span style="color: #70AD47;">green</span>
-    * its **estimated standard error** in <span style="color: #FFC000;">yellow</span>
-    * the **number of observations** in <span style="color: #7030A0;">purple</span>
-    * the **R-squared** in <span style="color: #C00000;">red</span>
-    * interpretation of the stars at the bottom
+* Chaque colonne correspond à une régression. Pour la 1ère on a : 
+    * le **nom de l'outcome** dans <span style="color: #2F528F;">blue</span>
+    * la **valeur estimée** $\hat{\beta_\textrm{small}}$ dans <span style="color: #70AD47;">green</span>
+    * l'**estimation de l'écart type** dans <span style="color: #FFC000;">yellow</span>
+    * le **nombre d'observations** dans <span style="color: #7030A0;">purple</span>
+    * le **R²** dans <span style="color: #C00000;">red</span>
+    * l'interprétation des étoiles en bas
 
 
 ---
