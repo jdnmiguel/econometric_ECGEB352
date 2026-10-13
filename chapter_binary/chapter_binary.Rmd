@@ -1,0 +1,1470 @@
+---
+title: "Econométrie"
+subtitle: "Variable Dépendante Binaire : MPL, Logit et Probit"
+author: "Jérémy Do Nascimento Miguel"
+lang: fr
+date: "Université de Namur </br> `r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    # chakra: "https://cdnjs.cloudflare.com/ajax/libs/remark/0.14.0/remark.min.js"
+    lib_dir: libs
+    css: [default, "../css/scpo.css", "../css/scpo-fonts.css"]
+    nature:
+      beforeInit: ["../js/ru_xaringan.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: "../libs/partials/header.html"
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+```{r setup, include=FALSE,warning=FALSE,message=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  dev = "svg",
+  cache = TRUE,
+  fig.align = "center"
+  #fig.width = 11,
+  #fig.height = 5
+)
+
+library(emo)
+library(countdown)
+library(broom)
+library(sandwich)
+library(lmtest)
+library(tidyverse)
+library(ggplot2)
+
+# données (packages R)
+data("mroz", package = "wooldridge")
+data("HMDA", package = "AER")
+
+# countdown style
+countdown(
+  color_border              = "forestgreen",
+  color_text                = "black",
+  color_running_background  = "forestgreen",
+  color_running_text        = "white",
+  color_finished_background = "white",
+  color_finished_text       = "forestgreen",
+  color_finished_border     = "forestgreen"
+)
+
+# fixer la graine aléatoire
+set.seed(1234)
+```
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# Rappel du cours précédent
+
+* Régression sur discontinuité (RDD) : exploiter une règle d'assignation au traitement
+
+* Jusqu'ici, la variable que l'on cherche à expliquer, $Y$, était ***continue*** : score en maths, taux de mortalité, emploi par établissement, salaire...
+
+--
+
+## Aujourd'hui : ***variable dépendante binaire***
+
+* Que faire lorsque $Y$ ne prend que deux valeurs : ***0*** ou ***1*** ?
+
+* Pourquoi les ***MCO*** (OLS) posent-ils des problèmes dans ce cas ?
+
+* Trois modèles : le ***modèle de probabilité linéaire (MPL)***, le ***logit*** et le ***probit***
+
+* *Applications empiriques* : participation des femmes au marché du travail et refus de prêts hypothécaires (données de packages `R`)
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# La variable dépendante binaire
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# Qu'est-ce qu'une variable binaire ?
+
+> ***Variable binaire*** (ou ***dummy***, ***indicatrice***, ***dichotomique***) : variable qui ne prend que ***deux valeurs***, codées $0$ et $1$.
+
+--
+
+$$
+Y_i = \begin{cases}
+                    1 \textrm{ si l'événement d'intérêt se réalise pour l'individu $i$} \\\\
+                    0 \textrm{ sinon}
+      \end{cases}
+$$
+
+--
+
+* Par convention, $Y = 1$ correspond à l'***événement d'intérêt*** (le « succès »).
+
+* Le codage $0/1$ n'est pas anodin : il donne à la moyenne de $Y$ une interprétation très simple (voir plus loin).
+
+--
+
+* Les deux modalités sont ***mutuellement exclusives*** : un individu est soit dans la catégorie $1$, soit dans la catégorie $0$.
+
+---
+
+# Des exemples en économie
+
+Beaucoup de questions économiques sont des questions de type « *oui / non* » :
+
+--
+
+* Une femme *participe-t-elle* au marché du travail ?
+
+--
+
+* Un ménage *achète-t-il* un logement ? Un client *souscrit-il* à un produit ?
+
+--
+
+* Une demande de prêt est-elle *refusée* ? Un emprunteur *fait-il défaut* ?
+
+--
+
+* Un étudiant *obtient-il* son diplôme ? Un individu est-il *au chômage* ?
+
+--
+
+* Une entreprise *exporte-t-elle* ? Une personne *vote-t-elle* ?
+
+--
+
+`r emo::ji("warning")` Il s'agit d'une ***variable dépendante*** binaire, à ne pas confondre avec les variables explicatives binaires (dummies) que nous avons déjà utilisées comme régresseurs.
+
+---
+
+# Variable binaire : explicative ou dépendante ?
+
+.pull-left[
+***Dummy comme variable explicative*** (déjà vu)
+
+$$Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i$$
+
+* $Y$ est continue.
+
+* $\beta_1$ = différence de moyenne de $Y$ entre les groupes $D = 1$ et $D = 0$.
+
+* Les MCO fonctionnent très bien (RCT, DiD, RDD...).
+]
+
+--
+
+.pull-right[
+***Dummy comme variable dépendante*** (aujourd'hui)
+
+$$D_i = \beta_0 + \beta_1 X_i + \varepsilon_i \; ???$$
+
+* $Y \in \{0, 1\}$ n'est pas continue.
+
+* Que signifie « prédire » un $0$ ou un $1$ ?
+
+* Les MCO sont-ils encore appropriés ?
+]
+
+---
+
+# Propriétés d'une variable binaire
+
+Soit $Y$ une variable binaire et $p = \mathbb{P}(Y = 1)$.
+
+--
+
+* ***Espérance*** : la moyenne d'une variable binaire est la ***proportion*** de $1$ :
+
+$$\mathbb{E}(Y) = 1 \times \mathbb{P}(Y = 1) + 0 \times \mathbb{P}(Y = 0) = p$$
+
+--
+
+* ***Variance*** : elle est entièrement déterminée par la moyenne :
+
+$$\mathbb{V}(Y) = p(1 - p)$$
+
+--
+
+* Conséquence : *modéliser l'espérance conditionnelle* de $Y$ revient à modéliser la ***probabilité conditionnelle*** que $Y = 1$ :
+
+$$\mathbb{E}(Y | X) = \mathbb{P}(Y = 1 | X)$$
+
+--
+
+$\rightarrow$ Notre objectif : comprendre comment la ***probabilité*** que l'événement se réalise ***varie avec $X$***.
+
+---
+
+# Premier exemple : participation des femmes au marché du travail
+
+* Données de [Mroz (1987)](https://www.jstor.org/stable/1911029) : 753 femmes mariées, données de panel américain (PSID) de 1975.
+
+* Disponibles dans le package `R` `wooldridge`, jeu de données `mroz`.
+
+--
+
+.pull-left[
+```{r, eval = FALSE}
+# installer le package (une seule fois)
+install.packages("wooldridge")
+
+# charger les données
+data("mroz", package = "wooldridge")
+```
+]
+
+--
+
+.pull-right[
+```{r}
+mroz %>%
+  select(inlf, educ, exper, age, kidslt6, nwifeinc) %>%
+  head()
+```
+]
+
+---
+
+# Les variables de `mroz`
+
+Variable | Définition
+:--|:--
+`inlf` | ***Variable dépendante*** : $1$ si la femme a travaillé en 1975, $0$ sinon
+`educ` | Années d'éducation
+`exper` | Années d'expérience sur le marché du travail
+`age` | Âge de la femme (en années)
+`kidslt6` | Nombre d'enfants de moins de 6 ans
+`kidsge6` | Nombre d'enfants de 6 à 18 ans
+`nwifeinc` | Revenu du ménage hors revenu de la femme (en milliers de dollars)
+
+--
+
+***Question*** : que pensez-vous de l'effet attendu de chaque variable sur la probabilité de travailler ?
+
+---
+
+# La variable `inlf` : proportion de femmes actives
+
+.pull-left[
+```{r}
+table(mroz$inlf)
+
+mean(mroz$inlf)
+```
+
+La moyenne de `inlf` est la ***proportion*** de femmes qui ont travaillé : `r round(100 * mean(mroz$inlf), 1)` %.
+]
+
+--
+
+.pull-right[
+```{r, echo = FALSE, fig.height = 4.5, fig.width = 5}
+mroz %>%
+  mutate(statut = ifelse(inlf == 1, "Active (1)", "Inactive (0)")) %>%
+  ggplot(aes(x = statut, fill = statut)) +
+  geom_bar(width = 0.7) +
+  scale_fill_viridis_d() +
+  labs(x = NULL, y = "Effectif") +
+  theme_bw(base_size = 16) +
+  theme(legend.position = "none")
+```
+]
+
+---
+
+# Que voulons-nous modéliser ?
+
+```{r, echo = FALSE, fig.height = 4.75, fig.width = 8}
+plot_mroz <- mroz %>%
+  ggplot(aes(x = educ, y = inlf)) +
+  geom_jitter(height = 0.03, width = 0.2, alpha = 0.4, size = 2) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  labs(x = "Années d'éducation",
+       y = "Participation au marché du travail (inlf)") +
+  theme_bw(base_size = 14)
+plot_mroz
+```
+
+--
+
+Les points se répartissent sur ***deux lignes*** ($0$ et $1$). On veut décrire comment la ***probabilité*** d'être sur la ligne $1$ évolue avec l'éducation.
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Le modèle de probabilité linéaire (MPL)
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# Point de départ : retour aux MCO
+
+* Modèle de régression linéaire multiple, estimé par ***MCO*** :
+
+$$Y_i = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki} + u_i$$
+
+--
+
+* Lorsque $Y$ est ***continue***, on interprète $\beta_j$ comme la ***variation de $Y$*** associée à une variation d'une unité de $X_j$, toutes choses égales par ailleurs :
+
+$$\beta_j = \frac{\Delta Y}{\Delta X_j}$$
+
+--
+
+* Lorsque $Y$ est ***binaire***, cette interprétation n'a plus de sens : $Y$ ne peut valoir que $0$ ou $1$, donc elle ne peut pas varier de « $\beta_j$ unités » de façon continue.
+
+--
+
+* Mais l'interprétation reste possible si l'hypothèse ***MLR.4*** (*moyenne conditionnelle nulle*) est vérifiée :
+
+$$\mathbb{E}(u_i | X_{1i}, \dots, X_{ki}) = 0$$
+
+--
+
+* Dans ce cas, $\mathbb{E}(Y_i | X_i) = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki}$ : $\beta_j$ mesure la variation de l'***espérance conditionnelle*** de $Y$, et non de $Y$ lui-même. Or, pour une variable binaire, l'espérance de $Y$ est une ***probabilité***.
+
+
+
+---
+
+
+# Le modèle de probabilité linéaire (MPL)
+
+* L'idée la plus simple : appliquer les ***MCO*** directement à la variable binaire.
+
+$$Y_i = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki} + \varepsilon_i$$
+
+--
+
+* Comme $\mathbb{E}(Y | X) = \mathbb{P}(Y = 1 | X)$, on obtient :
+
+$$\mathbb{P}(Y_i = 1 | X_i) = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki}$$
+
+--
+
+* Ce modèle est appelé ***modèle de probabilité linéaire*** (MPL, ou *LPM* en anglais) car la probabilité est une fonction ***linéaire*** des variables explicatives.
+
+--
+
+* ***Interprétation de $\beta_j$*** : une augmentation d'une unité de $X_j$ est associée à une variation de la probabilité que $Y = 1$ de $\beta_j$, soit $100 \times \beta_j$ ***points de pourcentage***, toutes choses égales par ailleurs.
+
+---
+
+# MPL : estimation avec `lm()`
+
+Régression simple de la participation sur l'éducation :
+
+$$inlf_i = \beta_0 + \beta_1 educ_i + \varepsilon_i$$
+
+.pull-left[
+```{r, eval = FALSE}
+lpm_simple <- lm(inlf ~ educ, data = mroz)
+
+library(broom)
+tidy(lpm_simple)
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+lpm_simple <- lm(inlf ~ educ, data = mroz)
+
+tidy(lpm_simple)
+```
+]
+
+--
+
+***Interprétation :*** une année d'éducation supplémentaire est associée à une hausse de la probabilité de travailler de `r round(100 * coef(lpm_simple)["educ"], 1)` points de pourcentage en moyenne.
+
+---
+
+# MPL : représentation graphique
+
+```{r, echo = FALSE, fig.height = 4.75, fig.width = 8}
+plot_mroz +
+  geom_smooth(method = "lm", se = FALSE, colour = "#d90502", size = 1.5)
+```
+
+--
+
+La droite de régression donne, pour chaque niveau d'éducation, la ***probabilité prédite*** de travailler.
+
+---
+
+# MPL : régression multiple
+
+On ajoute des variables de contrôle :
+
+```{r, eval = FALSE}
+lpm <- lm(inlf ~ educ + exper + age + kidslt6 + kidsge6 + nwifeinc,
+          data = mroz)
+tidy(lpm)
+```
+
+```{r, echo = FALSE}
+lpm <- lm(inlf ~ educ + exper + age + kidslt6 + kidsge6 + nwifeinc,
+          data = mroz)
+tidy(lpm) %>% mutate(across(where(is.numeric), ~ round(.x, 4)))
+```
+
+--
+
+* Un enfant de moins de 6 ans supplémentaire est associé à une ***baisse*** de la probabilité de travailler de `r round(-100 * coef(lpm)["kidslt6"], 1)` points de pourcentage.
+
+---
+
+class:inverse
+
+# Exercice 1 : le MPL sur `mroz`
+
+`r countdown(minutes = 10, top = 0)`
+
+1. Chargez les données avec `data("mroz", package = "wooldridge")`. Quelle proportion des femmes de l'échantillon a travaillé en 1975 ?
+
+1. Estimez le modèle de probabilité linéaire : `inlf` sur `educ`, `exper`, `age`, `kidslt6`, `kidsge6` et `nwifeinc`. Interprétez les coefficients de `educ` et de `kidslt6`.
+
+1. Calculez les probabilités prédites avec `fitted(lpm)`. Quelles sont les valeurs minimale et maximale ? Que remarquez-vous ?
+
+1. Combien de probabilités prédites sont inférieures à $0$ ou supérieures à $1$ ?
+
+---
+
+# Problème n°1 : des « probabilités » hors de $[0, 1]$
+
+* Une probabilité est comprise entre $0$ et $1$. Or une droite est ***non bornée*** : tôt ou tard elle sort de l'intervalle.
+
+--
+
+.pull-left[
+```{r}
+p_hat <- fitted(lpm)
+
+range(p_hat)
+
+sum(p_hat < 0 | p_hat > 1)
+```
+]
+
+--
+
+.pull-right[
+Pour `mroz`, `r sum(p_hat < 0 | p_hat > 1)` des 753 femmes (soit `r round(100 * mean(p_hat < 0 | p_hat > 1), 1)` %) ont une « probabilité » prédite ***en dehors de $[0, 1]$***.
+]
+
+--
+
+<br>
+
+* Que signifie une probabilité de travailler de $-0.15$ ou de $1.2$ ? Ces prédictions n'ont ***aucun sens***.
+
+---
+
+# Illustration avec des données simulées
+
+Imaginons que la ***vraie*** probabilité suive une courbe en « S » (courbe logistique) :
+
+```{r, echo = FALSE, fig.height = 3.5, fig.width = 10}
+set.seed(1234)
+n <- 300
+x <- runif(n, -3, 3)
+p_vraie <- plogis(-0.5 + 1.8 * x)
+y <- rbinom(n, size = 1, prob = p_vraie)
+sim <- tibble(x = x, y = y)
+
+plot_sim <- ggplot(sim, aes(x = x, y = y)) +
+  geom_hline(yintercept = c(0, 1), linetype = "longdash", colour = "grey40") +
+  geom_jitter(height = 0.03, alpha = 0.5, size = 2) +
+  stat_function(fun = function(x) plogis(-0.5 + 1.8 * x),
+                colour = "#d90502", size = 1.5) +
+  coord_cartesian(ylim = c(-0.3, 1.3)) +
+  labs(x = "Variable explicative X", y = "Y") +
+  theme_bw(base_size = 14)
+plot_sim +
+  annotate("label", x = -2.2, y = 0.35, label = "Vraie probabilité", colour = "#d90502", size = 5)
+```
+
+---
+
+# Illustration avec des données simulées
+
+Imaginons que la ***vraie*** probabilité suive une courbe en « S » (courbe logistique) :
+
+```{r, echo = FALSE, fig.height = 3.5, fig.width = 10}
+plot_sim +
+  geom_smooth(method = "lm", se = FALSE, colour = "#027D83", size = 1.5, fullrange = TRUE) +
+  annotate("label", x = -2.2, y = 0.35, label = "Vraie probabilité", colour = "#d90502", size = 5) +
+  annotate("label", x = 1.6, y = 0.3, label = "Droite MCO (MPL)", colour = "#027D83", size = 5)
+```
+
+--
+
+La droite MCO ***dépasse*** $1$ et passe sous $0$, et elle ***s'éloigne de la vraie probabilité*** aux extrémités : la forme linéaire est une mauvaise approximation.
+
+---
+
+# Problème n°2 : l'effet marginal est constant
+
+* Dans le MPL, l'effet d'une unité de $X$ est ***toujours le même*** : $\beta_1$, quel que soit le niveau de $X$
+
+--
+
+* Est-ce réaliste ?
+
+  * Passer de $0.50$ à $0.55$ de probabilité de travailler : plausible.
+
+  * Mais passer de $0.98$ à $1.03$ ? Impossible : la probabilité est bornée par $1$.
+
+--
+
+* Quand la probabilité est proche de $0$ ou de $1$, on s'attend à ce que l'effet de $X$ ***s'atténue*** (on « sature »).
+
+--
+
+$\rightarrow$ Si la vraie relation est non linéaire, les effets marginaux estimés par le MPL ne sont qu'une ***approximation*** de la réalité, de moins en moins bonne loin du « centre » des données.
+
+---
+
+# Problème n°3 : la forme des erreurs
+
+Comme $Y \in \{0, 1\}$, le terme d'erreur $\varepsilon_i = Y_i - \mathbb{P}(Y_i = 1 | X_i)$ ne peut prendre que ***deux valeurs***. Notons $p_i = \mathbb{P}(Y_i = 1 | X_i)$ :
+
+--
+
+$$
+\varepsilon_i = \begin{cases}
+                    1 - p_i \textrm{ avec une probabilité } p_i \\\\
+                    {-}p_i \textrm{ avec une probabilité } 1 - p_i
+      \end{cases}
+$$
+
+--
+
+* Les erreurs ne suivent donc ***pas une loi normale*** (une loi normale est continue !).
+
+---
+
+# Problème n°3 : la forme des erreurs
+
+
+* Les résidus du MPL forment deux « lignes » en fonction des valeurs prédites :
+
+```{r, echo = FALSE, fig.height = 3.5, fig.width = 8}
+tibble(predit = fitted(lpm), residu = resid(lpm), inlf = factor(mroz$inlf)) %>%
+  ggplot(aes(x = predit, y = residu, colour = inlf)) +
+  geom_point(alpha = 0.6) +
+  scale_colour_viridis_d(labels = c("0" = "inlf = 0", "1" = "inlf = 1")) +
+  labs(x = "Valeurs prédites", y = "Résidus", colour = NULL) +
+  theme_bw(base_size = 14) +
+  theme(legend.position = "top")
+```
+
+---
+
+# Problème n°4 : hétéroscédasticité
+
+* Rappel : $\mathbb{V}(Y | X) = p(X)\big(1 - p(X)\big)$ pour une variable binaire.
+
+--
+
+* Comme $p(X)$ dépend de $X$, la ***variance des erreurs dépend de $X$*** :
+
+$$\mathbb{V}(\varepsilon_i | X_i) = p_i (1 - p_i) = (\beta_0 + \beta_1 X_i)(1 - \beta_0 - \beta_1 X_i)$$
+
+--
+
+* Le MPL est donc ***toujours hétéroscédastique*** (sauf cas trivial où $\beta_1 = 0$) : l'hypothèse d'homoscédasticité est violée par construction !
+
+--
+
+* Conséquence : les ***écarts types*** usuels des MCO sont ***faux*** $\rightarrow$ les tests $t$, les valeurs-p et les intervalles de confiance ne sont pas fiables.
+
+--
+
+`r emo::ji("point_right")` Bonne nouvelle : ce problème se corrige facilement avec des ***écarts types robustes*** à l'hétéroscédasticité.
+
+---
+
+# Quels « biais » exactement ?
+
+Que cause l'utilisation des MCO avec une variable dépendante binaire ?
+
+Problème | Conséquence
+:--|:--
+Probabilités prédites hors de $[0, 1]$ | Prédictions sans signification
+Effet marginal constant (forme linéaire) | Approximation de la vraie relation, qui est biaisée si elle est non linéaire
+Hétéroscédasticité | ***Écarts types faux*** : tests et intervalles de confiance invalides
+Erreurs non normales | Inférence valable seulement ***asymptotiquement*** (grands échantillons)
+
+--
+
+`r emo::ji("warning")` Si $\mathbb{E}(Y | X)$ est réellement linéaire, les coefficients MCO restent ***sans biais*** et convergents : le problème porte surtout sur les ***écarts types*** et sur la ***plausibilité*** du modèle linéaire sur tout le domaine de $X$.
+
+---
+
+# Correction : écarts types robustes
+
+Avec `lm()`, les écarts types usuels supposent l'homoscédasticité. On utilise les écarts types robustes (*Eicker-Huber-White*) :
+
+```{r, eval = FALSE}
+library(sandwich)
+library(lmtest)
+
+coeftest(lpm, vcov = vcovHC(lpm, type = "HC1"))
+```
+
+--
+
+```{r, echo = FALSE}
+se_usuel <- coef(summary(lpm))[, "Std. Error"]
+se_robuste <- sqrt(diag(vcovHC(lpm, type = "HC1")))
+
+tibble(Variable = names(coef(lpm)),
+       Coefficient = coef(lpm),
+       `Écart type usuel` = se_usuel,
+       `Écart type robuste` = se_robuste) %>%
+  knitr::kable(format = "html", digits = 4)
+```
+
+---
+
+# Ce que le MPL fait bien
+
+* ***Simplicité*** : estimation par MCO, aucune hypothèse de distribution.
+
+* ***Interprétation directe*** : les coefficients sont des variations de probabilité (en points de pourcentage).
+
+--
+
+* ***Effets moyens proches de ceux de modèles plus complexes*** : lorsque les probabilités ne sont pas trop proches de $0$ ou de $1$, le MPL donne souvent de bonnes estimations de l'effet marginal moyen.
+
+--
+
+* Très utilisé en ***évaluation de politiques publiques*** (RCT, DiD, RDD...) : on cherche un effet moyen sur une probabilité, pas la prédiction de la probabilité de chaque individu.
+
+--
+
+* Mais pour ***prédire des probabilités*** (surtout proches de $0$ ou $1$) ou lorsque la non-linéarité compte, il vaut mieux utiliser un modèle qui respecte $0 \leq p \leq 1$ $\rightarrow$ ***logit*** et ***probit***.
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Logit et Probit
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# L'idée : une courbe en « S »
+
+* Dans le MPL, la probabilité est égale directement à un ***score*** linéaire :
+
+$$p = \beta_0 + \beta_1 X_1 + \dots + \beta_k X_k$$
+
+--
+
+* Problème : ce score peut prendre ***n'importe quelle valeur*** (négative, supérieure à $1$...), alors qu'une probabilité est toujours comprise entre $0$ et $1$.
+
+--
+
+* Solution en ***deux étapes*** :
+
+  1. Calculer un ***score*** $z = \beta_0 + \beta_1 X_1 + \dots + \beta_k X_k$, exactement comme dans une régression linéaire ;
+
+  2. ***Transformer*** ce score en probabilité grâce à une fonction $G$ :
+  $$p = G(z)$$
+
+--
+
+* $G$ est une courbe en « S » : elle « écrase » n'importe quel score $z$ en une valeur comprise entre $0$ et $1$.
+
+---
+
+# Deux choix classiques pour $G$
+
+* ***Probit*** : $G = \Phi$, la fonction de répartition de la loi ***normale*** centrée réduite.
+
+--
+
+* ***Logit*** : $G = \Lambda$, la fonction de répartition de la loi ***logistique*** :
+$$\Lambda(z) = \frac{e^z}{1 + e^z}$$
+
+--
+
+* Dans les deux cas, $G$ est une ***fonction de répartition*** : elle est croissante, proche de $0$ pour des scores très négatifs et proche de $1$ pour des scores très élevés.
+
+--
+
+* En pratique, le logit et le probit donnent des résultats ***quasi identiques***. La différence est surtout une question d'habitude selon les disciplines.
+
+---
+
+# Probit et logit : les deux courbes $G$
+
+```{r, echo = FALSE, fig.height = 4.75, fig.width = 8}
+ggplot(data.frame(z = c(-4, 4)), aes(x = z)) +
+  stat_function(fun = pnorm, aes(colour = "Probit (loi normale)"), size = 1.5) +
+  stat_function(fun = plogis, aes(colour = "Logit (loi logistique)"), size = 1.5) +
+  geom_hline(yintercept = c(0, 1), linetype = "longdash", colour = "grey40") +
+  scale_colour_manual(values = c("Probit (loi normale)" = "#027D83",
+                                 "Logit (loi logistique)" = "#d90502")) +
+  labs(x = "Score  z = β0 + β1 X1 + ... + βk Xk",
+       y = "Probabilité p = G(z)",
+       colour = NULL) +
+  theme_bw(base_size = 14) +
+  theme(legend.position = "top")
+```
+
+--
+
+Les deux courbes sont très proches : toujours entre $0$ et $1$, croissantes, et ***jamais linéaires***.
+
+---
+
+# Que fait la courbe en « S » ?
+
+```{r, echo = FALSE}
+tibble(`Score z` = -3:3,
+       `Probit : Φ(z)` = pnorm(-3:3),
+       `Logit : Λ(z)` = plogis(-3:3)) %>%
+  knitr::kable(format = "html", digits = 3)
+```
+
+--
+
+* Un score très ***négatif*** donne une probabilité proche de $0$.
+
+* Un score égal à ***zéro*** donne une probabilité de $0.5$.
+
+* Un score très ***positif*** donne une probabilité proche de $1$.
+
+--
+
+$\rightarrow$ Un score $z > 0$ signifie que l'événement est ***plus probable que non*** ($p > 0.5$).
+
+---
+
+# Estimation : le maximum de vraisemblance
+
+* Contrairement au MPL, le logit et le probit ne peuvent pas être estimés par MCO : le modèle est ***non linéaire***.
+
+--
+
+* On utilise le ***maximum de vraisemblance*** (MV). ***Intuition*** : on cherche les valeurs des $\beta$ pour lesquelles le modèle attribue une ***probabilité élevée à ce qui s'est réellement passé*** dans l'échantillon.
+
+  * si la femme ***travaille*** ($Y = 1$), le modèle devrait prédire une probabilité $p$ ***élevée*** ;
+
+  * si elle ***ne travaille pas*** ($Y = 0$), le modèle devrait prédire une probabilité $p$ ***faible*** (donc $1 - p$ élevée).
+
+--
+
+* La ***vraisemblance*** multiplie ces probabilités sur tous les individus de l'échantillon. On choisit les $\beta$ qui la rendent la plus ***grande*** possible.
+
+--
+
+* MCO : on *minimise* la somme des carrés des erreurs. MV : on *maximise* la probabilité d'avoir observé notre échantillon.
+
+--
+
+* Pas de formule explicite : le calcul est fait ***numériquement*** par l'ordinateur. Sous `R` :
+  * `glm(..., family = binomial(link = "logit"))`
+  * `glm(..., family = binomial(link = "probit"))`
+
+---
+
+# Estimation sous `R` : logit et probit
+
+```{r}
+logit  <- glm(inlf ~ educ + exper + age + kidslt6 + kidsge6 + nwifeinc,
+              data = mroz, family = binomial(link = "logit"))
+
+probit <- glm(inlf ~ educ + exper + age + kidslt6 + kidsge6 + nwifeinc,
+              data = mroz, family = binomial(link = "probit"))
+```
+
+--
+
+.pull-left[
+***Logit***
+```{r}
+tidy(logit) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+```
+]
+
+.pull-right[
+***Probit***
+```{r}
+tidy(probit) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+```
+]
+
+---
+
+# Comparaison des coefficients : MPL, logit et probit
+
+```{r, echo = FALSE}
+tibble(Variable = names(coef(lpm)),
+       MPL = coef(lpm),
+       Logit = coef(logit),
+       Probit = coef(probit)) %>%
+  knitr::kable(format = "html", digits = 3)
+```
+
+--
+
+* Les ***signes*** et la ***significativité*** sont similaires dans les trois modèles.
+
+* Mais les ***ordres de grandeur*** diffèrent : les coefficients du logit et du probit ne sont ***pas directement comparables*** à ceux du MPL !
+
+--
+
+* ***Pourquoi ?*** Dans le MPL, $\beta_j$ est une variation de ***probabilité***. Dans le logit et le probit, $\beta_j$ est une variation du ***score $z$***.
+
+---
+
+# Comment le modèle calcule-t-il une probabilité ?
+
+Prenons une femme de 12 ans d'éducation, 10 ans d'expérience, âgée de 40 ans, sans enfant de moins de 6 ans, avec un enfant de 6 à 18 ans, et un revenu du ménage hors le sien de 20 000 dollars.
+
+--
+
+***Étape 1*** : on calcule son ***score*** $z$ avec les coefficients du probit.
+
+```{r}
+b <- coef(probit)
+
+z <- unname(b["(Intercept)"] + b["educ"] * 12 + b["exper"] * 10 +
+            b["age"] * 40 + b["kidslt6"] * 0 + b["kidsge6"] * 1 +
+            b["nwifeinc"] * 20)
+z
+```
+
+--
+
+***Étape 2*** : on transforme le score en ***probabilité*** avec $G = \Phi$ (`pnorm()` sous `R`).
+
+```{r}
+pnorm(z)
+```
+
+---
+
+# Comment le modèle calcule-t-il une probabilité ?
+
+On obtient exactement le même résultat avec `predict()` : c'est ce que fait `R` en coulisses.
+
+```{r}
+predict(probit, type = "response",
+        newdata = data.frame(educ = 12, exper = 10, age = 40,
+                             kidslt6 = 0, kidsge6 = 1, nwifeinc = 20))
+```
+
+--
+
+* Cette femme a une probabilité de travailler de `r round(100 * pnorm(z), 1)` % selon le modèle probit.
+
+--
+
+* Si l'on change une variable (par exemple `educ` passe de $12$ à $13$), le score $z$ change de $\beta_{educ}$... mais de ***combien*** change la probabilité ? Cela dépend de l'endroit où l'on se trouve sur la courbe en « S ».
+
+---
+
+# Comment interpréter les coefficients ?
+
+* ***Signe*** de $\beta_j$ :
+
+  * $\beta_j > 0$ : quand $X_j$ augmente, le score $z$ ***augmente*** et, comme $G$ est croissante, la probabilité que $Y = 1$ ***augmente*** ;
+
+  * $\beta_j < 0$ : $X_j$ ***diminue*** la probabilité que $Y = 1$.
+
+--
+
+* ***Significativité*** : comme pour les MCO, on regarde la statistique $z$ et la valeur-p (test que $\beta_j = 0$).
+
+--
+
+* ***Ampleur*** : $\beta_j$ est la variation du ***score*** $z$, ***pas*** la variation de la probabilité.
+
+--
+
+`r emo::ji("warning")` Le coefficient seul ne dit pas de combien la probabilité change. Pour cela, il faut tenir compte de la ***forme de la courbe en « S »***.
+
+---
+
+# Un même effet sur le score, des effets différents sur la probabilité
+
+```{r, echo = FALSE, fig.height = 3.5, fig.width = 8}
+d1 <- plogis(-2) - plogis(-3)
+d2 <- plogis(1) - plogis(0)
+
+ggplot(data.frame(z = c(-4, 4)), aes(x = z)) +
+  stat_function(fun = plogis, colour = "#d90502", size = 1.5) +
+  annotate("segment", x = -3, xend = -2, y = plogis(-3), yend = plogis(-3),
+           linetype = "dashed") +
+  annotate("segment", x = -2, xend = -2, y = plogis(-3), yend = plogis(-2),
+           colour = "#027D83", size = 1.5) +
+  annotate("text", x = -1.8, y = (plogis(-3) + plogis(-2)) / 2, hjust = 0,
+           label = paste0("+ ", round(100 * d1), " points de %"),
+           colour = "#027D83", size = 5) +
+  annotate("segment", x = 0, xend = 1, y = plogis(0), yend = plogis(0),
+           linetype = "dashed") +
+  annotate("segment", x = 1, xend = 1, y = plogis(0), yend = plogis(1),
+           colour = "#027D83", size = 1.5) +
+  annotate("text", x = 1.2, y = (plogis(0) + plogis(1)) / 2, hjust = 0,
+           label = paste0("+ ", round(100 * d2), " points de %"),
+           colour = "#027D83", size = 5) +
+  labs(x = "Score z", y = "Probabilité p = G(z)") +
+  theme_bw(base_size = 14)
+```
+
+--
+
+Le score augmente de $1$ dans les deux cas. Mais la probabilité augmente ***beaucoup plus au milieu de la courbe*** (là où elle est raide) qu'en bas (là où elle est plate).
+
+---
+
+# Effet marginal = pente de la courbe × $\beta_j$
+
+* L'***effet marginal*** de $X_j$ est la variation de la ***probabilité*** quand $X_j$ augmente d'une unité (toutes choses égales par ailleurs) :
+
+$$\text{effet marginal de } X_j \approx g(z) \times \beta_j$$
+
+où $g(z)$ est la ***pente de la courbe en « S »*** au score $z$ de l'individu.
+
+--
+
+  * probit : $g(z) = \phi(z)$ (densité de la loi normale)
+
+  * logit : $g(z) = \Lambda(z)\big(1 - \Lambda(z)\big)$
+
+--
+
+* ***Au milieu de la courbe*** ($p$ proche de $0.5$) : la pente est forte $\rightarrow$ ***grand*** effet marginal.
+
+* ***Aux extrémités*** ($p$ proche de $0$ ou de $1$) : la pente est faible $\rightarrow$ ***petit*** effet marginal.
+
+--
+
+$\rightarrow$ L'effet marginal ***dépend de l'individu*** (via son score $z$) : c'est la grande différence avec le MPL, où il est constant.
+
+---
+
+# Effets marginaux : quelle valeur choisir ?
+
+L'effet marginal varie d'un individu à l'autre. On résume généralement par une seule valeur :
+
+--
+
+* ***Effet marginal moyen*** (*Average Marginal Effect*, AME) : on calcule l'effet marginal de ***chaque individu*** de l'échantillon, puis on fait la ***moyenne*** :
+
+$$AME_j = \frac{1}{n}\sum_{i=1}^{n} g(z_i) \times \hat\beta_j$$
+
+--
+
+* ***Effet marginal à la moyenne*** (*Marginal Effect at the Mean*, MEM) : effet marginal calculé pour un individu « moyen » (toutes ses caractéristiques égales à la moyenne).
+
+--
+
+* Pour une ***variable binaire*** $D$, on ne dérive pas : on calcule la ***différence de probabilités prédites*** quand $D$ passe de $0$ à $1$ (autres variables inchangées).
+
+--
+
+Nous utiliserons l'***AME***, le plus courant en pratique.
+
+---
+
+# L'effet marginal moyen pas à pas : l'éducation (probit)
+
+```{r}
+# Étape 1 : le score z de chaque femme
+z <- predict(probit, type = "link")
+
+# Étape 2 : la pente de la courbe en S pour chaque femme
+pente <- dnorm(z)
+head(pente)
+```
+
+--
+
+```{r}
+# Étape 3 : AME = pente moyenne × coefficient de l'éducation
+mean(pente) * coef(probit)["educ"]
+```
+
+--
+
+* En moyenne, une année d'éducation supplémentaire augmente la probabilité de travailler d'environ `r round(100 * mean(pente) * coef(probit)["educ"], 1)` points de pourcentage.
+
+---
+
+# Calcul de l'effet marginal moyen pour toutes les variables
+
+```{r}
+# AME de toutes les variables : pente moyenne g(z) × coefficient
+ame_glm <- function(modele, densite) {
+  z <- predict(modele, type = "link")   # score z de chaque individu
+  mean(densite(z)) * coef(modele)
+}
+
+ame_logit  <- ame_glm(logit,  dlogis)   # pente de la courbe logistique
+ame_probit <- ame_glm(probit, dnorm)    # pente de la courbe normale
+```
+
+--
+
+```{r, echo = FALSE}
+tibble(Variable = names(coef(lpm))[-1],
+       MPL = coef(lpm)[-1],
+       `AME logit` = ame_logit[-1],
+       `AME probit` = ame_probit[-1]) %>%
+  knitr::kable(format = "html", digits = 4)
+```
+
+--
+
+Les effets marginaux moyens du logit et du probit sont ***très proches des coefficients du MPL*** !
+
+---
+
+# Interprétation des effets marginaux moyens
+
+```{r, echo = FALSE}
+tibble(Variable = names(coef(lpm))[-1],
+       MPL = coef(lpm)[-1],
+       `AME logit` = ame_logit[-1],
+       `AME probit` = ame_probit[-1]) %>%
+  filter(Variable %in% c("educ", "kidslt6")) %>%
+  knitr::kable(format = "html", digits = 4)
+```
+
+--
+
+* ***Éducation*** : une année d'éducation supplémentaire augmente en moyenne la probabilité de travailler d'environ `r round(100 * ame_probit["educ"], 1)` points de pourcentage (probit).
+
+--
+
+* ***Jeunes enfants*** : un enfant de moins de 6 ans supplémentaire réduit en moyenne cette probabilité d'environ `r round(-100 * ame_probit["kidslt6"], 1)` points de pourcentage (probit).
+
+--
+
+* Ces valeurs sont très proches de celles du MPL : ici, le MPL est une ***bonne approximation de l'effet moyen***.
+
+---
+
+# En pratique : interpréter un logit ou un probit en 3 étapes
+
+***1. Direction*** : regarder le ***signe*** et la ***significativité*** du coefficient $\beta_j$ $\rightarrow$ l'effet est-il positif ou négatif ? Est-il statistiquement différent de zéro ?
+
+--
+
+***2. Ampleur*** : calculer l'***effet marginal moyen*** (AME) pour mesurer de combien la ***probabilité*** change.
+
+--
+
+***3. Rédaction*** : exprimer l'effet en ***points de pourcentage*** sur la ***probabilité***.
+
+--
+
+> *« Une année d'éducation supplémentaire augmente en moyenne de ... points de pourcentage la probabilité de travailler, toutes choses égales par ailleurs. »*
+
+--
+
+`r emo::ji("warning")` On ne dit ***jamais*** « une année d'éducation augmente la probabilité de $\beta$ » avec le coefficient du logit ou du probit : $\beta$ est une variation du ***score***, pas de la probabilité.
+
+---
+
+# Probabilités prédites : MPL, logit et probit
+
+On fait varier l'éducation en fixant les autres variables à leur moyenne :
+
+```{r, echo = FALSE, fig.height = 4.25, fig.width = 8}
+nd <- tibble(educ = seq(5, 17, length.out = 100),
+             exper = mean(mroz$exper),
+             age = mean(mroz$age),
+             kidslt6 = mean(mroz$kidslt6),
+             kidsge6 = mean(mroz$kidsge6),
+             nwifeinc = mean(mroz$nwifeinc))
+
+nd_pred <- nd %>%
+  mutate(MPL = predict(lpm, newdata = nd),
+         Logit = predict(logit, newdata = nd, type = "response"),
+         Probit = predict(probit, newdata = nd, type = "response")) %>%
+  pivot_longer(cols = c(MPL, Logit, Probit),
+               names_to = "modele", values_to = "proba")
+
+ggplot(nd_pred, aes(x = educ, y = proba, colour = modele)) +
+  geom_line(size = 1.5) +
+  scale_colour_viridis_d() +
+  labs(x = "Années d'éducation",
+       y = "Probabilité prédite de travailler",
+       colour = NULL) +
+  theme_bw(base_size = 14) +
+  theme(legend.position = "top")
+```
+
+--
+
+Les trois modèles donnent des prédictions très proches pour un individu « moyen ». Les différences apparaissent surtout aux ***extrémités***.
+
+---
+
+# Prédire avec un logit ou un probit
+
+* La fonction `predict()` renvoie par défaut le ***score*** $z$ (`type = "link"`). Pour obtenir les ***probabilités***, on précise `type = "response"` :
+
+```{r}
+p_logit <- predict(logit, type = "response")
+
+range(p_logit)
+```
+
+--
+
+* Les probabilités prédites sont ***toujours comprises entre 0 et 1*** : contrairement au MPL, on n'obtient plus de valeurs absurdes.
+
+--
+
+* Rappel pour le MPL : `r sum(p_hat < 0 | p_hat > 1)` prédictions en dehors de $[0, 1]$.
+
+---
+
+# Qualité d'ajustement
+
+Le $R^2$ n'a plus de sens simple pour les modèles de variable binaire. On utilise :
+
+--
+
+* Le ***pseudo-R2 de McFadden*** : compare la vraisemblance du modèle à celle d'un modèle sans variables explicatives.
+
+```{r}
+pseudo_r2 <- 1 - logit$deviance / logit$null.deviance
+pseudo_r2
+```
+
+--
+
+* Le ***taux de bonne classification*** : part des individus correctement classés quand on prédit $\hat{Y} = 1$ si $\hat{p} > 0.5$.
+
+```{r}
+y_pred <- as.numeric(fitted(logit) > 0.5)
+table(prédit = y_pred, observé = mroz$inlf)
+mean(y_pred == mroz$inlf)
+```
+
+---
+
+class:inverse
+
+# Exercice 2 : logit et probit sur `mroz`
+
+`r countdown(minutes = 15, top = 0)`
+
+1. Estimez un ***logit*** et un ***probit*** pour `inlf` avec les mêmes variables explicatives que dans l'exercice 1 (utilisez `glm()` avec `family = binomial(link = ...)`).
+
+1. Comparez les signes et les significativités des coefficients avec ceux du MPL. Les ordres de grandeur sont-ils comparables ?
+
+1. Calculez les ***effets marginaux moyens*** de chaque variable (utilisez le code de la slide précédente). Comparez-les avec les coefficients du MPL.
+
+1. Calculez les probabilités prédites du logit. Y en a-t-il en dehors de $[0, 1]$ ?
+
+1. *Optionnel :* calculez à la main (score $z$, puis `plogis()`) la probabilité de travailler d'une femme de 12 ans d'éducation, 10 ans d'expérience, 40 ans, sans enfant de moins de 6 ans, avec un enfant de 6 à 18 ans et un revenu du ménage hors le sien de 20. Vérifiez avec `predict()`.
+
+---
+
+# MPL, logit ou probit ?
+
+.pull-left[
+***MPL***
+
+* Simple, interprétation directe
+
+* Effets moyens souvent proches
+
+* Très utilisé en évaluation de politiques (RCT, DiD, RDD)
+
+* Mais : prédictions hors de $[0,1]$, écarts types robustes nécessaires
+]
+
+.pull-right[
+***Logit / Probit***
+
+* Probabilités toujours dans $[0, 1]$
+
+* Effets marginaux ***non constants***
+
+* Meilleurs pour ***prédire*** des probabilités, surtout proches de $0$ ou de $1$
+
+* Mais : interprétation moins directe (effets marginaux à calculer)
+]
+
+--
+
+<br>
+
+* ***Logit ou probit ?*** Le choix a très peu d'importance en pratique : les résultats sont quasi identiques. 
+
+---
+
+# Récapitulatif : MPL, logit et probit
+
+| | MPL | Logit | Probit |
+|:--|:--:|:--:|:--:|
+| ***Modèle*** | $p = z$ | $p = \Lambda(z)$ | $p = \Phi(z)$ |
+| ***Estimation*** | MCO | Max. de vraisemblance | Max. de vraisemblance |
+| *** $p$ dans $[0, 1]$*** | Non | Oui | Oui |
+| ***Effet marginal*** | Constant : $\beta_j$ | Dépend de l'individu | Dépend de l'individu |
+| ***Interprétation de $\beta_j$*** | Directe (en points de %) | Signe seulement (variation du score) | Signe seulement (variation du score) |
+| ***Écarts types*** | Robustes nécessaires | Usuels (MV) | Usuels (MV) |
+
+avec $z = \beta_0 + \beta_1 X_1 + \dots + \beta_k X_k$ le score linéaire.
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Deuxième exemple : le refus de prêts hypothécaires
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# Y a-t-il discrimination dans l'octroi de prêts ?
+
+* Données [HMDA](https://www.jstor.org/stable/2118254) (*Home Mortgage Disclosure Act*) sur les demandes de prêts hypothécaires à ***Boston*** en 1990 (Munnell et al., 1996).
+
+* Disponibles dans le package `R` `AER`, jeu de données `HMDA` : 2 380 demandes.
+
+--
+
+.pull-left[
+```{r, eval = FALSE}
+install.packages("AER")
+
+data("HMDA", package = "AER")
+```
+]
+
+--
+
+.pull-right[
+```{r}
+hmda <- HMDA %>%
+  mutate(deny01 = as.numeric(deny == "yes"),
+         afam01 = as.numeric(afam == "yes"))
+
+hmda %>% select(deny, afam, pirat) %>% head()
+```
+]
+
+--
+
+* `deny01` : $1$ si le prêt est ***refusé***. `afam01` : $1$ si le demandeur est afro-américain. `pirat` : ratio paiements / revenu.
+
+---
+
+# Taux de refus bruts
+
+```{r}
+hmda %>%
+  group_by(afam) %>%
+  summarise(n = n(), taux_refus = mean(deny01))
+```
+
+--
+
+* Le taux de refus est de `r round(100 * mean(hmda$deny01[hmda$afam01 == 1]), 1)` % pour les demandeurs afro-américains contre `r round(100 * mean(hmda$deny01[hmda$afam01 == 0]), 1)` % pour les autres.
+
+--
+
+* ***Question :*** cette différence reflète-t-elle une discrimination ? Ou d'autres différences (revenus, endettement, historique de crédit) ?
+
+--
+
+* Rappel du cours précédent : la sélection sur ***observables*** peut être contrôlée par la régression multiple. On contrôle ici par le ratio paiements / revenu (`pirat`).
+
+---
+
+# MPL, logit et probit sur les données HMDA
+
+```{r}
+lpm_h    <- lm(deny01 ~ afam01 + pirat, data = hmda)
+logit_h  <- glm(deny01 ~ afam01 + pirat, data = hmda,
+                family = binomial(link = "logit"))
+probit_h <- glm(deny01 ~ afam01 + pirat, data = hmda,
+                family = binomial(link = "probit"))
+```
+
+--
+
+```{r, echo = FALSE}
+tibble(Variable = names(coef(lpm_h)),
+       MPL = coef(lpm_h),
+       Logit = coef(logit_h),
+       Probit = coef(probit_h)) %>%
+  knitr::kable(format = "html", digits = 3)
+```
+
+--
+
+* Les coefficients du logit et du probit sont ***positifs et significatifs*** : être afro-américain et avoir un ratio paiements/revenu élevé ***augmentent*** la probabilité de refus. Mais l'ampleur n'est pas directement lisible.
+
+---
+
+# Effet marginal pour une variable binaire
+
+Pour `afam01` (dummy), on calcule la ***différence de probabilités prédites*** entre $afam01 = 1$ et $afam01 = 0$, en moyenne sur l'échantillon :
+
+```{r}
+ame_dummy <- function(modele, donnees, variable) {
+  d1 <- donnees; d1[[variable]] <- 1
+  d0 <- donnees; d0[[variable]] <- 0
+  mean(predict(modele, d1, type = "response") -
+       predict(modele, d0, type = "response"))
+}
+```
+
+--
+
+```{r}
+c(MPL    = ame_dummy(lpm_h,    hmda, "afam01"),
+  Logit  = ame_dummy(logit_h,  hmda, "afam01"),
+  Probit = ame_dummy(probit_h, hmda, "afam01"))
+```
+
+--
+
+* À ratio paiements/revenu donné, un demandeur afro-américain a une probabilité de refus plus élevée d'environ `r round(100 * ame_dummy(probit_h, hmda, "afam01"), 1)` points de pourcentage (probit). Les trois modèles donnent des résultats proches.
+
+---
+
+# Que conclure ? Association ou causalité ?
+
+* Les trois modèles concluent à une ***association positive*** entre l'origine afro-américaine et le refus de prêt, même en contrôlant le ratio paiements/revenu.
+
+--
+
+* Cela prouve-t-il une ***discrimination*** (effet causal) ?
+
+--
+
+  * Non, pas forcément : il peut exister des ***variables omises*** corrélées à l'origine et au refus (historique de crédit, ratio prêt/valeur du bien, emploi...).
+
+  * Les prêteurs observent des caractéristiques que nous ne contrôlons pas ici.
+
+--
+
+* Les modèles de variable binaire (MPL, logit, probit) ***n'ont pas, en eux-mêmes, de pouvoir causal*** : la question de l'identification (cours précédents) reste entière.
+
+--
+
+`r emo::ji("point_right")` Il s'agit d'un *choix de forme fonctionnelle* pour une variable dépendante binaire, pas d'une stratégie d'identification.
+
+---
+
+class:inverse
+
+# Exercice 3 : les données HMDA
+
+`r countdown(minutes = 15, top = 0)`
+
+1. Chargez les données avec `data("HMDA", package = "AER")` et créez les variables binaires `deny01` et `afam01`.
+
+1. Estimez le MPL de `deny01` sur `afam01`, `pirat` et `hirat` (ratio dépenses de logement / revenu). Calculez les écarts types robustes.
+
+1. Estimez le logit et le probit correspondants. Calculez l'effet marginal moyen de `afam01` pour chaque modèle.
+
+1. Les résultats sont-ils sensibles au choix du modèle ?
+
+1. Ajoutez d'autres variables de contrôle (par exemple `lvrat`, `chist`, `mhist`, `selfemp`). L'effet de `afam01` change-t-il ? Que cela suggère-t-il sur les variables omises ?
+
+---
+
+# Ce qu'il faut retenir
+
+* Une ***variable binaire*** ne prend que deux valeurs, $0$ et $1$ : sa moyenne est une ***proportion*** et $\mathbb{E}(Y | X) = \mathbb{P}(Y = 1 | X)$.
+
+--
+
+* Le ***MPL*** (MCO sur $Y$ binaire) est simple et ses coefficients se lisent directement en points de pourcentage, mais :
+  * il peut prédire des probabilités ***en dehors de $[0, 1]$***,
+  * ses erreurs sont ***hétéroscédastiques*** $\rightarrow$ écarts types ***robustes*** nécessaires,
+  * l'effet marginal est ***constant***.
+
+--
+
+* Le ***logit*** et le ***probit*** transforment un ***score*** linéaire $z$ par une courbe en « S » $G$ pour garantir $0 \leq p \leq 1$ :
+  * estimation par ***maximum de vraisemblance*** (`glm()`),
+  * le coefficient est une variation du ***score***, pas de la probabilité $\rightarrow$ calculer les ***effets marginaux*** (AME), qui dépendent de la pente de la courbe.
+
+--
+
+* En pratique, les ***effets marginaux moyens*** des trois modèles sont souvent très proches.
+
+---
+
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+# BONNE JOURNÉE !
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
+
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" chapter_binary.html chapter_binaire.pdf --chrome-arg=--disable-web-security')
+```

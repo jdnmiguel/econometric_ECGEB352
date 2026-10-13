@@ -1,0 +1,900 @@
+---
+title: "Econométrie"
+subtitle: "Endogénéité et Variables Instrumentales"
+author: "Jérémy Do Nascimento Miguel"
+lang: fr
+date: "Université de Namur </br> `r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    # chakra: "https://cdnjs.cloudflare.com/ajax/libs/remark/0.14.0/remark.min.js"
+    lib_dir: libs
+    css: [default, "../css/scpo.css", "../css/scpo-fonts.css"]
+    nature:
+      beforeInit: ["../js/ru_xaringan.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: "../libs/partials/header.html"
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+```{r setup, include=FALSE,warning=FALSE,message=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  dev = "svg",
+  cache = TRUE,
+  fig.align = "center"
+  #fig.width = 11,
+  #fig.height = 5
+)
+
+library(emo)
+library(countdown)
+library(broom)
+library(sandwich)
+library(lmtest)
+library(tidyverse)
+library(ggplot2)
+
+library(AER)   # ivreg()
+
+# données de Acemoglu, Johnson et Robinson (2001) : package hdm
+data("AJR", package = "hdm")
+
+# countdown style
+countdown(
+  color_border              = "forestgreen",
+  color_text                = "black",
+  color_running_background  = "forestgreen",
+  color_running_text        = "white",
+  color_finished_background = "white",
+  color_finished_text       = "forestgreen",
+  color_finished_border     = "forestgreen"
+)
+
+
+# fonction pour dessiner un DAG (graphe causal) avec ggplot2
+dag_plot <- function(noeuds, fleches, d = 0.55) {
+  a <- fleches %>%
+    left_join(noeuds %>% select(de = nom, x0 = x, y0 = y), by = "de") %>%
+    left_join(noeuds %>% select(vers = nom, x1 = x, y1 = y), by = "vers") %>%
+    mutate(len = sqrt((x1 - x0)^2 + (y1 - y0)^2),
+           xs = x0 + (x1 - x0) * d / len, ys = y0 + (y1 - y0) * d / len,
+           xe = x1 - (x1 - x0) * d / len, ye = y1 - (y1 - y0) * d / len,
+           xm = (x0 + x1) / 2, ym = (y0 + y1) / 2)
+  ggplot() +
+    geom_segment(data = a,
+                 aes(x = xs, y = ys, xend = xe, yend = ye, colour = couleur, linetype = style),
+                 arrow = arrow(length = unit(0.3, "cm"), type = "closed"), linewidth = 1.1) +
+    geom_label(data = filter(a, !is.na(texte)),
+               aes(x = xm, y = ym, label = texte, colour = couleur), size = 4.5,
+               fill = "white", label.size = 0) +
+    geom_label(data = noeuds, aes(x = x, y = y, label = etiquette, fill = fond),
+               size = 5, label.padding = unit(0.5, "lines")) +
+    scale_colour_identity() + scale_linetype_identity() + scale_fill_identity() +
+    scale_x_continuous(expand = expansion(mult = 0.3)) +
+    scale_y_continuous(expand = expansion(mult = 0.3)) +
+    coord_cartesian(clip = "off") +
+    theme_void() +
+    theme(plot.margin = margin(5, 20, 5, 20))
+}
+
+# fixer la graine aléatoire
+set.seed(1234)
+```
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# Aujourd'hui : ***endogénéité*** et ***variables instrumentales***
+
+* Dans tous les cours précédents, une hypothèse était centrale pour interpréter $\beta_1$ comme un ***effet causal*** : **MLR.4**, $\mathbb{E}(u | X) = 0$
+
+
+* Que se passe-t-il quand **MLR.4 est violée** et qu'on ne peut pas la corriger avec des variables de contrôle ?
+
+* Comment un ***instrument*** permet-il de retrouver un effet causal ?
+
+* *Application empirique* : l'effet des ***institutions*** sur le développement économique, avec la ***mortalité des colons*** comme instrument (Acemoglu, Johnson et Robinson, 2001)
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# L'endogénéité
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# Le modèle et l'hypothèse MLR.4
+
+* On veut estimer l'effet causal de $X$ sur $Y$ :
+
+$$Y_i = \beta_0 + \beta_1 X_i + u_i$$
+
+* $u_i$ regroupe ***tout ce qui affecte $Y$ et que l'on n'observe pas*** (aptitude, culture, motivation, géographie...).
+
+--
+
+* Les MCO donnent un estimateur ***sans biais*** de $\beta_1$ si **MLR.4** est vérifiée :
+
+$$\mathbb{E}(u_i | X_i) = 0$$
+
+* Autrement dit : $X$ et $u$ ne sont ***pas corrélés***. Quand $X$ varie, **rien d'autre** dans $u$ ne varie avec lui.
+
+---
+
+# Endogénéité
+
+* Une variable explicative est ***endogène*** quand elle est corrélée avec le terme d'erreur :
+
+$$\text{Cov}(X_i, u_i) \neq 0 \quad \Longleftrightarrow \quad \text{MLR.4 est violée}$$
+
+---
+
+# Exemple : l'éducation et le salaire
+
+$$\text{salaire}_i = \beta_0 + \beta_1 \, \text{éducation}_i + u_i$$
+
+* L'***aptitude*** (ou la motivation, le milieu familial...) fait partie de $u_i$ : elle augmente le salaire.
+
+--
+
+* Mais les personnes plus aptes ***font aussi plus d'études***.
+
+* Donc $\text{Cov}(\text{éducation}, u) > 0$ : l'éducation est ***endogène***.
+
+--
+
+* Quand on compare des personnes avec plus ou moins d'études, on compare aussi des personnes **plus ou moins aptes**.
+
+* Les MCO attribuent à l'éducation une partie de l'effet de l'aptitude : $\hat{\beta}_1$ est ***surestimé***.
+
+--
+
+.pull-left[
+.center[***Corrélation***]
+
+$X$ et $Y$ varient ensemble
+]
+
+.pull-right[
+.center[***Causalité***]
+
+changer $X$ ***fait*** changer $Y$
+]
+
+---
+
+# Les trois grandes sources d'endogénéité
+
+1. ***Variable omise*** : un facteur non observé affecte à la fois $X$ et $Y$ (l'aptitude dans l'exemple précédent).
+
+--
+
+2. ***Causalité inversée (simultanéité)*** : $Y$ affecte aussi $X$.
+  * Exemple : les institutions favorisent la richesse, mais les pays riches ont aussi les moyens de se doter de meilleures institutions.
+
+--
+
+3. ***Erreur de mesure*** : on observe $X$ avec du bruit.
+  * Exemple : la « qualité des institutions » est difficile à mesurer. L'erreur de mesure, si aléatoire, ***atténue*** l'estimation vers zéro.
+
+--
+
+* Dans les trois cas : $\text{Cov}(X, u) \neq 0$ et les MCO sont ***biaisés*** et ***non convergents*** (le biais ne disparaît pas avec plus de données).
+
+---
+
+# Le biais de l'estimateur MCO
+
+* Quand $\text{Cov}(X, u) \neq 0$, l'estimateur MCO converge vers :
+
+$$\hat{\beta}_1^{MCO} \;\longrightarrow\; \beta_1 + \underbrace{\frac{\text{Cov}(X, u)}{\text{Var}(X)}}_{\text{biais}}$$
+
+--
+
+* Le signe du biais est celui de $\text{Cov}(X, u)$ :
+  * aptitude $\rightarrow$ éducation (+) et aptitude $\rightarrow$ salaire (+) : biais ***positif***,
+  * on ne peut pas le réduire en augmentant la taille de l'échantillon.
+
+--
+
+* Si le facteur omis est **observé**, on le met en variable de contrôle (cours sur la régression multiple).
+
+* Si le facteur omis est **inobservé** (l'aptitude, la culture...) : on ne peut pas le contrôler.
+
+$\rightarrow$ Il faut une ***autre stratégie*** : les ***variables instrumentales***.
+
+
+---
+
+# Représenter l'endogénéité : le graphe causal (DAG)
+
+* Un ***DAG*** (*Directed Acyclic Graph*) est un schéma où une **flèche** $A \rightarrow B$ signifie « $A$ cause $B$ ».
+
+* Les variables ***non observées*** sont en gris.
+
+```{r dag-confond, echo=FALSE, fig.width=9, fig.height=3.8, out.width="75%"}
+noeuds <- tribble(
+  ~nom, ~etiquette,                 ~x, ~y,  ~fond,
+  "U",  "Aptitude (non observée)",   1,  1.6, "grey85",
+  "X",  "Éducation (X)",             0,  0,   "white",
+  "Y",  "Salaire (Y)",               2,  0,   "white"
+)
+fleches <- tribble(
+  ~de, ~vers, ~style,  ~couleur,    ~texte,
+  "X", "Y",   "solid", "black",     "effet causal β1 ?",
+  "U", "X",   "solid", "firebrick", NA,
+  "U", "Y",   "solid", "firebrick", NA
+)
+dag_plot(noeuds, fleches, d = 0.5)
+```
+
+--
+
+* Les flèches rouges forment un ***chemin de confusion*** $X \leftarrow U \rightarrow Y$ : $X$ et $Y$ sont corrélés **même si $X$ n'a aucun effet sur $Y$**.
+
+
+
+---
+
+# Simulons un cas d'endogénéité
+
+* On crée des données où l'on **connaît** le vrai effet : $\beta_1 = 0.5$.
+
+```{r sim-data}
+n <- 2000
+aptitude <- rnorm(n)                                  # non observée en pratique
+z        <- rnorm(n)                                  # on y reviendra : l'instrument
+educ     <- 0.8 * z + 0.8 * aptitude + rnorm(n)       # l'éducation dépend de l'aptitude
+salaire  <- 1 + 0.5 * educ + 1 * aptitude + rnorm(n)  # vrai effet de educ : 0.5
+sim <- tibble(salaire, educ, z, aptitude)
+```
+
+--
+
+```{r sim-ols}
+coef(lm(salaire ~ educ, data = sim))["educ"]
+```
+
+--
+
+* Les MCO donnent `r round(coef(lm(salaire ~ educ, data = sim))["educ"], 2)` au lieu de $0.5$ : le biais est ***énorme***, et ***reste*** si l'on multiplie $n$ par 100.
+
+* Si l'on contrôle l'aptitude (impossible en pratique) : `r round(coef(lm(salaire ~ educ + aptitude, data = sim))["educ"], 2)`.
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# L'idée de la variable instrumentale
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# L'intuition
+
+* Le problème : toute la variation de $X$ est **« contaminée »** par $u$ (une partie de $X$ vient de l'aptitude).
+
+--
+
+* Idée : trouver une variable $Z$ qui fait varier $X$ **pour des raisons sans rapport avec $u$**.
+
+* Cette variation de $X$ est « propre » : c'est comme si elle avait été **attribuée au hasard**.
+
+--
+
+* On regarde alors comment $Y$ réagit **uniquement à cette variation propre** de $X$.
+
+--
+
+## Une analogie
+
+* Un essai randomisé : un tirage au sort $Z$ encourage certains individus à prendre le traitement $X$.
+
+* Tout le monde n'obéit pas, mais le tirage au sort ***déplace*** $X$ de façon exogène.
+
+* La variable instrumentale généralise ce raisonnement aux **expériences naturelles**.
+
+---
+
+
+# Le DAG d'une variable instrumentale
+
+```{r dag-iv, echo=FALSE, fig.width=10, fig.height=4.6, out.width="85%"}
+noeuds <- tribble(
+  ~nom, ~etiquette,                  ~x, ~y,  ~fond,
+  "U",  "Facteurs non observés (U)",  2,  1.7, "grey85",
+  "Z",  "Instrument (Z)",             0,  0,   "white",
+  "X",  "Variable explicative (X)",   2,  0,   "white",
+  "Y",  "Résultat (Y)",               4,  0,   "white"
+)
+fleches <- tribble(
+  ~de, ~vers, ~style,  ~couleur,      ~texte,
+  "Z", "X",   "solid", "forestgreen", "1. pertinence",
+  "X", "Y",   "solid", "black",       "effet causal β1",
+  "U", "X",   "solid", "grey40",      NA,
+  "U", "Y",   "solid", "grey40",      NA
+)
+dag_plot(noeuds, fleches, d = 0.6)
+```
+
+* $Z$ **déplace** $X$ (flèche verte), mais n'est lié ni à $U$, ni directement à $Y$ : il n'agit sur $Y$ **qu'à travers $X$**.
+---
+
+# Les deux conditions d'un bon instrument
+
+.pull-left[
+### 1. ***Pertinence***
+
+$$\text{Cov}(Z, X) \neq 0$$
+
+* L'instrument doit **vraiment** influencer $X$.
+
+* ***Testable*** : on régresse $X$ sur $Z$ (première étape).
+]
+
+.pull-right[
+### 2. ***Exogénéité*** (ou *validité*)
+
+$$\text{Cov}(Z, u) = 0$$
+
+* $Z$ n'est pas lié aux déterminants inobservés de $Y$ **et** n'affecte $Y$ qu'à travers $X$ (***restriction d'exclusion***).
+
+* ***Non testable*** : elle repose sur un **argument** économique.
+]
+
+--
+
+<br>
+
+* Si l'on ne peut pas **défendre** l'exogénéité avec de bons arguments, l'instrument n'est pas crédible, quelle que soit sa force statistique.
+
+---
+
+# Quand l'instrument n'est pas valide : le DAG
+
+```{r dag-iv-faux, echo=FALSE, fig.width=10, fig.height=4.8, out.width="85%"}
+noeuds <- tribble(
+  ~nom, ~etiquette,                  ~x, ~y,  ~fond,
+  "U",  "Facteurs non observés (U)",  2,  1.8, "grey85",
+  "Z",  "Instrument (Z)",             0,  0,   "white",
+  "X",  "Variable explicative (X)",   2,  0,   "white",
+  "Y",  "Résultat (Y)",               4,  0,   "white"
+)
+fleches <- tribble(
+  ~de, ~vers, ~style,   ~couleur,      ~texte,
+  "Z", "X",   "solid",  "forestgreen", NA,
+  "X", "Y",   "solid",  "black",       NA,
+  "U", "X",   "solid",  "grey40",      NA,
+  "U", "Y",   "solid",  "grey40",      NA,
+  "U", "Z",   "dashed", "firebrick",   "(a)",
+  "Z", "Y",   "dashed", "firebrick",   "(b)"
+)
+dag_plot(noeuds, fleches, d = 0.6)
+```
+
+.pull-left[
+***(a)*** $U \rightarrow Z$ : l'instrument est lui-même lié aux facteurs non observés.
+]
+
+.pull-right[
+***(b)*** $Z \rightarrow Y$ : l'instrument agit sur $Y$ par **un autre canal** que $X$ (violation de l'exclusion).
+]
+
+---
+
+# Comment l'instrument identifie l'effet : les deux « morceaux »
+
+* Comme $Z$ n'agit sur $Y$ qu'à travers $X$, l'effet de $Z$ sur $Y$ se décompose :
+
+$$\underbrace{\text{effet de } Z \text{ sur } Y}_{\text{forme réduite}} \;=\; \underbrace{\text{effet de } Z \text{ sur } X}_{\text{première étape}} \;\times\; \underbrace{\text{effet de } X \text{ sur } Y}_{\beta_1}$$
+
+--
+
+* On en déduit l'effet causal recherché :
+
+$$\beta_1 = \frac{\text{effet de } Z \text{ sur } Y}{\text{effet de } Z \text{ sur } X} = \frac{\text{Cov}(Z, Y)}{\text{Cov}(Z, X)}$$
+
+--
+
+* Exemple chiffré : si $Z$ augmente $X$ de $2$ unités, et $Y$ de $1$ unité, alors une unité de $X$ fait varier $Y$ de $1/2 = 0.5$.
+
+--
+
+* C'est l'***estimateur de Wald*** (ou ***du ratio***). Il montre aussi pourquoi la ***pertinence*** est indispensable : on ne peut pas diviser par un effet quasi nul.
+
+---
+
+# La méthode des doubles moindres carrés (2SLS)
+
+* Dans la pratique, on procède en ***deux étapes***.
+
+--
+
+### Étape 1 : la ***première étape*** (*first stage*)
+
+$$X_i = \pi_0 + \pi_1 Z_i + v_i \quad \Rightarrow \quad \text{on calcule } \hat{X}_i = \hat{\pi}_0 + \hat{\pi}_1 Z_i$$
+
+* $\hat{X}_i$ est la partie de $X$ **expliquée par l'instrument** : c'est la variation « propre » de $X$.
+
+--
+
+### Étape 2 : la ***seconde étape*** (*second stage*)
+
+$$Y_i = \beta_0 + \beta_1 \hat{X}_i + \varepsilon_i$$
+
+* On régresse $Y$ sur $\hat{X}$ (et non sur $X$) : $\hat{\beta}_1^{2SLS}$ est l'effet causal de $X$ sur $Y$.
+
+--
+
+* Avec un seul instrument et un seul régresseur endogène, 2SLS $=$ estimateur de Wald.
+
+---
+
+# 2SLS sur nos données simulées
+
+```{r sim-iv}
+premiere  <- lm(educ ~ z, data = sim)                # première étape
+sim$educ_hat <- fitted(premiere)                     # variation « propre » de educ
+seconde   <- lm(salaire ~ educ_hat, data = sim)      # seconde étape
+coef(seconde)["educ_hat"]
+```
+
+--
+
+* Estimateur de Wald : $\text{Cov}(z, \text{salaire}) / \text{Cov}(z, \text{educ})$ = `r round(cov(sim$z, sim$salaire) / cov(sim$z, sim$educ), 3)`
+
+--
+
+* Comparaison avec le vrai effet $0.5$ :
+
+```{r sim-comp, echo=FALSE}
+tibble(
+  Méthode = c("MCO (biaisé)", "2SLS (instrument z)", "Vrai effet"),
+  Estimation = c(coef(lm(salaire ~ educ, data = sim))["educ"], coef(seconde)["educ_hat"], 0.5)
+) %>% mutate(Estimation = round(Estimation, 3))
+```
+
+---
+
+# Attention : ne faites pas la seconde étape « à la main »
+
+* Les **écarts types** de la seconde étape manuelle sont ***faux*** : ils ne tiennent pas compte du fait que $\hat{X}$ est lui-même estimé.
+
+--
+
+* Utilisez toujours `ivreg()` (package `AER`) : la syntaxe est `y ~ variable endogène | instrument`.
+
+```{r sim-ivreg}
+iv_sim <- ivreg(salaire ~ educ | z, data = sim)
+summary(iv_sim)$coefficients
+```
+
+--
+
+* Les coefficients sont **identiques** à ceux du calcul à la main, mais l'***erreur standard*** est correcte.
+
+* L'écart type du 2SLS est **plus grand** que celui des MCO : on paie l'absence de biais par une ***perte de précision***.
+
+---
+
+# Interpréter l'estimateur IV
+
+* Avec un instrument, on n'utilise que la partie de $X$ qui répond à $Z$.
+
+* L'estimateur IV mesure donc l'effet de $X$ ***pour les individus dont $X$ est modifié par $Z$*** : c'est un effet local (***LATE***), comme en RDD (on verra plus tard).
+
+--
+
+* Dans les modèles à effet homogène (comme ici), cela se confond avec l'effet moyen.
+
+--
+
+## Instruments faibles
+
+* Si $\text{Cov}(Z, X)$ est **faible**, deux problèmes :
+  * l'estimateur est très **imprécis** (on divise par un nombre proche de zéro),
+  * un petit défaut d'exogénéité est **amplifié** : le biais peut être pire que celui des MCO.
+
+* Règle pratique : la statistique $F$ de la première étape doit dépasser ***10***.
+
+---
+
+class:inverse
+
+# Exercice 1 : la force de l'instrument
+
+`r countdown(minutes = 10, top = 0)`
+
+On reprend la simulation : le vrai effet est $0.5$.
+
+1. Refaites la simulation avec un instrument **faible** : `educ <- 0.05 * z + 0.8 * aptitude + rnorm(n)`.
+
+2. Calculez la statistique $F$ de la première étape (`summary(lm(educ ~ z))$fstatistic`) et l'estimateur IV (`ivreg`).
+
+3. Répétez avec plusieurs graines (`set.seed()`). Que constatez-vous sur la **stabilité** de l'estimation ?
+
+4. Comparez avec le cas d'un instrument fort (`0.8 * z`).
+
+---
+
+layout: false
+class: title-slide-section-red, middle
+
+# Application : les institutions et le développement économique
+
+---
+
+layout: true
+
+<div class="my-footer"><img src="../img/logo/namur-shield.png" style="height: 60px;"/></div>
+
+---
+
+# La question d'Acemoglu, Johnson et Robinson (2001)
+
+* Pourquoi certains pays sont-ils **beaucoup plus riches** que d'autres ?
+
+* Hypothèse : les ***institutions*** (droits de propriété, protection contre l'expropriation, État de droit) favorisent l'investissement, donc la richesse.
+
+--
+
+$$\log(\text{PIB par tête})_i = \beta_0 + \beta_1 \, \text{Institutions}_i + u_i$$
+
+* $\beta_1 > 0$ : de meilleures institutions causent un PIB plus élevé.
+
+--
+
+## Mais l'estimation par MCO est probablement biaisée !
+
+1. ***Causalité inversée*** : les pays riches peuvent se payer de meilleures institutions.
+
+2. ***Variables omises*** : culture, géographie, climat, religion... affectent à la fois les institutions et la richesse.
+
+3. ***Erreur de mesure*** : la qualité des institutions est difficile à mesurer.
+
+---
+
+# L'idée : l'histoire de la colonisation
+
+* Les Européens ont colonisé des pays très différents, **selon les conditions locales**.
+
+--
+
+.pull-left[
+### Colonies d'***extraction***
+
+* Là où les colons **mouraient** massivement de maladies (paludisme, fièvre jaune) : peu de colons s'installent.
+
+* Les Européens mettent en place des institutions **extractives** pour piller les ressources (Afrique, Amérique centrale...).
+]
+
+.pull-right[
+### Colonies de ***peuplement***
+
+* Là où le climat était **sain** : les Européens s'installent massivement.
+
+* Ils reproduisent leurs institutions protégeant la **propriété privée** (États-Unis, Australie, Nouvelle-Zélande...).
+]
+
+--
+
+* Ces institutions ont ***persisté*** après l'indépendance et influencent encore les pays aujourd'hui.
+
+---
+
+# L'instrument : la mortalité des colons
+
+* ***Instrument $Z$*** : la mortalité des colons européens (soldats, évêques, marins) au XIX$^e$ siècle, mesurée dans chaque colonie.
+
+* ***Variable endogène $X$*** : la qualité des institutions actuelles, mesurée par la ***protection contre le risque d'expropriation*** (`Exprop`, de 0 à 10).
+
+* ***Résultat $Y$*** : le log du PIB par habitant en 1995 (`GDP`).
+
+--
+
+### Pourquoi la mortalité des colons est-elle un bon candidat ?
+
+1. ***Pertinence*** : une mortalité élevée $\rightarrow$ institutions extractives $\rightarrow$ qualité des institutions actuelle plus faible.
+
+2. ***Exclusion*** : ces maladies tuaient les Européens mais pas les populations locales (immunisées). Elles n'ont donc **pas** d'effet direct sur le PIB d'aujourd'hui, **seulement à travers les institutions**.
+
+
+---
+
+# Les données
+
+```{r ajr-data}
+glimpse(AJR %>% select(GDP, Exprop, logMort, Latitude, Africa, Asia))
+```
+
+* Les données proviennent du package `hdm` : **64** anciennes colonies.
+
+* `GDP` : log du PIB par habitant en 1995 ($Y$).
+
+* `Exprop` : protection moyenne contre l'expropriation, $0$ à $10$ ($X$, plus c'est élevé, meilleures sont les institutions).
+
+* `logMort` : log de la mortalité des colons européens ($Z$).
+
+---
+
+# Institutions et PIB : la corrélation brute
+
+```{r ajr-plot-ols, fig.width=8, fig.height=4.2, out.width="70%"}
+ggplot(AJR, aes(x = Exprop, y = GDP)) +
+  geom_point(size = 2.5, colour = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, colour = "firebrick") +
+  labs(x = "Protection contre l'expropriation (institutions)", y = "Log du PIB par habitant, 1995") +
+  theme_minimal(base_size = 14)
+```
+
+* Forte corrélation positive. Mais est-ce ***causal*** ? Les MCO sont suspects (causalité inversée, variables omises, erreur de mesure).
+
+---
+
+# Les MCO : la relation « naïve »
+
+```{r ajr-ols}
+ols <- lm(GDP ~ Exprop, data = AJR)
+summary(ols)$coefficients
+```
+
+--
+
+* Un point d'indice supplémentaire de protection contre l'expropriation est associé à un PIB par habitant plus élevé d'environ `r round(100 * coef(ols)["Exprop"], 0)` %.
+
+* Mais ce coefficient mélange l'effet des institutions et tout ce qui est corrélé avec elles.
+
+---
+
+# Pertinence de l'instrument : mortalité et institutions
+
+```{r ajr-plot-fs, fig.width=8, fig.height=4.2, out.width="70%"}
+ggplot(AJR, aes(x = logMort, y = Exprop)) +
+  geom_point(size = 2.5, colour = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, colour = "forestgreen") +
+  labs(x = "Log de la mortalité des colons", y = "Protection contre l'expropriation") +
+  theme_minimal(base_size = 14)
+```
+
+* Plus la mortalité des colons était élevée, **moins** les institutions actuelles protègent la propriété : l'instrument est ***pertinent***.
+
+---
+
+# La première étape
+
+```{r ajr-fs}
+premiere_ajr <- lm(Exprop ~ logMort, data = AJR)
+summary(premiere_ajr)$coefficients
+```
+
+--
+
+* Une hausse de `1` du log de la mortalité des colons est associée à une variation de `r round(coef(premiere_ajr)["logMort"], 2)` points de l'indice d'institutions.
+
+* Statistique $F$ de la première étape : ***`r round(summary(premiere_ajr)$fstatistic[1], 1)`*** (au-dessus de 10 $\Rightarrow$ instrument ***non faible***).
+
+---
+
+# La forme réduite : mortalité et PIB
+
+```{r ajr-plot-rf, fig.width=8, fig.height=4.2, out.width="70%"}
+ggplot(AJR, aes(x = logMort, y = GDP)) +
+  geom_point(size = 2.5, colour = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, colour = "darkorange") +
+  labs(x = "Log de la mortalité des colons", y = "Log du PIB par habitant, 1995") +
+  theme_minimal(base_size = 14)
+```
+
+* Les pays où les colons mouraient le plus sont aujourd'hui **plus pauvres**. Si l'exclusion est vraie, c'est **uniquement via les institutions**.
+
+---
+
+# Du ratio de Wald au 2SLS
+
+```{r ajr-wald}
+reduite_ajr <- lm(GDP ~ logMort, data = AJR)
+
+coef(reduite_ajr)["logMort"]       # effet de Z sur Y (forme réduite)
+coef(premiere_ajr)["logMort"]      # effet de Z sur X (première étape)
+coef(reduite_ajr)["logMort"] / coef(premiere_ajr)["logMort"]   # estimateur de Wald
+```
+
+--
+
+* L'effet causal estimé des institutions est le **ratio** : `r round(coef(reduite_ajr)["logMort"], 2)` / `r round(coef(premiere_ajr)["logMort"], 2)` = ***`r round(coef(reduite_ajr)["logMort"] / coef(premiere_ajr)["logMort"], 2)`***.
+
+--- 
+
+# Du ratio de Wald au 2SLS
+
+* L'effet causal estimé des institutions est le **ratio** : `r round(coef(reduite_ajr)["logMort"], 2)` / `r round(coef(premiere_ajr)["logMort"], 2)` = ***`r round(coef(reduite_ajr)["logMort"] / coef(premiere_ajr)["logMort"], 2)`***.
+
+
+* Vérifions avec la fonction `ivreg()` :
+
+```{r ajr-iv}
+iv_ajr <- ivreg(GDP ~ Exprop | logMort, data = AJR)
+summary(iv_ajr)$coefficients
+```
+
+---
+
+# MCO versus variables instrumentales
+
+```{r ajr-comp, echo=FALSE}
+tibble(
+  Méthode = c("MCO", "2SLS (instrument : logMort)"),
+  Coefficient = c(coef(ols)["Exprop"], coef(iv_ajr)["Exprop"]),
+  `Écart type` = c(summary(ols)$coefficients["Exprop", 2], summary(iv_ajr)$coefficients["Exprop", 2])
+) %>% mutate(across(where(is.numeric), ~ round(.x, 3)))
+```
+
+--
+
+* Un point d'indice supplémentaire de protection contre l'expropriation **cause** un PIB par habitant plus élevé d'environ `r round(100 * coef(iv_ajr)["Exprop"], 0)` %.
+
+--
+
+* L'écart type est **plus grand** pour le 2SLS : coût de l'instrument.
+
+* L'estimation IV est ***supérieure*** à l'estimation MCO. Pourquoi, alors qu'on attendait un biais positif des MCO ?
+
+---
+
+# Pourquoi l'estimation IV est-elle plus grande ?
+
+* AJR avancent l'***erreur de mesure*** : l'indice d'institutions est une mesure bruitée de la « vraie » qualité des institutions.
+
+--
+
+* L'erreur de mesure biaise les MCO ***vers zéro*** (biais d'atténuation).
+
+* L'instrument, lui, n'est pas affecté par ce bruit : il corrige ce biais.
+
+--
+
+* Ce biais d'atténuation peut **dominer** le biais de causalité inversée (qui, lui, pousse vers le haut).
+
+--
+
+<br>
+
+* ***Leçon*** : le sens du biais MCO n'est pas toujours évident quand plusieurs sources d'endogénéité coexistent.
+
+---
+
+# Robustesse : contrôles supplémentaires
+
+* Critique : la **géographie** (loin de l'équateur, climat plus tempéré) pourrait affecter à la fois la mortalité et le PIB.
+
+* On ajoute la latitude comme contrôle **exogène** : elle figure des deux côtés de la barre `|`.
+
+```{r ajr-controls}
+iv_ajr2 <- ivreg(GDP ~ Exprop + Latitude | logMort + Latitude, data = AJR)
+summary(iv_ajr2)$coefficients
+```
+
+--
+
+* L'estimation de `Exprop` : `r round(coef(iv_ajr2)["Exprop"], 2)` (contre `r round(coef(iv_ajr)["Exprop"], 2)` sans contrôle).
+
+* La règle : les variables de contrôle exogènes sont répétées **dans les deux parties** de la formule.
+
+---
+
+# Les critiques de la restriction d'exclusion
+
+* La restriction d'exclusion ne se teste pas : elle se ***discute***.
+
+--
+
+* ***Critique principale*** : la mortalité des colons reflète l'**environnement pathogène** (paludisme, fièvre jaune). Or les maladies peuvent affecter **directement** la productivité des habitants actuels, et donc le PIB, sans passer par les institutions.
+
+$$Z \rightarrow Y \text{ directement : exclusion violée}$$
+
+--
+
+* Autres critiques : la mortalité mesurée est elle-même imparfaite ; les institutions précoces peuvent refléter l'histoire pré-coloniale (la mortalité reflète le développement local).
+
+--
+
+* ***Message*** : un résultat IV n'est crédible que si l'on peut défendre l'**exclusion**. Il faut toujours discuter des canaux alternatifs possibles.
+
+---
+
+class:inverse
+
+# Exercice 2 : les données d'Acemoglu, Johnson et Robinson
+
+`r countdown(minutes = 10, top = 0)`
+
+1. Estimez par 2SLS l'effet de `Exprop` sur `GDP` en instrumentant par `logMort`, avec les contrôles `Africa` et `Asia`.
+
+2. Calculez la statistique $F$ de la première étape (`lm(Exprop ~ logMort + Africa + Asia)`). L'instrument reste-t-il fort ?
+
+3. L'effet des institutions change-t-il quand on contrôle la localisation géographique ?
+
+4. Discussion : donnez un **canal** par lequel la mortalité des colons pourrait affecter le PIB actuel sans passer par les institutions.
+
+---
+
+# Ce qu'il faut retenir
+
+* Une variable est ***endogène*** quand elle est corrélée avec le terme d'erreur ($\text{Cov}(X, u) \neq 0$) : variable omise, causalité inversée, erreur de mesure. Les MCO sont alors ***biaisés et non convergents***.
+
+
+
+* Un ***instrument $Z$*** permet de retrouver l'effet causal s'il vérifie deux conditions :
+  * ***pertinence*** : $Z$ est corrélé avec $X$ (testable, $F > 10$),
+  * ***exogénéité / exclusion*** : $Z$ n'affecte $Y$ qu'à travers $X$ (non testable, à argumenter).
+
+
+
+* Le ***DAG*** permet de visualiser ces hypothèses : $Z \rightarrow X \rightarrow Y$, sans flèche $Z \rightarrow Y$ ni $U \rightarrow Z$.
+
+
+* L'estimateur ***2SLS*** : première étape ($X$ sur $Z$), puis seconde étape ($Y$ sur $\hat{X}$). Utiliser `ivreg()`.
+
+
+
+* Application AJR : la **mortalité des colons** instrumente les **institutions** ; l'effet estimé est positif et ***plus grand*** que les MCO.
+
+
+
+* Le prix à payer : des estimations plus ***imprécises*** et dépendantes de l'argument d'exclusion.
+
+---
+
+class: title-slide-final, middle
+background-image: url(../img/logo/namur-logo.png)
+background-size: 250px
+background-position: 9% 19%
+
+# BONNE JOURNÉE !
+
+
+|                                                                                                            |                                   |
+| :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| <a href="mailto:jeremy.donascimento@unamur.be">.Namurgreen[<i class="fa fa-paper-plane fa-fw"></i>]               | jeremy.donascimento@unamur.be       |
+| <a href="https://discord.gg/RcdCRFBcc">.Namurgreen[<i class="fab fa-link fa-fw"></i></a>] | Discord |
+| <a href="https://github.com/jdnmiguel/econometric_ECGEB352">.Namurgreen[<i class="fa fa-link fa-fw"></i>] | Slides |
+
+
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" chapter_iv.html chapter_iv.pdf --chrome-arg=--disable-web-security')
+```
+

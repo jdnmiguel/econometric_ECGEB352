@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-10-08
+### Université de Namur </br> 2026-10-13
 ]
 
 ---
@@ -59,7 +59,51 @@ layout: true
 * Application empiriques :
 
   * Taille de la classe et performance
-  * Returns to education by gender
+  * Rendement à l'éducation par genre
+
+---
+
+
+# L'expérience STAR : le dispositif
+
+* ***STAR*** = *Student/Teacher Achievement Ratio*, Tennessee, 1985-1989.
+
+* Environ **11 600 élèves** dans **79 écoles**, suivis de la maternelle à la 3&lt;sup&gt;e&lt;/sup&gt; année primaire.
+
+--
+
+* **Tirage au sort à l'intérieur de chaque école** : chaque élève est affecté à l'un de trois types de classes :
+  * ***petite classe*** : 13 à 17 élèves (le *traitement*),
+  * ***classe normale*** : 22 à 25 élèves (le *contrôle*),
+  * ***classe normale avec assistant***.
+
+--
+
+* Tests standardisés (lecture, maths) passés chaque année.
+
+---
+
+# STAR : pourquoi est-ce une bonne expérience ?
+
+.pull-left[
+* L'affectation est ***aléatoire*** : en moyenne, élèves en petites et grandes classes ont les mêmes caractéristiques (milieu social, aptitude...).
+
+`\(\rightarrow\)` Plus de ***biais de sélection*** : une différence de moyennes donne un ***effet causal***.
+
+* Hors expérience, les écoles ou familles aisées peuvent obtenir des petites classes : on mesurerait l'effet du milieu social, pas celui de la taille.
+]
+
+.pull-right[
+### Résultat principal
+
+* Les élèves en petites classes obtiennent de **meilleurs résultats**, surtout en début de scolarité et pour les élèves **défavorisés**.
+
+### Limites
+
+* Certains élèves ont changé de type de classe ou quitté l'école.
+
+* Les résultats portent sur le Tennessee des années 1980.
+]
 
 ---
 
@@ -225,7 +269,7 @@ class:inverse
 
 # Tâche 1
 
-<countdown-timer class="countdown" id="timer_7d7fff0e" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_99d0e655" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Comme nous l'avons fait pour la distribution d'échantillonnage de la proportion de *pâtes vertes*, nous voulons générer la distribution bootstrap de `\(\hat{\beta}_\textrm{small}\)`. 
 
@@ -395,7 +439,7 @@ null_distribution &lt;- null_distribution %&gt;%
   mutate(test_stat = stat/sd(bootstrap_distrib$stat))
 ```
 
-* Rappelez-vous que nous avons obtenu `\(\hat{SE}(\hat{\beta}_\textrm{small})\)` = 1.7 à partir de notre distribution bootstrap.
+* Rappelez-vous que nous avons obtenu `\(\hat{SE}(\hat{\beta}_\textrm{small})\)` = 1.7.
 
 ]
 
@@ -913,7 +957,7 @@ class:inverse
 
 # Tâche 2
 
-<countdown-timer class="countdown" id="timer_cfc5e616" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_f697d42c" minutes="5" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. En uilisant la distribution bottstrap générée au 1er exercise, calculer les IC à 95% en utilisant la *méthode des percentiles*.
 
@@ -986,7 +1030,7 @@ etable(reg_simple_math, reg_gender_math, reg_simple_read,reg_gender_read,
 ---
 
 
-# Reading a regression table
+# Lire une table de régression 
 
 .center[
 &lt;table class="table" style="font-size: 10px; width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;"&gt;
@@ -1082,11 +1126,11 @@ etable(reg_simple_math, reg_gender_math, reg_simple_read,reg_gender_read,
 ]
 
 * Chaque colonne correspond à une régression. Pour la 1ère on a : 
-    * le **nom de l'outcome** dans &lt;span style="color: #2F528F;"&gt;blue&lt;/span&gt;
-    * la **valeur estimée** `\(\hat{\beta_\textrm{small}}\)` dans &lt;span style="color: #70AD47;"&gt;green&lt;/span&gt;
-    * l'**estimation de l'écart type** dans &lt;span style="color: #FFC000;"&gt;yellow&lt;/span&gt;
-    * le **nombre d'observations** dans &lt;span style="color: #7030A0;"&gt;purple&lt;/span&gt;
-    * le **R²** dans &lt;span style="color: #C00000;"&gt;red&lt;/span&gt;
+    * le **nom de l'outcome** en &lt;span style="color: #2F528F;"&gt;bleu&lt;/span&gt;
+    * la **valeur estimée** `\(\hat{\beta_\textrm{small}}\)` en &lt;span style="color: #70AD47;"&gt;vert&lt;/span&gt;
+    * l'**estimation de l'écart type** en &lt;span style="color: #FFC000;"&gt;yellow&lt;/span&gt;
+    * le **nombre d'observations** en &lt;span style="color: #7030A0;"&gt;purple&lt;/span&gt;
+    * le **R²** en &lt;span style="color: #C00000;"&gt;red&lt;/span&gt;
     * l'interprétation des étoiles en bas
 
 
@@ -1242,7 +1286,7 @@ class:inverse
 
 # Exercice 3.1
 
-<countdown-timer class="countdown" id="timer_11ca2131" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_7d8cd6c0" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Revenons à notre question des retours à l'éducation et du genre 
 
@@ -1268,7 +1312,7 @@ class:inverse
 
 # Exercice 3.2
 
-<countdown-timer class="countdown" id="timer_714c49e4" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_2ae2055d" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Faites un nuage de points de la relatio nentre `log wage` et `education`
 
