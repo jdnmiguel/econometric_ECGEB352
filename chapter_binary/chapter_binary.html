@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 12/10/2026
+### Université de Namur </br> 19/10/2026
 ]
 
 ---
@@ -322,7 +322,7 @@ layout: true
 
 --
 
-* ⚠️ Lorsque `\(Y\)` est ***binaire***, cette interprétation n'a plus de sens : `\(Y\)` ne peut valoir que `\(0\)` ou `\(1\)`, donc elle ne peut pas varier de « `\(\beta_j\)` unités » de façon continue.
+* Lorsque `\(Y\)` est ***binaire***, cette interprétation n'a plus de sens : `\(Y\)` ne peut valoir que `\(0\)` ou `\(1\)`, donc elle ne peut pas varier de « `\(\beta_j\)` unités » de façon continue.
 
 --
 
@@ -330,13 +330,14 @@ layout: true
 
 `$$\mathbb{E}(u_i | X_{1i}, \dots, X_{ki}) = 0$$`
 
---
+---
 
-* Dans ce cas, `\(\mathbb{E}(Y_i | X_i) = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki}\)` : `\(\beta_j\)` mesure la variation de l'***espérance conditionnelle*** de `\(Y\)`, et non de `\(Y\)` lui-même.
 
---
+* Mais l'interprétation reste possible si l'hypothèse ***MLR.4*** (*moyenne conditionnelle nulle*) est vérifiée :
 
-`\(\rightarrow\)` Or, pour une variable binaire, l'espérance de `\(Y\)` est une ***probabilité*** : voyons ce que cela change.
+`$$\mathbb{E}(u_i | X_{1i}, \dots, X_{ki}) = 0$$`
+
+* Dans ce cas, `\(\mathbb{E}(Y_i | X_i) = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki}\)` : `\(\beta_j\)` mesure la variation de l'***espérance conditionnelle*** de `\(Y\)`, et non de `\(Y\)` lui-même. Or, pour une variable binaire, l'espérance de `\(Y\)` est une ***probabilité***.
 
 
 
@@ -443,7 +444,7 @@ class:inverse
 
 # Exercice 1 : le MPL sur `mroz`
 
-<countdown-timer class="countdown" id="timer_a4257c28" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_25e1872f" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Chargez les données avec `data("mroz", package = "wooldridge")`. Quelle proportion des femmes de l'échantillon a travaillé en 1975 ?
 
@@ -518,7 +519,7 @@ La droite MCO ***dépasse*** `\(1\)` et passe sous `\(0\)`, et elle ***s'éloign
 
 # Problème n°2 : l'effet marginal est constant
 
-* Dans le MPL, l'effet d'une unité de `\(X\)` est ***toujours le même*** : `\(\beta_1\)`, quel que soit le niveau de `\(X\)`.
+* Dans le MPL, l'effet d'une unité de `\(X\)` est ***toujours le même*** : `\(\beta_1\)`, quel que soit le niveau de `\(X\)`
 
 --
 
@@ -848,7 +849,11 @@ Les deux courbes sont très proches : toujours entre `\(0\)` et `\(1\)`, croissa
 
 * MCO : on *minimise* la somme des carrés des erreurs. MV : on *maximise* la probabilité d'avoir observé notre échantillon.
 
---
+---
+
+# Estimation : le maximum de vraisemblance
+
+* MCO : on *minimise* la somme des carrés des erreurs. MV : on *maximise* la probabilité d'avoir observé notre échantillon.
 
 * Pas de formule explicite : le calcul est fait ***numériquement*** par l'ordinateur. Sous `R` :
   * `glm(..., family = binomial(link = "logit"))`
@@ -1081,7 +1086,7 @@ Le score augmente de `\(1\)` dans les deux cas. Mais la probabilité augmente **
 
 # Effet marginal = pente de la courbe × `\(\beta_j\)`
 
-* L'***effet marginal*** de `\(X_j\)` est la variation de la ***probabilité*** quand `\(X_j\)` augmente d'une unité (autres variables inchangées) :
+* L'***effet marginal*** de `\(X_j\)` est la variation de la ***probabilité*** quand `\(X_j\)` augmente d'une unité (toutes choses égales par ailleurs) :
 
 `$$\text{effet marginal de } X_j \approx g(z) \times \beta_j$$`
 
@@ -1385,7 +1390,7 @@ class:inverse
 
 # Exercice 2 : logit et probit sur `mroz`
 
-<countdown-timer class="countdown" id="timer_48868880" minutes="15" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_ed07c208" minutes="15" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Estimez un ***logit*** et un ***probit*** pour `inlf` avec les mêmes variables explicatives que dans l'exercice 1 (utilisez `glm()` avec `family = binomial(link = ...)`).
 
@@ -1650,7 +1655,7 @@ class:inverse
 
 # Exercice 3 : les données HMDA
 
-<countdown-timer class="countdown" id="timer_1b101509" minutes="15" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_8094e390" minutes="15" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Chargez les données avec `data("HMDA", package = "AER")` et créez les variables binaires `deny01` et `afam01`.
 
@@ -1700,6 +1705,9 @@ background-position: 9% 19%
 | &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
 | &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen[&lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt;] | Discord |
 | &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

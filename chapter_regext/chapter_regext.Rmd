@@ -479,12 +479,12 @@ $$\frac{\partial y}{\partial x} = \beta_1 + 2\beta_2x$$
 --
 
 Le **point de retournement** correspond au point où la pente est nulle :
-
+$$
 \begin{aligned} 
 \beta_1 + 2\beta_2x^* & = 0 \\
 x^* & = -\frac{\beta_1}{2\beta_2}
 \end{aligned}
-
+$$
 
 Interprétation
 
@@ -807,30 +807,6 @@ reg_full$coefficients
 
 ---
 
-# Aperçu des 3 prochains cours
-
-* Vous avez peut-être remarqué que depuis le début, nous travaillons toujours avec des **échantillons** tirés de la population globale.
-
---
-
-* À chaque fois, imaginez que l'on pourrait tirer un autre échantillon de la population :
-
-  * Obtiendrait-on les mêmes résultats ? 
-  
-  * Autrement dit, à quel point peut-on être confiant que nos estimations (signe, magnitude) ne sont pas simplement dues au hasard ?
-  
---
-
-* Nous répondrons à ce type de questions :
-
-  * Nous présenterons la notion d'**échantillonnage**, et
-  
-  * Comprendrons ce qu'est **l'inférence statistique** et comment la réaliser. 
-
-
----
-
-
 class: title-slide-final, middle
 background-image: url(../img/logo/namur-logo.png)
 background-size: 250px
@@ -901,3 +877,15 @@ Expérience du Tennessee sur le **S**tudent/**T**eacher **A**chievement **R**ati
 --
 
 * Il existait un problème d'***attrition non aléatoire***, mais nous l'ignorerons dans la suite.
+
+
+```{r makepdf, echo=FALSE, eval=FALSE}
+Sys.setenv(PATH = paste(
+  "C:/Program Files/nodejs",
+  "C:/Users/jerem/AppData/Roaming/npm",
+  Sys.getenv("PATH"),
+  sep = ";"
+))
+Sys.setenv(PUPPETEER_EXECUTABLE_PATH = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
+system('"C:/Users/jerem/AppData/Roaming/npm/decktape.cmd" chapter_regext.html chapitre_ols_ext.pdf --chrome-arg=--disable-web-security')
+```

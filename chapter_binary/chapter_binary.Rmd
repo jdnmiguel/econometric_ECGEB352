@@ -347,7 +347,12 @@ $$\beta_j = \frac{\Delta Y}{\Delta X_j}$$
 
 $$\mathbb{E}(u_i | X_{1i}, \dots, X_{ki}) = 0$$
 
---
+---
+
+
+* Mais l'interprétation reste possible si l'hypothèse ***MLR.4*** (*moyenne conditionnelle nulle*) est vérifiée :
+
+$$\mathbb{E}(u_i | X_{1i}, \dots, X_{ki}) = 0$$
 
 * Dans ce cas, $\mathbb{E}(Y_i | X_i) = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki}$ : $\beta_j$ mesure la variation de l'***espérance conditionnelle*** de $Y$, et non de $Y$ lui-même. Or, pour une variable binaire, l'espérance de $Y$ est une ***probabilité***.
 
@@ -798,7 +803,11 @@ $\rightarrow$ Un score $z > 0$ signifie que l'événement est ***plus probable q
 
 * MCO : on *minimise* la somme des carrés des erreurs. MV : on *maximise* la probabilité d'avoir observé notre échantillon.
 
---
+---
+
+# Estimation : le maximum de vraisemblance
+
+* MCO : on *minimise* la somme des carrés des erreurs. MV : on *maximise* la probabilité d'avoir observé notre échantillon.
 
 * Pas de formule explicite : le calcul est fait ***numériquement*** par l'ordinateur. Sous `R` :
   * `glm(..., family = binomial(link = "logit"))`

@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Jérémy Do Nascimento Miguel
 ]
 .date[
-### Université de Namur </br> 2026-08-17
+### Université de Namur </br> 2026-10-15
 ]
 
 ---
@@ -330,12 +330,12 @@ L'effet marginal de \(X\) sur \(Y\) est obtenu en dérivant le modèle :
 --
 
 Le **point de retournement** correspond au point où la pente est nulle :
-
+$$
 \begin{aligned} 
 \beta_1 + 2\beta_2x^* &amp; = 0 \\
 x^* &amp; = -\frac{\beta_1}{2\beta_2}
 \end{aligned}
-
+$$
 
 Interprétation
 
@@ -351,9 +351,9 @@ Interprétation
 
 class:inverse
 
-# Task 1 : Relations non-linéaires
+# Tâche 1 : Relations non-linéaires
 
-<countdown-timer class="countdown" id="timer_c5ec6f8f" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_eac6ed0c" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Chargez les données [ici](https://www.dropbox.com/s/2v5mb04nzw2u7bd/college_tuition_income.csv?dl=1). Ce jeu de données contient des informations sur les frais de scolarité et les revenus estimés des diplômés d'universités américaines. Plus de détails [ici](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-03-10/readme.md).
 
@@ -528,9 +528,9 @@ $$ \textrm{score}_i = \color{#d96502}{\beta_0} + \color{#027D83}{\beta_1} \textr
 
 class:inverse
 
-# Task 2 : Salaires, éducation et genre en 1985
+# Tâche 2 : Salaires, éducation et genre en 1985
 
-<countdown-timer class="countdown" id="timer_7c8b8b39" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_c729628c" minutes="10" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 1. Chargez les données `CPS1985` du package `AER`.
 
@@ -625,9 +625,9 @@ Si le ***régresseur*** `\(x_k\)` est standardisé, i.e. le modèle est `\(y = \
 
 class:inverse
 
-# Task 3 : Régression standardisée
+# Tâche 3 : Régression standardisée
 
-<countdown-timer class="countdown" id="timer_96dcfa0f" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_35c63427" minutes="7" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
 
 Revenons à notre jeu de données [grades](https://www.dropbox.com/s/wwp2cs9f0dubmhr/grade5.dta?dl=1). Rappelez-vous que pour charger les données, vous devez utiliser la fonction `read_dta()` du package `haven`. Voici les estimations obtenues en régressant le score moyen en mathématiques sur l'ensemble complet des régresseurs.
 
@@ -650,45 +650,6 @@ Revenons à notre jeu de données [grades](https://www.dropbox.com/s/wwp2cs9f0du
 
 ---
 
-# Aperçu des 3 prochains cours
-
-* Vous avez peut-être remarqué que depuis le début, nous travaillons toujours avec des **échantillons** tirés de la population globale.
-
---
-
-* À chaque fois, imaginez que l'on pourrait tirer un autre échantillon de la population :
-
-  * Obtiendrait-on les mêmes résultats ? 
-  
-  * Autrement dit, à quel point peut-on être confiant que nos estimations (signe, magnitude) ne sont pas simplement dues au hasard ?
-  
---
-
-* Nous répondrons à ce type de questions :
-
-  * Nous présenterons la notion d'**échantillonnage**, et
-  
-  * Comprendrons ce qu'est **l'inférence statistique** et comment la réaliser. 
----
-
-# En route vers la causalité
-
-✅ Comment gérer les données ? Les lire, les nettoyer, les visualiser !
-
-✅  **Comment résumer les relations entre variables ?** Régression linéaire simple et multivariée, régressions non-linéaires, interactions...
-
-✅ Qu'est-ce que la causalité ?
-
-❌ Que faire si on n'observe pas toute une population ?
-
-❌  Nos résultats sont-ils simplement dus au hasard ?
-
-❌ Comment trouver l'exogénéité en pratique ?
-
-
----
-
-
 class: title-slide-final, middle
 background-image: url(../img/logo/namur-logo.png)
 background-size: 250px
@@ -699,9 +660,10 @@ background-position: 9% 19%
 
 |                                                                                                            |                                   |
 | :--------------------------------------------------------------------------------------------------------- | :-------------------------------- |
-| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.ScPored[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
-| &lt;a href="https://github.com/ScPoEcon/ScPoEconometrics-Slides"&gt;.ScPored[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
-| &lt;a href="http://github.com/ScPoEcon"&gt;.ScPored[&lt;i class="fa fa-github fa-fw"&gt;&lt;/i&gt;]                          | @ScPoEcon                       |
+| &lt;a href="mailto:jeremy.donascimento@unamur.be"&gt;.Namurgreen[&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;]               | jeremy.donascimento@unamur.be       |
+| &lt;a href="https://discord.gg/RcdCRFBcc"&gt;.Namurgreen &lt;i class="fab fa-link fa-fw"&gt;&lt;/i&gt;&lt;/a&gt; | Discord |
+| &lt;a href="https://github.com/jdnmiguel/econometric_ECGEB352"&gt;.Namurgreen[&lt;i class="fa fa-link fa-fw"&gt;&lt;/i&gt;] | Slides |
+
 
 ---
 name: log_approx
